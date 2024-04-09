@@ -484,9 +484,9 @@ namespace big
 
         // Apply the transformation matrix to the entity position
         Vector3 transformed_position;
-        transformed_position.x = view_port->m_matrix[1] * entity_position.x + view_port->m_matrix[5] * entity_position.y + view_port->m_matrix[9] * entity_position.z + view_port->m_matrix[13]; // Row 2
-        transformed_position.y = view_port->m_matrix[2] * entity_position.x + view_port->m_matrix[6] * entity_position.y + view_port->m_matrix[10] * entity_position.z + view_port->m_matrix[14]; // Row 3
-        transformed_position.z = view_port->m_matrix[3] * entity_position.x + view_port->m_matrix[7] * entity_position.y + view_port->m_matrix[11] * entity_position.z + view_port->m_matrix[15]; // Row 4
+		transformed_position.x = view_port->m_matrix[1] * entity_position.x + view_port->m_matrix[5] * entity_position.y + view_port->m_matrix[9] * entity_position.z + view_port->m_matrix[13]; // Row 2
+		transformed_position.y = view_port->m_matrix[2] * entity_position.x + view_port->m_matrix[6] * entity_position.y + view_port->m_matrix[10] * entity_position.z + view_port->m_matrix[14]; // Row 3
+		transformed_position.z = view_port->m_matrix[3] * entity_position.x + view_port->m_matrix[7] * entity_position.y + view_port->m_matrix[11] * entity_position.z + view_port->m_matrix[15]; // Row 4
 
         // Check if the transformed position is behind the camera
         if (transformed_position.z < 0.001f)
