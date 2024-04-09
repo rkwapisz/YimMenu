@@ -478,19 +478,18 @@ namespace big
 
     bool esp::world_to_screen(const Vector3 entity_position, float& screenX, float& screenY)
     {
-        // Get the viewport matrix
-		const rage::CViewPort* view_port       = g_pointers->m_gta.m_viewport;
+        // Get the viewport matrix	
+		rage::CViewPort* view_port = *g_pointers->m_gta.m_viewport;
+
+		if (view_port == nullptr)
+			return false;
 
         // Apply the transformation matrix to the entity position
         Vector3 tVec = {0.0f, 0.0f, 0.0f};
 
-		LOG(INFO) << "viewport matrix: " << view_port->m_matrix[0] << ", " << view_port->m_matrix[1] << ", " << view_port->m_matrix[2] << ", " << view_port->m_matrix[3] << ", " << view_port->m_matrix[4] << ", " << view_port->m_matrix[5] << ", " << view_port->m_matrix[6] << ", " << view_port->m_matrix[7] << ", " << view_port->m_matrix[8] << ", " << view_port->m_matrix[9] << ", " << view_port->m_matrix[10] << ", " << view_port->m_matrix[11] << ", " << view_port->m_matrix[12] << ", " << view_port->m_matrix[13] << ", " << view_port->m_matrix[14] << ", " << view_port->m_matrix[15];
-
 		tVec.x = view_port->m_matrix[1] * entity_position.x + view_port->m_matrix[5] * entity_position.y + view_port->m_matrix[9]  * entity_position.z + view_port->m_matrix[13]; // Row 2
 		tVec.y = view_port->m_matrix[2] * entity_position.x + view_port->m_matrix[6] * entity_position.y + view_port->m_matrix[10] * entity_position.z + view_port->m_matrix[14]; // Row 3
 		tVec.z = view_port->m_matrix[3] * entity_position.x + view_port->m_matrix[7] * entity_position.y + view_port->m_matrix[11] * entity_position.z + view_port->m_matrix[15]; // Row 4
-
-		LOG(INFO) << "Transformed Position: " << tVec.x << ", " << tVec.y << ", " << tVec.z;
 
         if (tVec.z < 0.001f)
             return false;
