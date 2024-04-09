@@ -384,6 +384,15 @@ namespace big
                 g_pointers->m_gta.m_get_gameplay_cam_coords = ptr.sub(0xE).as<functions::get_gameplay_cam_coords>();
             }
         },
+        // Cam Gameplay Director
+        {
+            "CGD",
+            "4C 8B 35 ? ? ? ? 33 FF 32 DB",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_cam_gameplay_director = ptr.add(3).rip().as<uintptr_t*>();
+            }
+        }
         // Give Pickup Reward
         {
             "GPR",
