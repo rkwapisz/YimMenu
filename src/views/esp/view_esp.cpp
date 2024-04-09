@@ -147,6 +147,8 @@ namespace big
 					draw_list->AddLine(r_ankle_pos, r_foot_pos, esp_color, 2.0f);
 				}
 
+				LOG(INFO) << "Drawing ESP for " << plyr->get_name() << " at " << screen_x << ", " << screen_y;
+
 				/*
 				bool head_valid = bone_to_screen(plyr, (int)PedBones::SKEL_Head, head_pos);
 				
@@ -408,6 +410,7 @@ namespace big
 			}
 		}
 	}
+
 	/*
 	bool esp::bone_to_screen(const player_ptr& plyr, int boneID, ImVec2& boneVec)
 	{
@@ -508,76 +511,4 @@ namespace big
 
         return true;
     }
-
-
-	/*
-
-
-	bool esp::world_to_screen(const Vector3 entity_position, float &screenX, float &screenY)
-	{
-		rage::CViewPort* view_port = g_pointers->m_gta.m_viewport;
-
-
-		// Viewport is a 16-element (4x4 matrix)
-		float cam_matrix[4][4] = {0};
-
-		// Copy the values from the 16-element viewport array to the 4x4 matrix
-		for (int i = 0; i < 16; i++)
-		{
-			cam_matrix[i / 4][i % 4] = view_port->m_matrix[i];
-		}
-
-		// LOG(INFO) << "cam_matrix: " << cam_matrix[0][0] << ", " << cam_matrix[0][1] << ", " << cam_matrix[0][2] << ", " << cam_matrix[0][3] << ", " << cam_matrix[1][0] << ", " << cam_matrix[1][1] << ", " << cam_matrix[1][2] << ", " << cam_matrix[1][3] << ", " << cam_matrix[2][0] << ", " << cam_matrix[2][1] << ", " << cam_matrix[2][2] << ", " << cam_matrix[2][3] << ", " << cam_matrix[3][0] << ", " << cam_matrix[3][1] << ", " << cam_matrix[3][2] << ", " << cam_matrix[3][3];
-
-		// Transpose
-		float transposed_cam_matrix[4][4] = {0};
-
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				transposed_cam_matrix[j][i] = cam_matrix[i][j];
-			}
-		}
-
-		Vector4 vecZ = {transposed_cam_matrix[3][0], transposed_cam_matrix[3][1], transposed_cam_matrix[3][2], transposed_cam_matrix[3][3]};
-		Vector4 vecX = {transposed_cam_matrix[1][0], transposed_cam_matrix[1][1], transposed_cam_matrix[1][2], transposed_cam_matrix[1][3]};
-		Vector4 vecY = {transposed_cam_matrix[2][0], transposed_cam_matrix[2][1], transposed_cam_matrix[2][2], transposed_cam_matrix[2][3]};
-
-		Vector3 screen_position = {0, 0, 0};
-		screen_position.z = (vecZ.x * entity_position.x) + (vecZ.y * entity_position.y) + (vecZ.z * entity_position.z) + vecZ.w;
-		screen_position.x =	(vecX.x * entity_position.x) + (vecX.y * entity_position.y) + (vecX.z * entity_position.z) + vecX.w;
-		screen_position.y = (vecY.x * entity_position.x) + (vecY.y * entity_position.y) + (vecY.z * entity_position.z) + vecY.w;
-
-		if (screen_position.z < 0.001f)
-		{
-			screenX = 0.0f;
-			screenY = 0.0f;
-			
-			return false;
-		}
-
-		float invw = 1.0f / screen_position.z;
-
-		screen_position.x *= invw;
-		screen_position.y *= invw;
-
-		LOG(INFO) << "screen_position: " << screen_position.x << ", " << screen_position.y;
-
-		float resX = (float)*g_pointers->m_gta.m_resolution_x;
-		float resY = (float)*g_pointers->m_gta.m_resolution_y;
-
-		// Compute res on-screen pixel position
-		screen_position.x += (resX / 2.0f) + (int)(0.5f * screen_position.x * resX + 0.5f);
-		screen_position.y = (resY / 2.0f) - (int)(0.5f * screen_position.y * resY + 0.5f);
-
-		screenX = screen_position.x;
-		screenY = screen_position.y;
-
-		LOG(INFO) << "screenX: " << screenX << ", screenY: " << screenY;
-
-		return true;
-	}*/
-
-
 }
