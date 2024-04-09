@@ -38,6 +38,7 @@ namespace big
 		uint32_t ped_damage_bits = plyr->get_ped()->m_damage_bits;
 
 		Vector3 plyr_coords = {player_pos.x, player_pos.y, player_pos.z};
+
 		if (world_to_screen(plyr_coords, screen_x, screen_y))
 		//if (g_pointers->m_gta.m_get_screen_coords_for_world_coords(player_pos.data, &screen_x, &screen_y))
 		{
@@ -146,8 +147,6 @@ namespace big
 					// Right ankle to right foot
 					draw_list->AddLine(r_ankle_pos, r_foot_pos, esp_color, 2.0f);
 				}
-
-				LOG(INFO) << "Drawing ESP for " << plyr->get_name() << " at " << screen_x << ", " << screen_y;
 
 				/*
 				bool head_valid = bone_to_screen(plyr, (int)PedBones::SKEL_Head, head_pos);
@@ -443,8 +442,8 @@ namespace big
 		if (plyr == nullptr)
 			return false;
 
-		float screenX = (float)*g_pointers->m_gta.m_resolution_x;
-		float screenY = (float)*g_pointers->m_gta.m_resolution_y;
+        float resolutionX = static_cast<float>(*g_pointers->m_gta.m_resolution_x);
+		float resolutionY = static_cast<float>(*g_pointers->m_gta.m_resolution_y);
 
 		// Validate stability of get_bone_coords
 		const auto player_bones = plyr->get_ped()->get_bone_coords(boneType);
@@ -453,8 +452,8 @@ namespace big
 
 		if (world_to_screen(f_vec, boneVec.x, boneVec.y))
 		{
-			boneVec.x = screenX * boneVec.x;
-			boneVec.y = screenY * boneVec.y;
+			boneVec.x = resolutionX * boneVec.x;
+			boneVec.y = resolutionY * boneVec.y;
 
 			return true;
 		}
@@ -480,30 +479,33 @@ namespace big
     bool esp::world_to_screen(const Vector3 entity_position, float& screenX, float& screenY)
     {
         // Get the viewport matrix
-        rage::CViewPort* view_port = g_pointers->m_gta.m_viewport;
+		const rage::CViewPort* view_port       = g_pointers->m_gta.m_viewport;
 
         // Apply the transformation matrix to the entity position
-        Vector3 transformed_position;
-		transformed_position.x = view_port->m_matrix[1] * entity_position.x + view_port->m_matrix[5] * entity_position.y + view_port->m_matrix[9] * entity_position.z + view_port->m_matrix[13]; // Row 2
-		transformed_position.y = view_port->m_matrix[2] * entity_position.x + view_port->m_matrix[6] * entity_position.y + view_port->m_matrix[10] * entity_position.z + view_port->m_matrix[14]; // Row 3
-		transformed_position.z = view_port->m_matrix[3] * entity_position.x + view_port->m_matrix[7] * entity_position.y + view_port->m_matrix[11] * entity_position.z + view_port->m_matrix[15]; // Row 4
+        Vector3 tVec = {0.0f, 0.0f, 0.0f};
 
-        // Check if the transformed position is behind the camera
-        if (transformed_position.z < 0.001f)
+		LOG(INFO) << "viewport matrix: " << view_port->m_matrix[0] << ", " << view_port->m_matrix[1] << ", " << view_port->m_matrix[2] << ", " << view_port->m_matrix[3] << ", " << view_port->m_matrix[4] << ", " << view_port->m_matrix[5] << ", " << view_port->m_matrix[6] << ", " << view_port->m_matrix[7] << ", " << view_port->m_matrix[8] << ", " << view_port->m_matrix[9] << ", " << view_port->m_matrix[10] << ", " << view_port->m_matrix[11] << ", " << view_port->m_matrix[12] << ", " << view_port->m_matrix[13] << ", " << view_port->m_matrix[14] << ", " << view_port->m_matrix[15];
+
+		tVec.x = view_port->m_matrix[1] * entity_position.x + view_port->m_matrix[5] * entity_position.y + view_port->m_matrix[9]  * entity_position.z + view_port->m_matrix[13]; // Row 2
+		tVec.y = view_port->m_matrix[2] * entity_position.x + view_port->m_matrix[6] * entity_position.y + view_port->m_matrix[10] * entity_position.z + view_port->m_matrix[14]; // Row 3
+		tVec.z = view_port->m_matrix[3] * entity_position.x + view_port->m_matrix[7] * entity_position.y + view_port->m_matrix[11] * entity_position.z + view_port->m_matrix[15]; // Row 4
+
+		LOG(INFO) << "Transformed Position: " << tVec.x << ", " << tVec.y << ", " << tVec.z;
+
+        if (tVec.z < 0.001f)
             return false;
 
-        // Perform perspective division
-        transformed_position.z = 1.0f / transformed_position.z;
-        transformed_position.x *= transformed_position.z;
-        transformed_position.y *= transformed_position.z;
+        tVec.z = 1.0f / tVec.z;
+        tVec.x *= tVec.z;
+        tVec.y *= tVec.z;
 
         // Get the resolution of the game window
         float resolutionX = static_cast<float>(*g_pointers->m_gta.m_resolution_x);
         float resolutionY = static_cast<float>(*g_pointers->m_gta.m_resolution_y);
 
         // Calculate the screen coordinates
-        screenX = ((resolutionX * 0.5f) + (0.5f * transformed_position.x * resolutionX + 1.0f)) / resolutionX;
-        screenY = ((resolutionY * 0.5f) - (0.5f * transformed_position.y * resolutionY + 1.0f)) / resolutionY;
+        screenX = ((resolutionX * 0.5f) + (0.5f * tVec.x * resolutionX + 1.0f)) / resolutionX;
+        screenY = ((resolutionY * 0.5f) - (0.5f * tVec.y * resolutionY + 1.0f)) / resolutionY;
 
         // Check if the screen coordinates are outside the screen boundaries
         if (screenX > 1.0f || screenX < 0.0f || screenY > 1.0f || screenY < 0.0f)
