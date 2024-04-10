@@ -20,15 +20,25 @@ namespace rage
 		};
 	};
 
-	class CViewPort
+	struct grcViewport
 	{
-	public:
-		char _0x0000[0x27C];
-		float m_matrix[0x10];
+		fmatrix44 m_world;
+		fmatrix44 m_worldView;
+		fmatrix44 m_worldViewProj;
+		fmatrix44 m_inverseView;
+		fmatrix44 m_view;
+		fmatrix44 m_projection;
 	};
 
-	struct ScreenResolution
+	struct CViewportGame
 	{
-		uint32_t w, h;
+	public:
+		virtual ~CViewportGame() = 0;
+
+	private:
+		char m_pad[8];
+
+	public:
+		grcViewport viewport;
 	};
 }

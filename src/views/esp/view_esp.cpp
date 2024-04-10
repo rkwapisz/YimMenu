@@ -410,33 +410,6 @@ namespace big
 		}
 	}
 
-	/*
-	bool esp::bone_to_screen(const player_ptr& plyr, int boneID, ImVec2& boneVec)
-	{
-		bool isSuccess = false;
-
-		if (plyr == nullptr)
-			return false;
-
-		float bone_x = 0;
-		float bone_y = 0;
-
-		float screenX = (float)*g_pointers->m_gta.m_resolution_x;
-		float screenY = (float)*g_pointers->m_gta.m_resolution_y;
-
-		const auto player_ped = g_pointers->m_gta.m_ptr_to_handle(plyr->get_ped());
-		const auto bone_data = ENTITY::GET_WORLD_POSITION_OF_ENTITY_BONE(player_ped, PED::GET_PED_BONE_INDEX(player_ped, boneID));
-
-		float f_vec[3] = { bone_data.x, bone_data.y, bone_data.z };
-		isSuccess = g_pointers->m_gta.m_get_screen_coords_for_world_coords(f_vec, &bone_x, &bone_y);
-
-		boneVec.x = screenX * bone_x;
-		boneVec.y = screenY * bone_y;
-
-		return isSuccess;
-	}
-	*/
-
 	bool esp::bone_to_screen(const player_ptr& plyr, ePedBoneType boneType, ImVec2& boneVec)
 	{
 		if (plyr == nullptr)
@@ -479,17 +452,35 @@ namespace big
     bool esp::world_to_screen(const Vector3 entity_position, float& screenX, float& screenY)
     {
         // Get the viewport matrix	
-		rage::CViewPort* view_port = *g_pointers->m_gta.m_viewport;
+		rage::CViewportGame** g_viewportGame = g_pointers->m_gta.m_viewport;
 
-		if (view_port == nullptr)
+		if (g_viewportGame == nullptr)
 			return false;
 
-        // Apply the transformation matrix to the entity position
-        Vector3 tVec = {0.0f, 0.0f, 0.0f};
+		const auto viewport		= (*g_viewportGame)->viewport;
+		const auto view_matrix	= viewport.m_worldViewProj;
 
-		tVec.x = view_port->m_matrix[1] * entity_position.x + view_port->m_matrix[5] * entity_position.y + view_port->m_matrix[9]  * entity_position.z + view_port->m_matrix[13]; // Row 2
-		tVec.y = view_port->m_matrix[2] * entity_position.x + view_port->m_matrix[6] * entity_position.y + view_port->m_matrix[10] * entity_position.z + view_port->m_matrix[14]; // Row 3
-		tVec.z = view_port->m_matrix[3] * entity_position.x + view_port->m_matrix[7] * entity_position.y + view_port->m_matrix[11] * entity_position.z + view_port->m_matrix[15]; // Row 4
+		rage::fmatrix44 transposed_view_matrix;
+
+        // Transpose the view_matrix so we can store right, up, and forward in their own vectors
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				transposed_view_matrix.data[i][j] = view_matrix.data[j][i];
+			}
+		}
+
+        // Apply the transposed matrix to the entity position to get our entity to screen matrix
+		auto vRight     = transposed_view_matrix.rows[0]; // Right
+		auto vUp		= transposed_view_matrix.rows[1]; // Up
+		auto vForward   = transposed_view_matrix.rows[2]; // Forward
+	
+		Vector3 tVec = {0.f, 0.f, 0.f};
+
+		tVec.x = (vRight.x * entity_position.x) + (vRight.y * entity_position.y) + (vRight.z * entity_position.z) + vRight.w;
+		tVec.y = (vUp.x * entity_position.x) + (vUp.y * entity_position.y) + (vUp.z * entity_position.z) + vUp.w;
+		tVec.z = (vForward.x * entity_position.x) + (vForward.y * entity_position.y) + (vForward.z * entity_position.z) + vForward.w;
 
         if (tVec.z < 0.001f)
             return false;
