@@ -1,14 +1,15 @@
 #pragma once
 #include "pointers.hpp"
 #include "gta/matrix.hpp"
-#include "../graphics/CViewport.hpp"
+#include "graphics/CViewport.hpp"
 
 namespace big::world_to_screen
 {
 	// w2w will return real pixel coordinates into screen
 	bool w2s(const rage::fvector3 entity_position, rage::fvector2 &screen) {
 	    // Get the viewport matrix
-	    rage::CViewportGame** g_viewportGame = g_pointers->m_gta.m_viewport;
+	   
+		CViewportGame** g_viewportGame = g_pointers->m_gta.m_viewport;
 
 		if (g_viewportGame == nullptr)
 			return false;
@@ -49,11 +50,11 @@ namespace big::world_to_screen
 		rage::fvector2 resolution = {static_cast<float>(*g_pointers->m_gta.m_resolution_x), static_cast<float>(*g_pointers->m_gta.m_resolution_y)};
 
 		// Calculate the screen coordinates
-		screenX = ((resolution.x * 0.5f) + (0.5f * tVec.x * resolution.x + 1.0f));
-		screenY = ((resolution.y * 0.5f) - (0.5f * tVec.y * resolution.y + 1.0f));
+		screen.x = ((resolution.x * 0.5f) + (0.5f * tVec.x * resolution.x + 1.0f));
+		screen.y = ((resolution.y * 0.5f) - (0.5f * tVec.y * resolution.y + 1.0f));
 
 		// Check if the screen coordinates are outside the screen boundaries
-		if (screenX > resolution.x || screenX < 0.0f || screenY > resolution.y || screenY < 0.0f)
+		if (screen.x > resolution.x || screen.x < 0.0f || screen.y > resolution.y || screen.y < 0.0f)
 			return false;
 
 		return true;

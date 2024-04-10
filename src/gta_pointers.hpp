@@ -126,7 +126,7 @@ namespace big
 
 		functions::get_gameplay_cam_coords m_get_gameplay_cam_coords;
 		
-		rage::CViewportGame** m_viewport;
+		CViewportGame** m_viewport;
 
 		PVOID m_write_player_gamer_data_node;
 

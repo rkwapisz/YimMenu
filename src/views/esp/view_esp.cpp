@@ -41,8 +41,8 @@ namespace big
 		if (world_to_screen::w2s(player_pos, screen))
 		//if (g_pointers->m_gta.m_get_screen_coords_for_world_coords(player_pos.data, &screen_x, &screen_y))
 		{
-			const auto esp_x = (float)*g_pointers->m_gta.m_resolution_x * screen.x;
-			const auto esp_y = (float)*g_pointers->m_gta.m_resolution_y * screen.y;
+			const auto esp_x = screen.x;
+			const auto esp_y = screen.y;
 
 			std::string name_str;
 			ImVec2 name_pos = {esp_x - (62.5f * multplr), esp_y - (175.f * multplr) - 20.f};
@@ -74,9 +74,6 @@ namespace big
 
 			if (distance < g.esp.bone_render_distance[1] && distance > g.esp.bone_render_distance[0] && g.esp.bone)
 			{
-				// Used to convert fvector2 coordinates into ImVec2 for drawing
-				ImVec2 im_bone_vec;
-
 				// Map bone locations to x/y on screen
 				rage::fvector2 head_pos;
 				bool head_valid = bone_to_screen(plyr, ePedBoneType::HEAD, head_pos);
@@ -414,9 +411,6 @@ namespace big
 	{
 		if (plyr == nullptr)
 			return false;
-
-		float resolutionX = static_cast<float>(*g_pointers->m_gta.m_resolution_x);
-		float resolutionY = static_cast<float>(*g_pointers->m_gta.m_resolution_y);
 
 		// Validate stability of get_bone_coords
 		const auto player_bones = plyr->get_ped()->get_bone_coords(bone_type);
