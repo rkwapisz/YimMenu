@@ -1,12 +1,13 @@
 #include "view_esp.hpp"
 
+#include "gta/enums.hpp"
+#include "gta/matrix.hpp"
 #include "gta_util.hpp"
 #include "pointers.hpp"
-#include "gta/matrix.hpp"
 #include "services/players/player_service.hpp"
 #include "util/math.hpp"
 #include "util/misc.hpp"
-#include "gta/enums.hpp"
+#include "util/world_to_screen.hpp"
 
 namespace big
 {
@@ -27,7 +28,7 @@ namespace big
 
 		auto& player_pos = *plyr->get_ped()->m_navigation->get_position();
 
-		float screen_x, screen_y;
+		rage::fvector2 screen;
 
 		const float distance = math::calculate_distance_from_game_cam(player_pos);
 		const float multplr  = distance > g.esp.global_render_distance[1] ? -1.f : 6.17757f / distance;
@@ -37,13 +38,11 @@ namespace big
 
 		uint32_t ped_damage_bits = plyr->get_ped()->m_damage_bits;
 
-		Vector3 plyr_coords = {player_pos.x, player_pos.y, player_pos.z};
-
-		if (world_to_screen(plyr_coords, screen_x, screen_y))
+		if (world_to_screen::w2s(player_pos, screen))
 		//if (g_pointers->m_gta.m_get_screen_coords_for_world_coords(player_pos.data, &screen_x, &screen_y))
 		{
-			const auto esp_x = (float)*g_pointers->m_gta.m_resolution_x * screen_x;
-			const auto esp_y = (float)*g_pointers->m_gta.m_resolution_y * screen_y;
+			const auto esp_x = (float)*g_pointers->m_gta.m_resolution_x * screen.x;
+			const auto esp_y = (float)*g_pointers->m_gta.m_resolution_y * screen.y;
 
 			std::string name_str;
 			ImVec2 name_pos = {esp_x - (62.5f * multplr), esp_y - (175.f * multplr) - 20.f};
@@ -75,77 +74,80 @@ namespace big
 
 			if (distance < g.esp.bone_render_distance[1] && distance > g.esp.bone_render_distance[0] && g.esp.bone)
 			{
+				// Used to convert fvector2 coordinates into ImVec2 for drawing
+				ImVec2 im_bone_vec;
+
 				// Map bone locations to x/y on screen
-				ImVec2 head_pos;
+				rage::fvector2 head_pos;
 				bool head_valid = bone_to_screen(plyr, ePedBoneType::HEAD, head_pos);
 				if (head_valid)
 				{
 					// Draw circle around head
-					draw_list->AddCircle(head_pos, 20.f * multplr, esp_color, 0, 2.0f);
+					draw_list->AddCircle(ImVec2(head_pos.x, head_pos.y), 20.f * multplr, esp_color, 0, 2.0f);
 				}
 
-				ImVec2 neck_pos;
+				rage::fvector2 neck_pos;
 				bool neck_valid = bone_to_screen(plyr, ePedBoneType::NECK, neck_pos);
 				if (head_valid && neck_valid)
 				{
 					// Head to neck
-					draw_list->AddLine(head_pos, neck_pos, esp_color, 2.0f);
+					draw_list->AddLine(ImVec2(head_pos.x, head_pos.y), ImVec2(neck_pos.x, neck_pos.y), esp_color, 2.0f);
 				}
 
-				ImVec2 abdomen_pos;
+				rage::fvector2 abdomen_pos;
 				bool abdomen_valid = bone_to_screen(plyr, ePedBoneType::ABDOMEN, abdomen_pos);
 				if (neck_valid && abdomen_valid)
 				{
 					// Neck to abdomen
-					draw_list->AddLine(neck_pos, abdomen_pos, esp_color, 2.0f);
+					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(abdomen_pos.x, abdomen_pos.y), esp_color, 2.0f);
 				}
 
-				ImVec2 l_hand_pos;
+				rage::fvector2 l_hand_pos;
 				bool l_hand_valid = bone_to_screen(plyr, ePedBoneType::L_HAND, l_hand_pos);
 				if (neck_valid && l_hand_valid)
 				{
 					// Neck to left hand
-					draw_list->AddLine(neck_pos, l_hand_pos, esp_color, 2.0f);
+					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(l_hand_pos.x, l_hand_pos.y), esp_color, 2.0f);
 				}
 
-				ImVec2 r_hand_pos;
+				rage::fvector2 r_hand_pos;
 				bool r_hand_valid = bone_to_screen(plyr, ePedBoneType::R_HAND, r_hand_pos);
 				if (neck_valid && r_hand_valid)
 				{
 					// Neck to right hand
-					draw_list->AddLine(neck_pos, r_hand_pos, esp_color, 2.0f);
+					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(r_hand_pos.x, r_hand_pos.y), esp_color, 2.0f);
 				}
 
-				ImVec2 l_ankle_pos;
+				rage::fvector2 l_ankle_pos;
 				bool l_ankle_valid = bone_to_screen(plyr, ePedBoneType::L_ANKLE, l_ankle_pos);
 				if (abdomen_valid && l_ankle_valid)
 				{
 					// Abdomen to left ankle
-					draw_list->AddLine(abdomen_pos, l_ankle_pos, esp_color, 2.0f);
+					draw_list->AddLine(ImVec2(abdomen_pos.x, abdomen_pos.y), ImVec2(l_ankle_pos.x, l_ankle_pos.y), esp_color, 2.0f);
 				}
 
-				ImVec2 r_ankle_pos;
+				rage::fvector2 r_ankle_pos;
 				bool r_ankle_valid = bone_to_screen(plyr, ePedBoneType::R_ANKLE, r_ankle_pos);
 				if (abdomen_valid && r_ankle_valid)
 				{
 					// Abdomen to right ankle
-					draw_list->AddLine(abdomen_pos, r_ankle_pos, esp_color, 2.0f);
+					draw_list->AddLine(ImVec2(abdomen_pos.x, abdomen_pos.y), ImVec2(r_ankle_pos.x, r_ankle_pos.y), esp_color, 2.0f);
 				}
 
-				ImVec2 l_foot_pos;
+				rage::fvector2 l_foot_pos;
 				bool l_foot_valid = bone_to_screen(plyr, ePedBoneType::L_FOOT, l_foot_pos);
 				if (l_ankle_valid && l_foot_valid)
 				{
 					// Left ankle to left foot
-					draw_list->AddLine(l_ankle_pos, l_foot_pos, esp_color, 2.0f);
+					draw_list->AddLine(ImVec2(l_ankle_pos.x, l_ankle_pos.y), ImVec2(l_foot_pos.x, l_foot_pos.y), esp_color, 2.0f);
 				}
 
-				ImVec2 r_foot_pos;
+				rage::fvector2 r_foot_pos;
 				bool r_foot_valid = bone_to_screen(plyr, ePedBoneType::R_FOOT, r_foot_pos);
 				if (r_ankle_valid && r_foot_valid)
 				{
 					// Right ankle to right foot
-					draw_list->AddLine(r_ankle_pos, r_foot_pos, esp_color, 2.0f);
+					draw_list->AddLine(ImVec2(r_ankle_pos.x, r_ankle_pos.y), ImVec2(r_foot_pos.x, r_foot_pos.y), esp_color, 2.0f);
 				}
 
 				/*
@@ -339,12 +341,10 @@ namespace big
 				}
 			}
 
-			if (auto player_vehicle = plyr->get_current_vehicle();
-				player_vehicle &&
-				(plyr->get_ped()->m_ped_task_flag & (uint32_t)ePedTask::TASK_DRIVING) &&
-				(player_vehicle->m_damage_bits & (uint32_t)eEntityProofs::GOD))
+			if (auto player_vehicle = plyr->get_current_vehicle(); player_vehicle && (plyr->get_ped()->m_ped_task_flag & (uint32_t)ePedTask::TASK_DRIVING)
+			    && (player_vehicle->m_damage_bits & (uint32_t)eEntityProofs::GOD))
 			{
-				mode_str =+ "VEHICLE_GOD"_T.data();
+				mode_str = +"VEHICLE_GOD"_T.data();
 			}
 
 			if (!mode_str.empty())
@@ -410,26 +410,19 @@ namespace big
 		}
 	}
 
-	bool esp::bone_to_screen(const player_ptr& plyr, ePedBoneType boneType, ImVec2& boneVec)
+	bool esp::bone_to_screen(const player_ptr& plyr, ePedBoneType bone_type, rage::fvector2& bone_vec)
 	{
 		if (plyr == nullptr)
 			return false;
 
-        float resolutionX = static_cast<float>(*g_pointers->m_gta.m_resolution_x);
+		float resolutionX = static_cast<float>(*g_pointers->m_gta.m_resolution_x);
 		float resolutionY = static_cast<float>(*g_pointers->m_gta.m_resolution_y);
 
 		// Validate stability of get_bone_coords
-		const auto player_bones = plyr->get_ped()->get_bone_coords(boneType);
+		const auto player_bones = plyr->get_ped()->get_bone_coords(bone_type);
 
-		Vector3 f_vec = {player_bones.x, player_bones.y, player_bones.z};
-
-		if (world_to_screen(f_vec, boneVec.x, boneVec.y))
-		{
-			boneVec.x = resolutionX * boneVec.x;
-			boneVec.y = resolutionY * boneVec.y;
-
+		if (world_to_screen::w2s(player_bones, bone_vec))
 			return true;
-		}
 
 		return false;
 	}
@@ -448,59 +441,4 @@ namespace big
 			});
 		}
 	}
-
-    bool esp::world_to_screen(const Vector3 entity_position, float& screenX, float& screenY)
-    {
-        // Get the viewport matrix	
-		rage::CViewportGame** g_viewportGame = g_pointers->m_gta.m_viewport;
-
-		if (g_viewportGame == nullptr)
-			return false;
-
-		const auto viewport		= (*g_viewportGame)->viewport;
-		const auto view_matrix	= viewport.m_worldViewProj;
-
-		rage::fmatrix44 transposed_view_matrix;
-
-        // Transpose the view_matrix so we can store right, up, and forward in their own vectors
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				transposed_view_matrix.data[i][j] = view_matrix.data[j][i];
-			}
-		}
-
-        // Apply the transposed matrix to the entity position to get our entity to screen matrix
-		auto vRight     = transposed_view_matrix.rows[0]; // Right
-		auto vUp		= transposed_view_matrix.rows[1]; // Up
-		auto vForward   = transposed_view_matrix.rows[2]; // Forward
-	
-		Vector3 tVec = {0.f, 0.f, 0.f};
-
-		tVec.x = (vRight.x * entity_position.x) + (vRight.y * entity_position.y) + (vRight.z * entity_position.z) + vRight.w;
-		tVec.y = (vUp.x * entity_position.x) + (vUp.y * entity_position.y) + (vUp.z * entity_position.z) + vUp.w;
-		tVec.z = (vForward.x * entity_position.x) + (vForward.y * entity_position.y) + (vForward.z * entity_position.z) + vForward.w;
-
-        if (tVec.z < 0.001f)
-            return false;
-
-        tVec.z = 1.0f / tVec.z;
-        tVec.x *= tVec.z;
-        tVec.y *= tVec.z;
-
-        // Get the resolution of the game window
-        float resolutionX = static_cast<float>(*g_pointers->m_gta.m_resolution_x);
-        float resolutionY = static_cast<float>(*g_pointers->m_gta.m_resolution_y);
-
-        // Calculate the screen coordinates
-        screenX = ((resolutionX * 0.5f) + (0.5f * tVec.x * resolutionX + 1.0f)) / resolutionX;
-        screenY = ((resolutionY * 0.5f) - (0.5f * tVec.y * resolutionY + 1.0f)) / resolutionY;
-
-        // Check if the screen coordinates are outside the screen boundaries
-        if (screenX > 1.0f || screenX < 0.0f || screenY > 1.0f || screenY < 0.0f)
-            return false;
-
-        return true;
-    }
 }
