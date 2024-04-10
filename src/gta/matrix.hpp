@@ -1,5 +1,6 @@
 #pragma once
 #include "rage/vector.hpp"
+
 #include <cstdint>
 
 namespace rage
@@ -20,25 +21,15 @@ namespace rage
 		};
 	};
 
-	struct grcViewport
+	class CViewPort
 	{
-		fmatrix44 m_world;
-		fmatrix44 m_worldView;
-		fmatrix44 m_worldViewProj;
-		fmatrix44 m_inverseView;
-		fmatrix44 m_view;
-		fmatrix44 m_projection;
+	public:
+		char _0x0000[0x24C];
+		float m_matrix[0x10];
 	};
 
-	struct CViewportGame
+	struct ScreenResolution
 	{
-	public:
-		virtual ~CViewportGame() = 0;
-
-	private:
-		char m_pad[8];
-
-	public:
-		grcViewport viewport;
+		uint32_t w, h;
 	};
 }
