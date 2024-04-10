@@ -392,7 +392,16 @@ namespace big
             {
                 g_pointers->m_gta.m_cam_gameplay_director = ptr.add(3).rip().as<uintptr_t*>();
             }
-        }
+        },
+        // Get Viewport
+        {
+            "GV",
+            "48 8B 15 ? ? ? ? 48 8D 2D ? ? ? ? 48 8B CD",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_viewport = ptr.add(3).rip().as<rage::CViewportGame**>();
+			      }
+		    },
         // Give Pickup Reward
         {
             "GPR",

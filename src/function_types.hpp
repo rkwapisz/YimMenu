@@ -28,6 +28,7 @@ namespace rage
 	class snMsgRemoveGamersFromSessionCmd;
 	class snSession;
 	class snPlayer;
+	class CViewportGame;
 	class CDynamicEntity;
 	class netTimeSyncMsg;
 	class snConnectToPeerTaskData;
