@@ -2,6 +2,7 @@
 #include "gta/enums.hpp"
 #include "natives.hpp"
 #include "util/entity.hpp"
+#include "util/world_to_screen.hpp"
 
 #include <numbers>
 namespace big
@@ -17,7 +18,7 @@ namespace big
 
 		static inline Entity target_entity = 0;
 		static inline float zCorrection; // Define a zCorrection that lets us vertically offset our aim from the bone
-		static inline uint32_t aimBone = 0x796E;
+		static inline uint16_t aimBone = (uint16_t)PedBones::SKEL_Head;
 
 		// Stage 1: Target Acquisition
 		// Stage 2: Target Tracking
@@ -27,10 +28,7 @@ namespace big
 		virtual void on_tick() override
 		{
 			// Set local versions of configured variables
-			float aimbot_fov = g.weapons.aimbot.fov; // FoV in pixels, grabbed from ImGUI slider
-
-			// Correct for unit circle for the actual math
-			aimbot_fov = aimbot_fov / (float)*g_pointers->m_gta.m_resolution_x;
+			rage::fvector2 resolution = {(float)*g_pointers->m_gta.m_resolution_x, (float)*g_pointers->m_gta.m_resolution_y};
 
 			// Only process aim targets while we're actually free aiming
 			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id))
@@ -68,18 +66,19 @@ namespace big
 					if (playerToPedDistance < 2.0f)
 						continue;
 
-					float xScreen, yScreen;
-					GRAPHICS::GET_SCREEN_COORD_FROM_WORLD_COORD(pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z, &xScreen, &yScreen);
+					rage::fvector2 screen = {0.f, 0.f};
+					//GRAPHICS::GET_SCREEN_COORD_FROM_WORLD_COORD(pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z, &xScreen, &yScreen);
+					world_to_screen::w2s({pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z}, screen);
 
-					float xDelta = xScreen - 0.5f; // How far from center (crosshair) is X?
-					float yDelta = yScreen - 0.5f; // How far from center (crosshair) is Y?
+					float xDelta = screen.x - (resolution.x * 0.5f); // How far from center (crosshair) is X?
+					float yDelta = screen.y - (resolution.y * 0.5f); // How far from center (crosshair) is Y?
 
 					// Note that the values returned into xScreen and yScreen by the W2S function range from [0,0] (top left) to [1,1] (bottom right)
 					// Largest supported magnitude will obviously be sqrt(0.5^2 + 0.5^2) = 0.707 which is what we'll use in the GUI for now
 					// TODO: Create a more easily understandable mapping between GUI value and actual implementation (maybe pixels? maybe draw a box on-screen that shows the valid area?)
 					float crosshairMag = sqrtf(xDelta * xDelta + yDelta * yDelta);
 
-					if (crosshairMag > aimbot_fov)
+					if (crosshairMag > g.weapons.aimbot.fov)
 						continue;
 
 					// Filter out peds that are alive and in the scan area, but are behind some sort of cover (we don't want to aim through walls)
@@ -149,17 +148,17 @@ namespace big
 						int pedVehicleClass = VEHICLE::GET_VEHICLE_CLASS(PED::GET_VEHICLE_PED_IS_IN(target_entity, 0));
 						if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0) && (pedVehicleClass == 8 || pedVehicleClass == 13))
 						{
-							aimBone     = 0x9995; // Neck
+							aimBone     = (uint16_t)PedBones::SKEL_Spine_Root; // Spine
 							zCorrection = 0.f;
 						}
 						else if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0))
 						{
-							aimBone     = 0x796E; // Head
+							aimBone     = (uint16_t)PedBones::SKEL_Head; // Head
 							zCorrection = 0.075f;
 						}
 						else
 						{
-							aimBone     = 0x796E; // Head
+							aimBone     = (uint16_t)PedBones::SKEL_Head; // Head
 							zCorrection = 0.07f;
 						}
 
@@ -197,32 +196,32 @@ namespace big
 						compedAimPos.z += zCorrection;
 
 						/*
-						// Vector3 playerVelocity;
-						float predMult = 0.015f;
+					// Vector3 playerVelocity;
+					float predMult = 0.015f;
 
-						// For prediction, we want the vehicle's velocity if the ped is in one, otherwise we just grab the ped's velocity if they're on foot
-						Vehicle pedVehicle = PED::GET_VEHICLE_PED_IS_IN(target_entity, 0);
-						if (pedVehicle)
-						{
-							targetVelocity = ENTITY::GET_ENTITY_SPEED_VECTOR(pedVehicle, 1);
-						}
-						else
-						{
-							targetVelocity = ENTITY::GET_ENTITY_SPEED_VECTOR(target_entity, 1);
-						}
+					// For prediction, we want the vehicle's velocity if the ped is in one, otherwise we just grab the ped's velocity if they're on foot
+					Vehicle pedVehicle = PED::GET_VEHICLE_PED_IS_IN(target_entity, 0);
+					if (pedVehicle)
+					{
+						targetVelocity = ENTITY::GET_ENTITY_SPEED_VECTOR(pedVehicle, 1);
+					}
+					else
+					{
+						targetVelocity = ENTITY::GET_ENTITY_SPEED_VECTOR(target_entity, 1);
+					}
 
-						// Set up a corrected/predicted target position based on their velocity and the prediction multiplier
-						targetVelocityPred = targetVelocity * predMult;
+					// Set up a corrected/predicted target position based on their velocity and the prediction multiplier
+					targetVelocityPred = targetVelocity * predMult;
 						
-						//playerVelocity = ENTITY::GET_ENTITY_SPEED_VECTOR(self::ped, 1);
+					//playerVelocity = ENTITY::GET_ENTITY_SPEED_VECTOR(self::ped, 1);
 
-						aim_lock = PED::GET_PED_BONE_COORDS(target_entity,
-						    g.weapons.aimbot.selected_bone,
-						    targetVelocityPred.x,
-						    targetVelocityPred.y + 0.05f, // Small manual adjustment since the head bone isn't optimal for aimbot
-						    targetVelocityPred.z);
+					aim_lock = PED::GET_PED_BONE_COORDS(target_entity,
+						g.weapons.aimbot.selected_bone,
+						targetVelocityPred.x,
+						targetVelocityPred.y + 0.05f, // Small manual adjustment since the head bone isn't optimal for aimbot
+						targetVelocityPred.z);
 						
-						*/
+					*/
 
 						// New aimbot code, credits to xiaoxiao921
 						// Do a bit of converting from Vector3 to fvector3
@@ -259,57 +258,57 @@ namespace big
 						*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target; // Third person
 
 						/*
-						if (!PED::IS_PED_IN_ANY_VEHICLE(self::ped, 0))
-						{
-							if (CAM::GET_FOLLOW_PED_CAM_VIEW_MODE() == CameraMode::FIRST_PERSON)
-							{
-								*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x40) = camera_target;
-							}
-							else
-							{
-								*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target;
-							}
-						}
-						else
-						{
-							// Setting these vectors allows us to correct aim from inside a vehicle
-							reset_aim_vectors(cam_follow_ped_camera);
-
-							*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target;
-						}
-						*/
-						// Got rid of all the smoothing crap... I don't see any value for it in a game like GTA
-						/*
-						camera_target = aim_lock - CAM::GET_GAMEPLAY_CAM_COORD();
-
-						constexpr float RADPI = 180.0f / std::numbers::pi;
-						float magnitude       = std::hypot(camera_target.x, camera_target.y, camera_target.z);
-						float camera_heading  = atan2f(camera_target.x, camera_target.y) * RADPI;
-
-						float camera_pitch = asinf(camera_target.z / magnitude) * RADPI;
-						float self_heading = ENTITY::GET_ENTITY_HEADING(self::ped);
-						float self_pitch   = ENTITY::GET_ENTITY_PITCH(self::ped);
-
-						if (camera_heading >= 0.0f && camera_heading <= 180.0f)
-						{
-							camera_heading = 360.0f - camera_heading;
-						}
-						else if (camera_heading <= -0.0f && camera_heading >= -180.0f)
-						{
-							camera_heading = -camera_heading;
-						}
-
+					if (!PED::IS_PED_IN_ANY_VEHICLE(self::ped, 0))
+					{
 						if (CAM::GET_FOLLOW_PED_CAM_VIEW_MODE() == CameraMode::FIRST_PERSON)
 						{
-							CAM::SET_FIRST_PERSON_SHOOTER_CAMERA_HEADING(camera_heading - self_heading);
-							CAM::SET_FIRST_PERSON_SHOOTER_CAMERA_PITCH(camera_pitch - self_pitch);
+							*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x40) = camera_target;
 						}
 						else
 						{
-							CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(camera_heading - self_heading);
-							CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(camera_pitch - self_pitch, 1.0f);
+							*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target;
 						}
-						*/
+					}
+					else
+					{
+						// Setting these vectors allows us to correct aim from inside a vehicle
+						reset_aim_vectors(cam_follow_ped_camera);
+
+						*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target;
+					}
+					*/
+						// Got rid of all the smoothing crap... I don't see any value for it in a game like GTA
+						/*
+					camera_target = aim_lock - CAM::GET_GAMEPLAY_CAM_COORD();
+
+					constexpr float RADPI = 180.0f / std::numbers::pi;
+					float magnitude       = std::hypot(camera_target.x, camera_target.y, camera_target.z);
+					float camera_heading  = atan2f(camera_target.x, camera_target.y) * RADPI;
+
+					float camera_pitch = asinf(camera_target.z / magnitude) * RADPI;
+					float self_heading = ENTITY::GET_ENTITY_HEADING(self::ped);
+					float self_pitch   = ENTITY::GET_ENTITY_PITCH(self::ped);
+
+					if (camera_heading >= 0.0f && camera_heading <= 180.0f)
+					{
+						camera_heading = 360.0f - camera_heading;
+					}
+					else if (camera_heading <= -0.0f && camera_heading >= -180.0f)
+					{
+						camera_heading = -camera_heading;
+					}
+
+					if (CAM::GET_FOLLOW_PED_CAM_VIEW_MODE() == CameraMode::FIRST_PERSON)
+					{
+						CAM::SET_FIRST_PERSON_SHOOTER_CAMERA_HEADING(camera_heading - self_heading);
+						CAM::SET_FIRST_PERSON_SHOOTER_CAMERA_PITCH(camera_pitch - self_pitch);
+					}
+					else
+					{
+						CAM::SET_GAMEPLAY_CAM_RELATIVE_HEADING(camera_heading - self_heading);
+						CAM::SET_GAMEPLAY_CAM_RELATIVE_PITCH(camera_pitch - self_pitch, 1.0f);
+					}
+					*/
 
 						// Store the current position for next tick's prediction
 						prevTargetPosition = curTargetPosition;
@@ -317,14 +316,14 @@ namespace big
 					}
 				}
 				// END Target Tracking
-			}
-			else
-			{
-				// Stage 3: Target Reset
-				// If we're not free aiming, clear the target entity in case we were previously locked onto something
-				target_entity      = 0;
-				prevTargetPosition = {0.f, 0.f, 0.f};
-				prevPlayerPosition = {0.f, 0.f, 0.f};
+				else
+				{
+					// Stage 3: Target Reset
+					// If we're not free aiming, clear the target entity in case we were previously locked onto something
+					target_entity      = 0;
+					prevTargetPosition = {0.f, 0.f, 0.f};
+					prevPlayerPosition = {0.f, 0.f, 0.f};
+				}
 			}
 		}
 
