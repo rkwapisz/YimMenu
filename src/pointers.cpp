@@ -402,7 +402,8 @@ namespace big
 
                 g_pointers->m_gta.m_viewport = ptr.add(3).rip().as<CViewportGame**>();
 			      }
-		    },
+		    }
+        },
         // Give Pickup Reward
         {
             "GPR",
