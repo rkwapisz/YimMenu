@@ -44,6 +44,7 @@ namespace big
 			}
 
 			ImGui::Checkbox("SETTINGS_ESP_PLAYER_NAME"_T.data(), &g.esp.name);
+			ImGui::Checkbox("SETTINGS_ESP_PLAYER_WEAPON"_T.data(), &g.esp.weapon);
 			ImGui::Checkbox("SETTINGS_ESP_PLAYER_DISTANCE"_T.data(), &g.esp.distance);
 			ImGui::Checkbox("SETTINGS_ESP_PLAYER_GOD_MODE"_T.data(), &g.esp.god);
 			ImGui::Checkbox("SETTINGS_ESP_PLAYER_HEALTH"_T.data(), &g.esp.health);

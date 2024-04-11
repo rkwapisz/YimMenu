@@ -317,7 +317,14 @@ namespace big
 				name_str += "m";
 			}
 
+			if (g.esp.weapon && plyr->get_ped()->m_weapon_manager != nullptr && plyr->get_ped()->m_weapon_manager->m_weapon_info != nullptr && plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name != nullptr)
+			{
+				std::string weapon_str = plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name;
+				draw_list->AddText({esp_x - (62.5f * multplr), esp_y - (175.f * multplr) + 20.f}, esp_color, weapon_str.c_str());
+			}
+			
 			draw_list->AddText(name_pos, esp_color, name_str.c_str());
+
 			std::string mode_str = "";
 			if (g.esp.god)
 			{

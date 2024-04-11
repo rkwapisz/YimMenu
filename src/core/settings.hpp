@@ -980,6 +980,7 @@ namespace big
 			bool god                        = true;
 			bool distance                   = true;
 			bool name                       = true;
+			bool weapon						= false;	
 			bool change_esp_color_from_dist = false;
 			bool scale_health_from_dist     = false;
 			bool scale_armor_from_dist      = false;
@@ -989,7 +990,7 @@ namespace big
 			ImU32 default_color             = 4285713522;
 			ImU32 friend_color              = 4293244509;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp, enabled, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, change_esp_color_from_dist, scale_health_from_dist, scale_armor_from_dist, distance_threshold, enemy_color, enemy_near_color, default_color, friend_color)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp, enabled, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, change_esp_color_from_dist, scale_health_from_dist, scale_armor_from_dist, distance_threshold, enemy_color, enemy_near_color, default_color, friend_color)
 		} esp{};
 
 		struct session_browser
