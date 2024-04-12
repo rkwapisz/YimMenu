@@ -1,5 +1,6 @@
 #include "backend/player_command.hpp"
 #include "backend/looped/looped.hpp"
+#include "common.hpp"
 #include "natives.hpp"
 #include "pointers.hpp"
 #include "script.hpp"
@@ -30,6 +31,7 @@ namespace big
 			cageTimer = std::async(std::launch::async, [cageDuration, this]()
 			{
 				std::this_thread::sleep_for(cageDuration);
+				g_notification_service.push_success("Player DB", std::format("Cage timer expired"));
 				isExpired = true;
 			});
 		}
@@ -37,6 +39,7 @@ namespace big
 		Object createTimedCage(DWORD model, float xLoc, float yLoc, float zLoc, float pedHeading, std::chrono::seconds cageDuration)
 		{	
 			startTimer(cageDuration);
+			g_notification_service.push_success("Player DB", std::format("Cage created at {}, {}, {}", xLoc, yLoc, zLoc));
 			return CREATE_OBJECT_WITH_HEADING(model, xLoc, yLoc, zLoc, pedHeading, false, isVisible);
 		}
 
