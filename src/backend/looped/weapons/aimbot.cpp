@@ -21,12 +21,13 @@ namespace big
 		using looped_command::looped_command;
 		virtual void on_tick() override
 		{
-			if (!PLAYER::IS_PLAYER_FREE_AIMING(self::id) && target_entity) {
+			// Reset aim target when we're not aiming
+			if (!PLAYER::IS_PLAYER_FREE_AIMING(self::id)) {
 				target_entity = 0;
 			}
 
 			// Only process aim targets while we're actually free aiming
-			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && target_entity == 0)
+			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && !target_entity)
 			{
 				// Stage 1: Target Acquisition
 				rage::fvector2 resolution = {(float)*g_pointers->m_gta.m_resolution_x, (float)*g_pointers->m_gta.m_resolution_y};
@@ -52,15 +53,11 @@ namespace big
 					Vector3 pedWorldPosition    = ENTITY::GET_ENTITY_COORDS(ped, false);
 					Vector3 playerWorldPosition = ENTITY::GET_ENTITY_COORDS(self::ped, false);
 
-					playerToPedDistance = SYSTEM::VDIST2(playerWorldPosition.x,
-					    playerWorldPosition.y,
-					    playerWorldPosition.z,
-					    pedWorldPosition.x,
-					    pedWorldPosition.y,
-					    pedWorldPosition.z);
+					rage::fvector3 ped_world_position_fvec = {pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z};
+					float player_to_cam_distance = math::calculate_distance_from_game_cam(ped_world_position_fvec);
 
 					// Don't flip out if an enemy is on top of us
-					if (playerToPedDistance < 2.0f)
+					if (player_to_cam_distance < 2.0f || player_to_cam_distance > 1000.0f)
 						continue;
 
 					rage::fvector2 screen = {0.f, 0.f};
@@ -145,7 +142,7 @@ namespace big
 					int pedVehicleClass = VEHICLE::GET_VEHICLE_CLASS(PED::GET_VEHICLE_PED_IS_IN(target_entity, 0));
 					if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0) && (pedVehicleClass == 8 || pedVehicleClass == 13))
 					{
-                        aimBone = static_cast<uint16_t>(PedBones::SKEL_Pelvis); // Pelvis
+                        aimBone = static_cast<uint16_t>(PedBones::SKEL_Spine_Root); // Spine
 					}
 					else if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0))
 					{
@@ -159,11 +156,18 @@ namespace big
 					Vector3 target_position = ENTITY::GET_ENTITY_BONE_POSTION(target_entity, PED::GET_PED_BONE_INDEX(target_entity, aimBone));
 					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_entity);
 
+					Vector3 player_position = ENTITY::GET_ENTITY_COORDS(self::ped, false);
+					Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
+
 					rage::fvector3 target_position_fvec = {target_position.x, target_position.y, target_position.z};
 					rage::fvector3 target_velocity_fvec = {target_velocity.x, target_velocity.y, target_velocity.z};
 
+					// We use get_camera_position() later to get the player's camera position, so no need for natives
+					rage::fvector3 player_velocity_fvec = {player_velocity.x, player_velocity.y, player_velocity.z};
+
 					// Apply a compensating factor for velocity
-					float velocity_comp_factor = 0.015f;
+					float velocity_comp_factor = 0.0125f;
+
 					target_position_fvec       = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
 
 					target_position_fvec.z += 0.075f;
@@ -184,6 +188,11 @@ namespace big
 
                     // Convert target_position from Vector3 to rage::fvector3
 					rage::fvector3 camera_position_fvec = get_camera_position();
+
+					// Compensate for player velocity
+					camera_position_fvec = camera_position_fvec + (player_velocity_fvec * velocity_comp_factor);
+
+					// Finally calculate the vector we write into memory
 					rage::fvector3 camera_target_fvec   = (target_position_fvec - camera_position_fvec).normalize();
 
 					// Game uses different cameras when on-foot vs. in vehicle, which is why using the gameplay cam is such a PITA, but for the aimbot it's fine to write to both locations
