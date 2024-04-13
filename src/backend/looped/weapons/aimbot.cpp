@@ -142,7 +142,7 @@ namespace big
 					int pedVehicleClass = VEHICLE::GET_VEHICLE_CLASS(PED::GET_VEHICLE_PED_IS_IN(target_entity, 0));
 					if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0) && (pedVehicleClass == 8 || pedVehicleClass == 13))
 					{
-                        aimBone = static_cast<uint16_t>(PedBones::SKEL_Spine_Root); // Spine
+                        aimBone = static_cast<uint16_t>(PedBones::SKEL_R_Clavicle); // Claivcle
 					}
 					else if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0))
 					{
