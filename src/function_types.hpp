@@ -16,6 +16,7 @@ enum class PedBones : uint16_t;
 class CNetComplaintMgr;
 class Network;
 class CNetworkObjectMgr;
+class CViewportGame;
 
 namespace rage
 {
