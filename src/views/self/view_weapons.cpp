@@ -180,6 +180,8 @@ namespace big
 
 		if (g.weapons.aimbot.enable)
 		{
+			ImGui::SameLine();
+			components::command_checkbox<"nonhitscan">();
 			components::command_checkbox<"aimatplayer">();
 			ImGui::SameLine();
 			components::command_checkbox<"aimatnpc">();
