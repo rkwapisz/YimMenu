@@ -119,7 +119,8 @@ namespace big
 		});
 
 		components::command_checkbox<"incrdamage">();
-		ImGui::InputFloat("VIEW_WEAPON_DAMAGE"_T.data(), &g.weapons.increased_damage, .1, 10, "%.1f");
+		if (g.weapons.increase_damage)
+			ImGui::InputFloat("VIEW_WEAPON_DAMAGE"_T.data(), &g.weapons.increased_damage, .1, 10, "%.1f");
 
 
 		components::command_checkbox<"flyingaxe">();
