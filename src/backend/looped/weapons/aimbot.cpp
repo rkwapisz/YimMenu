@@ -29,6 +29,35 @@ namespace big
 			// Only process aim targets while we're actually free aiming
 			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && !target_entity)
 			{
+				Hash weapon_hash = WEAPON::GET_SELECTED_PED_WEAPON(self::ped);
+				
+				if (!g.weapons.aimbot.nonhitscan)
+				{
+					// Don't aimbot with throwables
+					if (weapon_hash == 0x93E220BD || // Grenade
+						weapon_hash == 0xA0973D5E || // BZ Gas
+						weapon_hash == 0x24B17070 || // Molotov
+						weapon_hash == 0xAB564B93 || // Prox Mines
+						weapon_hash == 0xBA45E8B8 || // Pipe Bomb
+						weapon_hash == 0x2C3731D9 || // Sticky Bomb
+						weapon_hash == 0x497FACC3 || // Flare
+						weapon_hash == 0xFDBC8A50)   // Tear Gas
+					{
+						return;
+					}
+
+					if (weapon_hash == 0xB1CA77B1 || // RPG
+						weapon_hash == 0xA284510B || // Grenade Launcher
+						weapon_hash == 0x4DD2DC56 || // Smoke Grenade Launcher
+						weapon_hash == 0x7F7497E5 || // Firework Launcher
+						weapon_hash == 0x63AB0442 || // Homing Launcher
+						weapon_hash == 0x0781FE4A || // Compact Launcher
+						weapon_hash == 0xDB26713A)   // EMP Launcher
+					{
+						return;
+					}
+				}
+
 				// Stage 1: Target Acquisition
 				rage::fvector2 resolution = {(float)*g_pointers->m_gta.m_resolution_x, (float)*g_pointers->m_gta.m_resolution_y};
 
@@ -138,19 +167,29 @@ namespace big
 					// We have a valid ped, now do bone stuff
 
 					// Set the bone to aim at
-					// If the target is on a motorcycle or bike, aim at their neck since a headshot is going to be difficult and most shots will miss
+					// Default bone will be the head
+					aimBone = static_cast<uint16_t>(PedBones::SKEL_Head); // Head
+
+					// Some heavy weapons should be aimed at the body instead of the head
+					Hash weapon_hash = WEAPON::GET_SELECTED_PED_WEAPON(self::ped);
+
+					if (weapon_hash == 0x42BF8A85 || // Minigun
+					    weapon_hash == 0xFEA23564 || // Railgun
+					    weapon_hash == 0xB62D1F67)   // Widowmaker
+					{
+						aimBone = static_cast<uint16_t>(PedBones::SKEL_Spine_Root); // Spine0
+					}
+
+					// Check if the target is in a vehicle, since we may want to aim a little differently
 					int pedVehicleClass = VEHICLE::GET_VEHICLE_CLASS(PED::GET_VEHICLE_PED_IS_IN(target_entity, 0));
-					if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0) && (pedVehicleClass == 8 || pedVehicleClass == 13))
+					if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0))
 					{
-                        aimBone = static_cast<uint16_t>(PedBones::SKEL_Spine_Root); // Spine
-					}
-					else if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0))
-					{
-						aimBone = static_cast<uint16_t>(PedBones::SKEL_Head); // Head
-					}
-					else
-					{
-						aimBone = static_cast<uint16_t>(PedBones::SKEL_Head); // Head
+						// If the target is on a motorcycle or bike, aim at their neck since a headshot is going to be difficult and most shots will miss
+						if (pedVehicleClass == 8 || pedVehicleClass == 13)
+							aimBone = static_cast<uint16_t>(PedBones::SKEL_R_Clavicle); // Claivcle
+						else
+							// In most vehicles, we want even our heavy weapons to aim at the head since body shots will hit the vehicle anyway
+							aimBone = static_cast<uint16_t>(PedBones::SKEL_Head); // Head
 					}
 
 					Vector3 target_position = ENTITY::GET_ENTITY_BONE_POSTION(target_entity, PED::GET_PED_BONE_INDEX(target_entity, aimBone));
@@ -269,6 +308,8 @@ namespace big
 
 	aimbot g_aimbot("aimbot", "VIEW_OVERLAY_AIMBOT", "BACKEND_LOOPED_WEAPONS_AIMBOT_DESC", g.weapons.aimbot.enable);
 
+	bool_command
+	    g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC", g.weapons.aimbot.nonhitscan);
 	bool_command
 	    g_aimbot_on_player("aimatplayer", "PLAYER", "BACKEND_LOOPED_WEAPONS_AIM_AT_PLAYER_DESC", g.weapons.aimbot.on_player);
 	bool_command

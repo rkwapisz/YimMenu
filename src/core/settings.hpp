@@ -848,16 +848,13 @@ namespace big
 			struct aimbot
 			{
 				bool enable            = false;
-				bool smoothing         = true;
-				float smoothing_speed  = 2.f;
+				bool nonhitscan		   = true;
 				bool on_player         = true;
 				bool on_enemy          = false;
 				bool on_police         = false;
 				bool on_npc            = false;
-				float fov              = 90.f;
-				float distance         = 200.f;
-				uint32_t selected_bone = 0x796E; // Default to head
-				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, smoothing, smoothing_speed, on_player, on_enemy, on_police, on_npc, fov, distance)
+				float fov              = 100.0f;
+				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, on_player, on_enemy, on_police, on_npc, fov)
 			} aimbot{};
 
 			struct flying_axe
