@@ -12,7 +12,8 @@ namespace big
 		static inline float playerToPedDistance;
 
 		static inline Entity target_entity = 0;
-		static inline uint16_t aimBone     = (uint16_t)PedBones::SKEL_Head;
+
+		static inline uint16_t aimBone = (uint16_t)PedBones::SKEL_Head;
 
 		// Stage 1: Target Acquisition
 		// Stage 2: Target Tracking
@@ -22,8 +23,7 @@ namespace big
 		virtual void on_tick() override
 		{
 			// Reset aim target when we're not aiming
-			if (!PLAYER::IS_PLAYER_FREE_AIMING(self::id))
-			{
+			if (!PLAYER::IS_PLAYER_FREE_AIMING(self::id)) {
 				target_entity = 0;
 			}
 
@@ -31,29 +31,29 @@ namespace big
 			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && !target_entity)
 			{
 				Hash weapon_hash = WEAPON::GET_SELECTED_PED_WEAPON(self::ped);
-
+				
 				if (!g.weapons.aimbot.nonhitscan)
 				{
 					// Don't aimbot with throwables
 					if (weapon_hash == 0x93E220BD || // Grenade
-					    weapon_hash == 0xA0973D5E || // BZ Gas
-					    weapon_hash == 0x24B17070 || // Molotov
-					    weapon_hash == 0xAB564B93 || // Prox Mines
-					    weapon_hash == 0xBA45E8B8 || // Pipe Bomb
-					    weapon_hash == 0x2C3731D9 || // Sticky Bomb
-					    weapon_hash == 0x497FACC3 || // Flare
-					    weapon_hash == 0xFDBC8A50)   // Tear Gas
+						weapon_hash == 0xA0973D5E || // BZ Gas
+						weapon_hash == 0x24B17070 || // Molotov
+						weapon_hash == 0xAB564B93 || // Prox Mines
+						weapon_hash == 0xBA45E8B8 || // Pipe Bomb
+						weapon_hash == 0x2C3731D9 || // Sticky Bomb
+						weapon_hash == 0x497FACC3 || // Flare
+						weapon_hash == 0xFDBC8A50)   // Tear Gas
 					{
 						return;
 					}
 
 					if (weapon_hash == 0xB1CA77B1 || // RPG
-					    weapon_hash == 0xA284510B || // Grenade Launcher
-					    weapon_hash == 0x4DD2DC56 || // Smoke Grenade Launcher
-					    weapon_hash == 0x7F7497E5 || // Firework Launcher
-					    weapon_hash == 0x63AB0442 || // Homing Launcher
-					    weapon_hash == 0x0781FE4A || // Compact Launcher
-					    weapon_hash == 0xDB26713A)   // EMP Launcher
+						weapon_hash == 0xA284510B || // Grenade Launcher
+						weapon_hash == 0x4DD2DC56 || // Smoke Grenade Launcher
+						weapon_hash == 0x7F7497E5 || // Firework Launcher
+						weapon_hash == 0x63AB0442 || // Homing Launcher
+						weapon_hash == 0x0781FE4A || // Compact Launcher
+						weapon_hash == 0xDB26713A)   // EMP Launcher
 					{
 						return;
 					}
@@ -207,7 +207,6 @@ namespace big
 
 					// Apply a compensating factor for velocity
 					float velocity_comp_factor = 0.0125f;
-
 					target_position_fvec = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
 
 					target_position_fvec.z += 0.075f;
@@ -226,14 +225,16 @@ namespace big
 					// Camera Handling
 					// Note we HAVE to normalize this vector
 
-					// Convert target_position from Vector3 to rage::fvector3
+
+                    // Convert target_position from Vector3 to rage::fvector3
 					rage::fvector3 camera_position_fvec = get_camera_position();
 
 					// Compensate for player velocity
 					camera_position_fvec = camera_position_fvec + (player_velocity_fvec * velocity_comp_factor);
 
 					// Finally calculate the vector we write into memory
-					rage::fvector3 camera_target_fvec = (target_position_fvec - camera_position_fvec).normalize();
+
+					rage::fvector3 camera_target_fvec   = (target_position_fvec - camera_position_fvec).normalize();
 
 					// Game uses different cameras when on-foot vs. in vehicle, which is why using the gameplay cam is such a PITA, but for the aimbot it's fine to write to both locations
 					reset_aim_vectors(cam_follow_ped_camera);
@@ -309,13 +310,14 @@ namespace big
 
 	aimbot g_aimbot("aimbot", "VIEW_OVERLAY_AIMBOT", "BACKEND_LOOPED_WEAPONS_AIMBOT_DESC", g.weapons.aimbot.enable);
 
-	bool_command g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC",
-	    g.weapons.aimbot.nonhitscan);
+	bool_command
+	    g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC", g.weapons.aimbot.nonhitscan);
 	bool_command
 	    g_aimbot_on_player("aimatplayer", "PLAYER", "BACKEND_LOOPED_WEAPONS_AIM_AT_PLAYER_DESC", g.weapons.aimbot.on_player);
-	bool_command g_aimbot_on_npc("aimatnpc", "NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
+	bool_command
+		g_aimbot_on_npc("aimatnpc", "NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
 	bool_command
 	    g_aimbot_on_police("aimatpolice", "POLICE", "BACKEND_LOOPED_WEAPONS_AIM_AT_POLICE_DESC", g.weapons.aimbot.on_police);
-	bool_command g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY_DESC",
-	    g.weapons.aimbot.on_enemy);
+	bool_command
+		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY_DESC", g.weapons.aimbot.on_enemy);
 }

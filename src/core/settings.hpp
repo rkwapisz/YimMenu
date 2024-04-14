@@ -848,16 +848,13 @@ namespace big
 			struct aimbot
 			{
 				bool enable            = false;
-				bool smoothing         = true;
-				float smoothing_speed  = 2.f;
+				bool nonhitscan		   = true;
 				bool on_player         = true;
 				bool on_enemy          = false;
 				bool on_police         = false;
 				bool on_npc            = false;
-				float fov              = 90.f;
-				float distance         = 200.f;
-				uint32_t selected_bone = 0x796E; // Default to head
-				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, smoothing, smoothing_speed, on_player, on_enemy, on_police, on_npc, fov, distance)
+				float fov              = 100.0f;
+				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, on_player, on_enemy, on_police, on_npc, fov)
 			} aimbot{};
 
 			struct flying_axe
@@ -970,14 +967,17 @@ namespace big
 			float global_render_distance[2] = {0.f, 600.f};
 			float tracer_render_distance[2] = {200.f, 600.f};
 			float box_render_distance[2]    = {0.f, 150.f};
+			float bone_render_distance[2]   = {0.f, 150.f};
 			bool tracer                     = true;
 			float tracer_draw_position[2]   = {0.5f, 1.f};
-			bool box                        = true;
+			bool box                        = false;
+			bool bone                       = true;
 			bool health                     = true;
 			bool armor                      = true;
 			bool god                        = true;
 			bool distance                   = true;
 			bool name                       = true;
+			bool weapon						= false;	
 			bool change_esp_color_from_dist = false;
 			bool scale_health_from_dist     = false;
 			bool scale_armor_from_dist      = false;
@@ -987,7 +987,7 @@ namespace big
 			ImU32 default_color             = 4285713522;
 			ImU32 friend_color              = 4293244509;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp, enabled, global_render_distance, tracer_render_distance, box_render_distance, tracer, tracer_draw_position, box, health, armor, god, distance, name, change_esp_color_from_dist, scale_health_from_dist, scale_armor_from_dist, distance_threshold, enemy_color, enemy_near_color, default_color, friend_color)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp, enabled, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, change_esp_color_from_dist, scale_health_from_dist, scale_armor_from_dist, distance_threshold, enemy_color, enemy_near_color, default_color, friend_color)
 		} esp{};
 
 		struct session_browser

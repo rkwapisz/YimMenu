@@ -1,5 +1,6 @@
 #pragma once
 #include "rage/vector.hpp"
+
 #include <cstdint>
 
 namespace rage
