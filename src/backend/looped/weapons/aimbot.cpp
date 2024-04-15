@@ -209,7 +209,15 @@ namespace big
 					float velocity_comp_factor = 0.0125f;
 					target_position_fvec = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
 
-					target_position_fvec.z += 0.075f;
+					// If we're a good distance above our target, we should aim just a little lower
+					if (player_position.z - target_position_fvec.z > 15.0f)
+					{
+						target_position_fvec.z -= 0.065f;
+					}
+					else
+					{
+						target_position_fvec.z += 0.065f;
+					}
 
 					uintptr_t cam_gameplay_director = *g_pointers->m_gta.m_cam_gameplay_director;
 
