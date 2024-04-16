@@ -181,18 +181,6 @@ namespace big
 						aimBone = static_cast<uint16_t>(PedBones::SKEL_Spine_Root); // Spine0
 					}
 
-					// Check if the target is in a vehicle, since we may want to aim a little differently
-					int pedVehicleClass = VEHICLE::GET_VEHICLE_CLASS(PED::GET_VEHICLE_PED_IS_IN(target_entity, 0));
-					if (PED::IS_PED_IN_ANY_VEHICLE(target_entity, 0))
-					{
-						// If the target is on a motorcycle or bike, aim at their neck since a headshot is going to be difficult and most shots will miss
-						if (pedVehicleClass == 8 || pedVehicleClass == 13)
-							aimBone = static_cast<uint16_t>(PedBones::SKEL_R_Clavicle); // Claivcle
-						else
-							// In most vehicles, we want even our heavy weapons to aim at the head since body shots will hit the vehicle anyway
-							aimBone = static_cast<uint16_t>(PedBones::SKEL_Head); // Head
-					}
-
 					Vector3 target_position = ENTITY::GET_ENTITY_BONE_POSTION(target_entity, PED::GET_PED_BONE_INDEX(target_entity, aimBone));
 					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_entity);
 
@@ -212,7 +200,7 @@ namespace big
 					// If we're a good distance above our target, we should aim just a little lower
 					if (player_position.z - target_position_fvec.z > 15.0f)
 					{
-						target_position_fvec.z -= 0.065f;
+						target_position_fvec.z -= 0.030f;
 					}
 					else
 					{
