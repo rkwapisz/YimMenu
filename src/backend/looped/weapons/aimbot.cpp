@@ -178,14 +178,35 @@ namespace big
 					    weapon_hash == 0xFEA23564 || // Railgun
 					    weapon_hash == 0xB62D1F67)   // Widowmaker
 					{
-						aimBone = static_cast<uint16_t>(PedBones::SKEL_Spine_Root); // Spine0
+						aimBone = static_cast<uint16_t>(PedBones::SKEL_Spine_Root);
+					}
+
+					//Vehicle player_vehicle = PED::GET_VEHICLE_PED_IS_IN(self::ped, false);
+					Vehicle target_vehicle = PED::GET_VEHICLE_PED_IS_IN(target_entity, false);
+
+					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_vehicle);
+					Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
+
+					if (target_vehicle)
+					{
+						int veh_class          = VEHICLE::GET_VEHICLE_CLASS(target_vehicle);
+						Hash veh_hash          = ENTITY::GET_ENTITY_MODEL(PED::GET_VEHICLE_PED_IS_IN(target_entity, 0));
+
+						if (veh_class == 8 || veh_class == 13) // Motorcycles and bicycles
+						{
+							aimBone = static_cast<uint16_t>(PedBones::SKEL_Neck_1);
+						}
+
+						if (veh_hash == 0x34B82784 || veh_hash == 0x7B54A9D3) // Oppressor and Mk 2
+						{
+							aimBone = static_cast<uint16_t>(PedBones::SKEL_Pelvis);
+						}
+
+						target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_vehicle);
 					}
 
 					Vector3 target_position = ENTITY::GET_ENTITY_BONE_POSTION(target_entity, PED::GET_PED_BONE_INDEX(target_entity, aimBone));
-					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_entity);
-
 					Vector3 player_position = ENTITY::GET_ENTITY_COORDS(self::ped, false);
-					Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
 
 					rage::fvector3 target_position_fvec = {target_position.x, target_position.y, target_position.z};
 					rage::fvector3 target_velocity_fvec = {target_velocity.x, target_velocity.y, target_velocity.z};
@@ -194,7 +215,7 @@ namespace big
 					rage::fvector3 player_velocity_fvec = {player_velocity.x, player_velocity.y, player_velocity.z};
 
 					// Apply a compensating factor for velocity
-					float velocity_comp_factor = 0.0125f;
+					float velocity_comp_factor = 0.020f;
 					target_position_fvec = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
 
 					// If we're a good distance above our target, we should aim just a little lower

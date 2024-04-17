@@ -7,6 +7,7 @@
 #include "services/players/player_service.hpp"
 #include "util/math.hpp"
 #include "util/misc.hpp"
+#include "util/model_info.hpp"
 #include "util/world_to_screen.hpp"
 
 namespace big
@@ -317,13 +318,31 @@ namespace big
 				name_str += "m";
 			}
 
+			std::string weapon_str = "";
+
 			if (g.esp.weapon && plyr->get_ped()->m_weapon_manager != nullptr && plyr->get_ped()->m_weapon_manager->m_weapon_info != nullptr && plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name != nullptr)
 			{
-				std::string weapon_str = plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name;
-				draw_list->AddText({esp_x - (62.5f * multplr), esp_y - (175.f * multplr) + 20.f}, esp_color, weapon_str.c_str());
+				weapon_str = plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name;
+			}
+
+			if (g.esp.vehicle && plyr->get_current_vehicle() != nullptr && plyr->get_current_vehicle()->m_model_info != nullptr)
+			{
+				CVehicleModelInfo* model_info = static_cast<CVehicleModelInfo*>(plyr->get_current_vehicle()->m_model_info);
+
+				if (model_info->m_name != nullptr)
+				{
+					// Only add spacer if we're displaying the weapon as well
+					if (!weapon_str.empty())
+						weapon_str += " | ";
+
+					weapon_str += model_info->m_name;
+				}
 			}
 			
 			draw_list->AddText(name_pos, esp_color, name_str.c_str());
+
+			if (!weapon_str.empty())
+				draw_list->AddText({esp_x - (62.5f * multplr), esp_y - (175.f * multplr) + 20.f}, esp_color, weapon_str.c_str());
 
 			std::string mode_str = "";
 			if (g.esp.god)
