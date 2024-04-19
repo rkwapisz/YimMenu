@@ -215,17 +215,22 @@ namespace big
 					rage::fvector3 player_velocity_fvec = {player_velocity.x, player_velocity.y, player_velocity.z};
 
 					// Apply a compensating factor for velocity
-					float velocity_comp_factor = 0.020f;
+					float velocity_comp_factor = g.weapons.aimbot.pred_comp;
 					target_position_fvec = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
 
-					// If we're a good distance above our target, we should aim just a little lower
-					if (player_position.z - target_position_fvec.z > 15.0f)
+					if (target_vehicle)
 					{
-						target_position_fvec.z -= 0.030f;
+						target_position_fvec.z += g.weapons.aimbot.z_veh_comp;
 					}
 					else
 					{
-						target_position_fvec.z += 0.065f;
+						target_position_fvec.z += g.weapons.aimbot.z_foot_comp;
+					}
+
+					// If we're a good distance above our target, we should aim just a little lower
+					if (player_position.z - target_position_fvec.z > 20.0f)
+					{
+						target_position_fvec.z -= 0.030f;
 					}
 
 					uintptr_t cam_gameplay_director = *g_pointers->m_gta.m_cam_gameplay_director;

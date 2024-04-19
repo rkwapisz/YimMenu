@@ -193,7 +193,17 @@ namespace big
 
 			ImGui::PushItemWidth(350);
 			ImGui::SliderFloat("VIEW_WEAPON_AIM_FOV"_T.data(), &g.weapons.aimbot.fov, 0.0f, (float)*g_pointers->m_gta.m_resolution_x, "%.0f");
+			ImGui::SliderFloat("VIEW_WEAPON_AIM_FOOT_ZCOMP"_T.data(), &g.weapons.aimbot.z_foot_comp, -0.2f, 0.2f, "%.5f");
+			ImGui::SliderFloat("VIEW_WEAPON_AIM_VEH_ZCOMP"_T.data(), &g.weapons.aimbot.z_veh_comp, -0.2f, 0.2f, "%.5f");
+			ImGui::SliderFloat("VIEW_WEAPON_AIM_PREDCOMP"_T.data(), &g.weapons.aimbot.pred_comp, 0.0f, 0.2f, "%.5f");
 			ImGui::PopItemWidth();
+
+			components::button("DEFAULT"_T, [] {
+				g.weapons.aimbot.fov         = 100.0f;
+				g.weapons.aimbot.z_foot_comp = 0.08f;
+				g.weapons.aimbot.z_veh_comp  = 0.05f;
+				g.weapons.aimbot.pred_comp   = 0.01f;
+			});
 		}
 
 		if (ImGui::CollapsingHeader("VIEW_WEAPON_AMMUNATION"_T.data()))
