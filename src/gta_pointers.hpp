@@ -371,6 +371,8 @@ namespace big
 		functions::can_create_vehicle m_can_create_vehicle;
 		
 		uintptr_t* m_cam_gameplay_director;
+
+		PVOID m_format_int;
 	};
 #pragma pack(pop)
 	static_assert(sizeof(gta_pointers) % 8 == 0, "Pointers are not properly aligned");
