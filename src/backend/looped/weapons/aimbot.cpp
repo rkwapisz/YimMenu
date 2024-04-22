@@ -2,9 +2,13 @@
 #include "gta/enums.hpp"
 #include "natives.hpp"
 #include "util/entity.hpp"
+#include "util/ped.hpp"
 #include "util/world_to_screen.hpp"
 
 #include <numbers>
+#include <chrono>
+#include <cmath>
+
 namespace big
 {
 	class aimbot : looped_command
@@ -62,6 +66,8 @@ namespace big
 				// Stage 1: Target Acquisition
 				rage::fvector2 resolution = {(float)*g_pointers->m_gta.m_resolution_x, (float)*g_pointers->m_gta.m_resolution_y};
 
+				int plyr_team = PLAYER::GET_PLAYER_TEAM(self::id);
+
 				for (auto ped : entity::get_entities(false, true))
 				{
 					// Don't trying acquiring a target if we're already locked onto one
@@ -72,6 +78,16 @@ namespace big
 					if (ENTITY::IS_ENTITY_DEAD(ped, 0))
 						continue;
 
+					// Don't aim at our own teammates
+					player_ptr target_plyr = ped::get_player_from_ped(ped);
+					if (target_plyr != nullptr)
+					{
+						int target_team = PLAYER::GET_PLAYER_TEAM(target_plyr->id());
+
+						if (plyr_team != -1 && plyr_team == target_team)
+							continue;
+					}
+
 					Vehicle playerVehicle = PED::GET_VEHICLE_PED_IS_IN(self::ped, 0);
 					Vehicle pedVehicle    = PED::GET_VEHICLE_PED_IS_IN(ped, 0);
 
@@ -81,7 +97,7 @@ namespace big
 
 					// Next, filter out peds outside of the scan area
 					Vector3 pedWorldPosition    = ENTITY::GET_ENTITY_COORDS(ped, false);
-					Vector3 playerWorldPosition = ENTITY::GET_ENTITY_COORDS(self::ped, false);
+					Vector3 playerWorldPosition = get_camera_position(); //ENTITY::GET_ENTITY_COORDS(self::ped, false);
 
 					rage::fvector3 ped_world_position_fvec = {pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z};
 					float player_to_cam_distance = math::calculate_distance_from_game_cam(ped_world_position_fvec);
@@ -184,29 +200,11 @@ namespace big
 					//Vehicle player_vehicle = PED::GET_VEHICLE_PED_IS_IN(self::ped, false);
 					Vehicle target_vehicle = PED::GET_VEHICLE_PED_IS_IN(target_entity, false);
 
-					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_vehicle);
-					Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
-
-					if (target_vehicle)
-					{
-						int veh_class          = VEHICLE::GET_VEHICLE_CLASS(target_vehicle);
-						Hash veh_hash          = ENTITY::GET_ENTITY_MODEL(PED::GET_VEHICLE_PED_IS_IN(target_entity, 0));
-
-						if (veh_class == 8 || veh_class == 13) // Motorcycles and bicycles
-						{
-							aimBone = static_cast<uint16_t>(PedBones::SKEL_Neck_1);
-						}
-
-						if (veh_hash == 0x34B82784 || veh_hash == 0x7B54A9D3) // Oppressor and Mk 2
-						{
-							aimBone = static_cast<uint16_t>(PedBones::SKEL_Pelvis);
-						}
-
-						target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_vehicle);
-					}
-
 					Vector3 target_position = ENTITY::GET_ENTITY_BONE_POSTION(target_entity, PED::GET_PED_BONE_INDEX(target_entity, aimBone));
 					Vector3 player_position = ENTITY::GET_ENTITY_COORDS(self::ped, false);
+
+					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_entity);
+					Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
 
 					rage::fvector3 target_position_fvec = {target_position.x, target_position.y, target_position.z};
 					rage::fvector3 target_velocity_fvec = {target_velocity.x, target_velocity.y, target_velocity.z};
@@ -228,7 +226,11 @@ namespace big
 					}
 
 					// If we're a good distance above our target, we should aim just a little lower
-					if (player_position.z - target_position_fvec.z > 20.0f)
+					if (player_position.z - target_position_fvec.z > 40.0f)
+					{
+						target_position_fvec.z -= 0.060f;
+					}
+					else if (player_position.z - target_position_fvec.z > 20.0f)
 					{
 						target_position_fvec.z -= 0.030f;
 					}
@@ -262,6 +264,46 @@ namespace big
 					reset_aim_vectors(cam_follow_ped_camera);
 					*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x40) = camera_target_fvec; // First person & sniper (on foot)
 					*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target_fvec; // Third person
+
+					static auto lastExecutionTime = std::chrono::steady_clock::now();
+
+					auto currentTime = std::chrono::steady_clock::now();
+					auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastExecutionTime).count();          
+
+					rage::fvector3 shoot_from_fvec = camera_position_fvec;
+					rage::fvector3 shoot_to_fvec   = target_position_fvec;
+
+					//if (g.weapons.aimbot.instantfire && elapsedTime >= 1000)
+
+					long long time_between_shots = static_cast<long long>(g_local_player->m_weapon_manager->m_weapon_info->m_time_between_shots);
+
+					if (g.weapons.aimbot.instant_fire && elapsedTime >= time_between_shots)
+					{
+						if (g.weapons.aimbot.magic_bullet)
+						{
+							rage::fvector3 magic_vector = target_position_fvec - camera_position_fvec;
+							magic_vector                = magic_vector.normalize();
+							shoot_from_fvec             = target_position_fvec - (magic_vector * 5.0f);
+							shoot_to_fvec				= target_position_fvec + (magic_vector * 5.0f);
+						}
+
+						MISC::SHOOT_SINGLE_BULLET_BETWEEN_COORDS(
+							shoot_from_fvec.x,
+						    shoot_from_fvec.y,
+						    shoot_from_fvec.z,
+						    shoot_to_fvec.x,
+						    shoot_to_fvec.y,
+						    shoot_to_fvec.z,
+							g_local_player->m_weapon_manager->m_weapon_info->m_damage, // damage
+							false, // pureAccuracy
+						    g_local_player->m_weapon_manager->m_selected_weapon_hash, //weaponHash
+							self::ped, //ownerPed
+							true, // isAudible
+							true, // isInvisible
+							-1);
+
+						lastExecutionTime = currentTime;
+					}
 				}
 			}
 		}
@@ -334,6 +376,10 @@ namespace big
 
 	bool_command
 	    g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC", g.weapons.aimbot.nonhitscan);
+	bool_command
+		g_aimbot_instant_fire("instant_fire", "BACKEND_LOOPED_WEAPONS_AIMBOT_INSTANT_FIRE", "BACKEND_LOOPED_WEAPONS_AIMBOT_INSTANT_FIRE_DESC", g.weapons.aimbot.instant_fire);
+	bool_command
+		g_aimbot_magicbullet("aimbotmagicbullet", "BACKEND_LOOPED_WEAPONS_AIMBOT_MAGIC_BULLET", "BACKEND_LOOPED_WEAPONS_AIMBOT_MAGIC_BULLET_DESC", g.weapons.aimbot.magic_bullet);
 	bool_command
 	    g_aimbot_on_player("aimatplayer", "PLAYER", "BACKEND_LOOPED_WEAPONS_AIM_AT_PLAYER_DESC", g.weapons.aimbot.on_player);
 	bool_command

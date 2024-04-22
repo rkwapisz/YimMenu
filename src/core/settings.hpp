@@ -329,6 +329,7 @@ namespace big
 			bool no_water_collision           = false;
 			int wanted_level                  = 0;
 			bool god_mode                     = false;
+			bool auto_heal					  = false;
 			bool part_water                   = false;
 			bool proof_bullet                 = false;
 			bool proof_fire                   = false;
@@ -387,7 +388,7 @@ namespace big
 				NLOHMANN_DEFINE_TYPE_INTRUSIVE(super_hero_fly, gradual, explosions, auto_land, charge, ptfx, fly_speed, initial_launch)
 			} super_hero_fly{};
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(self, ipls, ptfx_effects, clean_player, force_wanted_level, passive, free_cam, invisibility, local_visibility, never_wanted, no_ragdoll, noclip, noclip_aim_speed_multiplier, noclip_speed_multiplier, off_radar, super_run, no_collision, unlimited_oxygen, no_water_collision, wanted_level, god_mode, part_water, proof_bullet, proof_fire, proof_collision, proof_melee, proof_explosion, proof_steam, proof_water, proof_mask, mobile_radio, fast_respawn, auto_tp, super_jump, beast_jump, healthregen, healthregenrate, hud, superman, custom_weapon_stop, prompt_ambient_animations, persist_outfit, persist_outfits_mis, interaction_menu_freedom, super_hero_fly)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(self, ipls, ptfx_effects, clean_player, force_wanted_level, passive, free_cam, invisibility, local_visibility, never_wanted, no_ragdoll, noclip, noclip_aim_speed_multiplier, noclip_speed_multiplier, off_radar, super_run, no_collision, unlimited_oxygen, no_water_collision, wanted_level, god_mode, auto_heal, part_water, proof_bullet, proof_fire, proof_collision, proof_melee, proof_explosion, proof_steam, proof_water, proof_mask, mobile_radio, fast_respawn, auto_tp, super_jump, beast_jump, healthregen, healthregenrate, hud, superman, custom_weapon_stop, prompt_ambient_animations, persist_outfit, persist_outfits_mis, interaction_menu_freedom, super_hero_fly)
 		} self{};
 
 		struct session
@@ -480,6 +481,7 @@ namespace big
 				int beastjump               = 0;
 				int invisveh                = 0;
 				int localinvisveh           = 0;
+				int magic_bullet            = 0;
 				int fill_ammo               = 0;
 				int fast_quit               = 0;
 				int cmd_excecutor           = 'U';
@@ -488,7 +490,7 @@ namespace big
 				int clear_wanted            = 0;
 				int random_ped_components   = 0;
 
-				NLOHMANN_DEFINE_TYPE_INTRUSIVE(hotkeys, editing_menu_toggle, menu_toggle, teleport_waypoint, teleport_objective, teleport_selected, teleport_pv, noclip, vehicle_flymode, bringvehicle, invis, heal, fill_inventory, skip_cutscene, freecam, superrun, passive, superjump, beastjump, invisveh, localinvisveh, fill_ammo, fast_quit, cmd_excecutor, repairpv, open_vehicle_controller, clear_wanted, random_ped_components)
+				NLOHMANN_DEFINE_TYPE_INTRUSIVE(hotkeys, editing_menu_toggle, menu_toggle, teleport_waypoint, teleport_objective, teleport_selected, teleport_pv, noclip, vehicle_flymode, bringvehicle, invis, heal, fill_inventory, skip_cutscene, freecam, superrun, passive, superjump, beastjump, invisveh, localinvisveh, magic_bullet, fill_ammo, fast_quit, cmd_excecutor, repairpv, open_vehicle_controller, clear_wanted, random_ped_components)
 			} hotkeys{};
 
 			NLOHMANN_DEFINE_TYPE_INTRUSIVE(settings, hotkeys, dev_dlc, onboarding_complete)
@@ -849,6 +851,8 @@ namespace big
 			{
 				bool enable            = false;
 				bool nonhitscan		   = true;
+				bool instant_fire	   = false;
+				bool magic_bullet	   = false;
 				bool on_player         = true;
 				bool on_enemy          = false;
 				bool on_police         = false;
@@ -857,7 +861,7 @@ namespace big
 				float z_foot_comp      = 0.0f;
 				float z_veh_comp	   = 0.0f;
 				float pred_comp		   = 0.0f;
-				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, on_player, on_enemy, on_police, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
+				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, instant_fire, magic_bullet, on_player, on_enemy, on_police, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
 			} aimbot{};
 
 			struct flying_axe

@@ -51,8 +51,8 @@ namespace big
 			static_cast<float>(*g_pointers->m_gta.m_resolution_y)};
 
 		// Calculate the screen coordinates
-		screen.x = ((resolution.x * 0.5f) + (0.5f * tVec.x * resolution.x + 1.0f));
-		screen.y = ((resolution.y * 0.5f) - (0.5f * tVec.y * resolution.y + 1.0f));
+		screen.x = (resolution.x * 0.5f) + (0.5f * tVec.x * resolution.x);
+		screen.y = (resolution.y * 0.5f) - (0.5f * tVec.y * resolution.y);
 
 		// Check if the screen coordinates are outside the screen boundaries
 		if (screen.x > resolution.x || screen.x < 0.0f || screen.y > resolution.y || screen.y < 0.0f)
