@@ -52,6 +52,9 @@ namespace big
 					g.clone_pv.plate = plate_buf;
 				});
 			}
+			ImGui::Checkbox("NO_POLLUTE"_T.data(), &g.clone_pv.no_pollute);
+			if (ImGui::IsItemHovered())
+				ImGui::SetTooltip("NO_POLLUTE_DESC"_T.data());
 		}
 
 
@@ -210,7 +213,9 @@ namespace big
 									}
 								}
 								// cleanup clones
-								ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&veh);
+
+								if (g.clone_pv.no_pollute)
+									ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&veh);
 							}
 							else
 							{

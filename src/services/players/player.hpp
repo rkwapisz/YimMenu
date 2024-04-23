@@ -62,6 +62,7 @@ namespace big
 		bool semi_godmode = false;
 		bool fix_vehicle  = false;
 
+		bool cage_loop		 = false;
 		bool kill_loop       = false;
 		bool explosion_loop  = false;
 		bool freeze_loop     = false;

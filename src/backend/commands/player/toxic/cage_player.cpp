@@ -1,76 +1,56 @@
-#include "backend/player_command.hpp"
 #include "backend/looped/looped.hpp"
-#include "common.hpp"
-#include "natives.hpp"
 #include "pointers.hpp"
 #include "script.hpp"
-#include <chrono>
-#include <future>
-#include <vector>
+#include "util/cages.hpp"
 
 // Keep spawned objects in a vector so we can keep track of them
 //std::vector<Object> spawnedObjects;
 
 namespace big
 {
-	//Object CREATE_OBJECT_WITH_ROTATION(DWORD model, float posX, float posY, float posZ, float rotX, float rotY, float rotZ, float rotW, bool dynamic, bool visible);
-	Object CREATE_OBJECT_WITH_HEADING(DWORD model, float posX, float posY, float posZ, float heading, bool dynamic, bool visible);
-
-	class cageObject
-	{
-	private:
-		Object cage;
-		std::chrono::seconds cageDuration;
-		std::future<void> cageTimer;
-
-		bool isExpired = false;
-		bool isVisible = false;
-
-		void startTimer(std::chrono::seconds cageDuration)
-		{
-			cageTimer = std::async(std::launch::async, [cageDuration, this]()
-			{
-				std::this_thread::sleep_for(cageDuration);
-				g_notification_service.push_success("Player DB", std::format("Cage timer expired"));
-				isExpired = true;
-			});
-		}
-
-		Object createTimedCage(DWORD model, float xLoc, float yLoc, float zLoc, float pedHeading, std::chrono::seconds cageDuration)
-		{	
-			startTimer(cageDuration);
-			g_notification_service.push_success("Player DB", std::format("Cage created at {}, {}, {}", xLoc, yLoc, zLoc));
-			return CREATE_OBJECT_WITH_HEADING(model, xLoc, yLoc, zLoc, pedHeading, false, isVisible);
-		}
-
-	public:
-		cageObject(DWORD model, float xLoc, float yLoc, float zLoc, float pedHeading, std::chrono::seconds cageDuration)
-		{
-			isExpired = false;
-			this->cage = createTimedCage(model, xLoc, yLoc, zLoc, pedHeading, cageDuration);
-		}
-
-		inline bool cageExpired()
-		{
-			return this->isExpired;
-		}
-
-		void deleteCage()
-		{
-			ENTITY::DELETE_ENTITY(&(this->cage));
-		}
-
-		~cageObject()
-		{
-			// The async timer SHOULD be done since we're setting isExpired afterward, but just to be safe...
-			if (cageTimer.valid())
-			{
-				cageTimer.wait();
-			}
-		}
-	};
-
 	std::vector<cageObject*> spawnedCages;
+
+	void cageObject::startTimer(std::chrono::seconds cageDuration)
+	{
+		cageTimer = std::async(std::launch::async, [cageDuration, this]()
+		{
+			std::this_thread::sleep_for(cageDuration);
+			g_notification_service.push_success("Player DB", std::format("Cage timer expired"));
+			isExpired = true;
+		});
+	}
+
+	Object cageObject::createTimedCage(DWORD model, float xLoc, float yLoc, float zLoc, float pedHeading, std::chrono::seconds cageDuration)
+	{	
+		startTimer(cageDuration);
+		g_notification_service.push_success("Player DB", std::format("Cage created at {}, {}, {}", xLoc, yLoc, zLoc));
+		return CREATE_OBJECT_WITH_HEADING(model, xLoc, yLoc, zLoc, pedHeading, false, isVisible);
+	}
+
+	cageObject::cageObject(DWORD model, float xLoc, float yLoc, float zLoc, float pedHeading, std::chrono::seconds cageDuration)
+	{
+		isExpired = false;
+		this->cage = createTimedCage(model, xLoc, yLoc, zLoc, pedHeading, cageDuration);
+	}
+
+	inline bool cageObject::cageExpired()
+	{
+		return this->isExpired;
+	}
+
+	void cageObject::deleteCage()
+	{
+		ENTITY::DELETE_ENTITY(&(this->cage));
+	}
+
+	cageObject::~cageObject()
+	{
+		// The async timer SHOULD be done since we're setting isExpired afterward, but just to be safe...
+		if (cageTimer.valid())
+		{
+			cageTimer.wait();
+		}
+	}
 
 	class small_cage_player : player_command
 	{
@@ -99,38 +79,9 @@ namespace big
 			// Offset the heading by +90 degrees so the concave side of the stunt tube end faces the player
 			spawnedCages.push_back(new cageObject(779277682, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading + 90.0, std::chrono::seconds(30))); // Stunt Tube End
 
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 0.f, 0.0f, -21.5f);
-			// Offset the heading by +90 degrees so the concave side of the stunt tube end faces the player
+			// spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 0.f, 0.0f, -21.5f);
+			// Offset the heading by -90 degrees so the concave side of the stunt tube end faces the player
 			spawnedCages.push_back(new cageObject(779277682, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading - 90.0, std::chrono::seconds(30))); // Stunt Tube End
-
-			/*
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 0.f, 1.0f, -0.50f); // Front
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, -1.0f, 1.0f, -0.50f); // Front Left
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, -1.0f, 0.0f, -0.50f); // Left
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, -1.0f, -1.0f, -0.50f); // Back Left
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 0.f, -1.0f, -0.50f); // Back
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 1.f, -1.0f, -0.50f); // Back Right
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 1.0f, 0.0f, -0.50f); // Right
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 1.0f, 1.0f, -0.50f); // Front Right
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-
-			spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 0.0f, 0.0f, 1.25f); // Above
-			CREATE_OBJECT_WITH_HEADING(3300099005, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading, false, false);
-			*/
 		}
 	};
 

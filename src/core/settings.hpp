@@ -501,10 +501,11 @@ namespace big
 			bool preview_vehicle = false;
 			bool spawn_inside    = false;
 			bool spawn_maxed     = false;
+			bool no_pollute	     = true;
 			std::string plate    = "";
 			int spawn_type       = 0;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(spawn_vehicle, preview_vehicle, spawn_inside, spawn_maxed, plate, spawn_type)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(spawn_vehicle, preview_vehicle, spawn_inside, spawn_maxed, no_pollute, plate, spawn_type)
 		} spawn_vehicle{};
 
 		struct clone_pv
@@ -513,11 +514,12 @@ namespace big
 			bool spawn_inside    = false;
 			bool spawn_clone     = false;
 			bool spawn_maxed     = false;
+			bool no_pollute	     = true;
 			bool clone_plate     = false;
 			std::string plate    = "";
 			std::string garage   = "";
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(clone_pv, preview_vehicle, spawn_inside, spawn_clone, spawn_maxed, clone_plate, plate, garage)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(clone_pv, preview_vehicle, spawn_inside, spawn_clone, spawn_maxed, no_pollute, clone_plate, plate, garage)
 		} clone_pv{};
 
 		struct persist_car

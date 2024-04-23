@@ -11,7 +11,7 @@ namespace big
 		virtual void on_tick() override
 		{
 			if (g_local_player->m_health < (0.5f * g_local_player->m_maxhealth))
-				ENTITY::SET_ENTITY_HEALTH(self::ped, g_local_player->m_maxhealth, 0, 0);
+				ENTITY::SET_ENTITY_HEALTH(self::ped, static_cast<int>(g_local_player->m_maxhealth), 0, 0);
 
 			if (g_local_player->m_armor <= 0.0f)
 				PED::SET_PED_ARMOUR(self::ped, PLAYER::GET_PLAYER_MAX_ARMOUR(self::id));
