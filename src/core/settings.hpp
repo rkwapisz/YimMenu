@@ -891,9 +891,11 @@ namespace big
 			bool interior_weapon          = false;
 			bool infinite_range           = false;
 			bool enable_weapon_hotkeys    = false;
+			bool enable_mk1_variants      = false;
 			std::map<int, std::vector<uint32_t>> weapon_hotkeys{};
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(weapons, ammo_special, custom_weapon, aimbot, infinite_ammo, always_full_ammo, infinite_mag, increased_damage, increase_damage, set_explosion_radius, modify_explosion_radius, no_recoil, no_spread, vehicle_gun_model, increased_c4_limit, increased_flare_limit, rapid_fire, gravity_gun, paintgun, interior_weapon, infinite_range, enable_weapon_hotkeys, weapon_hotkeys)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(weapons, ammo_special, custom_weapon, aimbot, infinite_ammo, always_full_ammo, infinite_mag, increased_damage, increase_damage, set_explosion_radius, modify_explosion_radius, no_recoil, no_spread, vehicle_gun_model, increased_c4_limit, increased_flare_limit, rapid_fire, gravity_gun, paintgun, interior_weapon, infinite_range, enable_weapon_hotkeys, weapon_hotkeys, enable_mk1_variants)
+
 		} weapons{};
 
 		struct window
