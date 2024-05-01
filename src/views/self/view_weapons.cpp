@@ -185,7 +185,7 @@ namespace big
 		{
 			ImGui::SameLine();
 			components::command_checkbox<"nonhitscan">();
-			ImGui::SameLine();
+
 			components::command_checkbox<"aimatplayer">();
 			ImGui::SameLine();
 			components::command_checkbox<"aimatnpc">();

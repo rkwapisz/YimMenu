@@ -63,16 +63,14 @@ namespace big
 
 			Entity target_entity_handle = g_pointers->m_gta.m_ptr_to_handle(best_player->get_ped());
 
-			Vector3 target_position = ENTITY::GET_ENTITY_BONE_POSTION(target_entity_handle, PED::GET_PED_BONE_INDEX(target_entity_handle, static_cast<uint16_t>(PedBones::SKEL_Head)));
-			rage::fvector3 target_position_fvec = {target_position.x, target_position.y, target_position.z};
-
+			rage::fvector3 target_position_fvec = best_player->get_ped()->get_bone_coords(ePedBoneType::HEAD);
 			rage::fvector3 player_position_fvec = *g_local_player->m_navigation->get_position();
 
-			rage::fvector3 magic_vector = target_position_fvec - player_position_fvec;
-			magic_vector                = magic_vector.normalize();
+			rage::fvector3 magic_vector_fvec = target_position_fvec - player_position_fvec;
+			magic_vector_fvec                = magic_vector_fvec.normalize();
 			
-			rage::fvector3 shoot_from_fvec = target_position_fvec - (magic_vector * 0.5f);
-			rage::fvector3 shoot_to_fvec = target_position_fvec + (magic_vector * 0.5f);
+			rage::fvector3 shoot_from_fvec = target_position_fvec - magic_vector_fvec;
+			rage::fvector3 shoot_to_fvec   = target_position_fvec + magic_vector_fvec;
 
 			MISC::SHOOT_SINGLE_BULLET_BETWEEN_COORDS(
 				shoot_from_fvec.x,
@@ -83,8 +81,8 @@ namespace big
 			    shoot_to_fvec.z,
 			    g_local_player->m_weapon_manager->m_weapon_info->m_damage, // damage
 			    false,                                                     // pureAccuracy
-			    g_local_player->m_weapon_manager->m_selected_weapon_hash,  //weaponHash
-			    self::ped,                                                 //ownerPed
+			    g_local_player->m_weapon_manager->m_selected_weapon_hash,  // weaponHash
+			    self::ped,                                                 // ownerPed
 			    true,                                                      // isAudible
 			    true,                                                      // isInvisible
 			    -1);
