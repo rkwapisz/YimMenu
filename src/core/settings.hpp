@@ -855,17 +855,14 @@ namespace big
 			{
 				bool enable            = false;
 				bool nonhitscan		   = true;
-				bool instant_fire	   = false;
-				bool magic_bullet	   = false;
 				bool on_player         = true;
 				bool on_enemy          = false;
-				bool on_police         = false;
 				bool on_npc            = false;
 				float fov              = 100.0f;
 				float z_foot_comp      = 0.0f;
 				float z_veh_comp	   = 0.0f;
 				float pred_comp		   = 0.0f;
-				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, instant_fire, magic_bullet, on_player, on_enemy, on_police, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
+				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, instant_fire, magic_bullet, on_player, on_enemy, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
 			} aimbot{};
 
 			struct flying_axe

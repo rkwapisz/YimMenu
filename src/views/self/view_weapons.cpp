@@ -186,19 +186,9 @@ namespace big
 			ImGui::SameLine();
 			components::command_checkbox<"nonhitscan">();
 			ImGui::SameLine();
-			components::command_checkbox<"instant_fire">();
-
-			if (g.weapons.aimbot.instant_fire)
-			{
-				ImGui::SameLine();
-				components::command_checkbox<"aimbotmagicbullet">();
-			}
-
 			components::command_checkbox<"aimatplayer">();
 			ImGui::SameLine();
 			components::command_checkbox<"aimatnpc">();
-			ImGui::SameLine();
-			components::command_checkbox<"aimatpolice">();
 			ImGui::SameLine();
 			components::command_checkbox<"aimatenemy">();
 
@@ -211,9 +201,9 @@ namespace big
 
 			components::button("DEFAULT"_T, [] {
 				g.weapons.aimbot.fov         = 100.0f;
-				g.weapons.aimbot.z_foot_comp = 0.06f;
-				g.weapons.aimbot.z_veh_comp  = 0.05f;
-				g.weapons.aimbot.pred_comp   = 0.01f;
+				g.weapons.aimbot.z_foot_comp = 0.065f;
+				g.weapons.aimbot.z_veh_comp  = 0.055f;
+				g.weapons.aimbot.pred_comp   = 0.015f;
 			});
 		}
 

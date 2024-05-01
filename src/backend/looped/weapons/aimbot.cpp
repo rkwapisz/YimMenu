@@ -15,9 +15,9 @@ namespace big
 	{
 		static inline float playerToPedDistance;
 
-		static inline Entity target_entity = 0;
+		static inline CPed* target_cped = nullptr;
 
-		static inline uint16_t aimBone = (uint16_t)PedBones::SKEL_Head;
+		static inline ePedBoneType aimBone = ePedBoneType::HEAD;
 
 		// Stage 1: Target Acquisition
 		// Stage 2: Target Tracking
@@ -28,11 +28,12 @@ namespace big
 		{
 			// Reset aim target when we're not aiming
 			if (!PLAYER::IS_PLAYER_FREE_AIMING(self::id)) {
-				target_entity = 0;
+				target_cped = nullptr;
+				return;
 			}
 
 			// Only process aim targets while we're actually free aiming
-			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && !target_entity)
+			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && target_cped == nullptr)
 			{
 				Hash weapon_hash = WEAPON::GET_SELECTED_PED_WEAPON(self::ped);
 				
@@ -70,49 +71,36 @@ namespace big
 
 				for (auto ped : entity::get_entities(false, true))
 				{
+                    CPed* cped = static_cast<CPed*>(g_pointers->m_gta.m_handle_to_ptr(ped));
+
 					// Don't trying acquiring a target if we're already locked onto one
-					if (target_entity)
+					if (target_cped)
 						continue;
 
 					// First, filter out all dead peds
-					if (ENTITY::IS_ENTITY_DEAD(ped, 0))
+					if (cped->m_health <= 0.0f)
 						continue;
-
-					// Don't aim at our own teammates
-					player_ptr target_plyr = ped::get_player_from_ped(ped);
-					if (target_plyr != nullptr)
-					{
-						int target_team = PLAYER::GET_PLAYER_TEAM(target_plyr->id());
-
-						if (plyr_team != -1 && plyr_team == target_team)
-							continue;
-					}
-
-					Vehicle playerVehicle = PED::GET_VEHICLE_PED_IS_IN(self::ped, 0);
-					Vehicle pedVehicle    = PED::GET_VEHICLE_PED_IS_IN(ped, 0);
 
 					// Ignore peds that are in the vehicle with the player
-					if (playerVehicle && (playerVehicle == pedVehicle))
+					if (g_local_player->m_vehicle && g_local_player->m_vehicle == cped->m_vehicle)
 						continue;
 
-					// Next, filter out peds outside of the scan area
-					Vector3 pedWorldPosition    = ENTITY::GET_ENTITY_COORDS(ped, false);
-					Vector3 playerWorldPosition = get_camera_position(); //ENTITY::GET_ENTITY_COORDS(self::ped, false);
+					rage::fvector3 camera_position = get_camera_position();
+					rage::fvector3 ped_position = *(cped->get_position());
 
-					rage::fvector3 ped_world_position_fvec = {pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z};
-					float player_to_cam_distance = math::calculate_distance_from_game_cam(ped_world_position_fvec);
+					float ped_to_cam_distance = math::calculate_distance_from_game_cam(ped_position);
 
 					// Don't flip out if an enemy is on top of us
-					if (player_to_cam_distance < 2.0f || player_to_cam_distance > 1000.0f)
+					if (ped_to_cam_distance < 1.0f || ped_to_cam_distance > 2000.0f)
 						continue;
 
 					rage::fvector2 screen = {0.f, 0.f};
 					//GRAPHICS::GET_SCREEN_COORD_FROM_WORLD_COORD(pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z, &xScreen, &yScreen);
-					world_to_screen::w2s({pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z}, screen);
+					world_to_screen::w2s({ped_position.x, ped_position.y, ped_position.z}, screen);
 
 					float xDelta = screen.x - (resolution.x * 0.5f); // How far from center (crosshair) is X?
 					float yDelta = screen.y - (resolution.y * 0.5f); // How far from center (crosshair) is Y?
-
+					
 					// Note that the values returned into xScreen and yScreen by the W2S function range from [0,0] (top left) to [1,1] (bottom right)
 					// Largest supported magnitude will obviously be sqrt(0.5^2 + 0.5^2) = 0.707 which is what we'll use in the GUI for now
 					// TODO: Create a more easily understandable mapping between GUI value and actual implementation (maybe pixels? maybe draw a box on-screen that shows the valid area?)
@@ -128,29 +116,30 @@ namespace big
 					// Now that we've filtered out most of what we want to ignore, our remaining peds are all alive, within our scan area, and targetable
 					// From this list of potentially valid targets, let's pick one!
 					int relation = PED::GET_RELATIONSHIP_BETWEEN_PEDS(self::ped, ped); // relation for enemy check
-					int type     = PED::GET_PED_TYPE(ped); // for police check, cop types are 6, swat is 27
+					uint32_t type     = cped->get_ped_type(); // for police check, cop types are 6, swat is 27
 
 					// If target is a player and we're aiming at players
-					if (PED::IS_PED_A_PLAYER(ped) && g.weapons.aimbot.on_player)
+					player_ptr target_plyr = ped::get_player_from_ped(ped);
+					if (g.weapons.aimbot.on_player && target_plyr)
 					{
+						// Don't aim at our own teammates
+						if (plyr_team != -1 && target_plyr)
+						{
+							int target_team = PLAYER::GET_PLAYER_TEAM(target_plyr->id());
+
+							if (plyr_team == target_team)
+								continue;
+						}
 						goto set_target;
 					}
 					// If target is an enemy and we're aiming at enemies
-					else if ((relation == 4 || relation == 5 || PED::IS_PED_IN_COMBAT(ped, self::ped))
-					    && g.weapons.aimbot.on_enemy) // relation 4 and 5 are for enemies
-					{
-						goto set_target;
-					}
-					// If target is law enforcement and we're aiming at law enforcement
-					else if (((type == 6 && !PED::IS_PED_MODEL(ped, rage::joaat("s_m_y_uscg_01"))) || type == 27 || // s_m_y_uscg_01 = us coast guard 1 (technically military)
-					             PED::IS_PED_MODEL(ped, rage::joaat("s_m_y_ranger_01")) || PED::IS_PED_MODEL(ped, rage::joaat("s_f_y_ranger_01"))) // ranger models
-					    && g.weapons.aimbot.on_police)
+					else if (g.weapons.aimbot.on_enemy && cped->m_hostility) // relation 4 and 5 are for enemies
 					{
 						goto set_target;
 					}
 					// If target is an NPC and we're aiming at all NPCs
 					// TODO: Maybe filter out animals (type 28)?
-					else if (g.weapons.aimbot.on_npc && !PED::IS_PED_A_PLAYER(ped) && type != 28)
+					else if (g.weapons.aimbot.on_npc && cped->m_player_info == nullptr && type != 28)
 					{
 						goto set_target;
 					}
@@ -164,20 +153,21 @@ namespace big
 				set_target:
 				{
 					// At this point, we've verified this ped is something we want to aim at
-					target_entity = ped;
+					target_cped = cped;
 				}
 				}
 			}
 
 			// Stage 2: Target Tracking
-			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && target_entity)
+			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && target_cped)
 			{
+				Entity target_ped = g_pointers->m_gta.m_ptr_to_handle(target_cped);
 				// We're now actively checking against the target entity each tick, not the entire pedlist
 				// So now we need to verify that the target entity is still valid (alive, not behind cover, etc.) and break the lock-on DURING free aim
-				if (ENTITY::IS_ENTITY_DEAD(target_entity, 0) || !ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, target_entity, 17))
+				if (target_cped->m_health <= 0.0f || !ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, target_ped, 17))
 				{
 					// Reset the target entity, and don't bother with the camera stuff since next tick we're scanning for a new target
-					target_entity = 0;
+					target_cped = nullptr;
 				}
 				else
 				{
@@ -185,26 +175,29 @@ namespace big
 
 					// Set the bone to aim at
 					// Default bone will be the head
-					aimBone = static_cast<uint16_t>(PedBones::SKEL_Head); // Head
+					aimBone = ePedBoneType::HEAD;
 
 					// Some heavy weapons should be aimed at the body instead of the head
-					Hash weapon_hash = WEAPON::GET_SELECTED_PED_WEAPON(self::ped);
+					Hash weapon_hash = g_local_player->m_weapon_manager->m_selected_weapon_hash;
 
 					if (weapon_hash == 0x42BF8A85 || // Minigun
 					    weapon_hash == 0xFEA23564 || // Railgun
 					    weapon_hash == 0xB62D1F67)   // Widowmaker
 					{
-						aimBone = static_cast<uint16_t>(PedBones::SKEL_Spine_Root);
+						aimBone = ePedBoneType::ABDOMEN;
 					}
 
 					//Vehicle player_vehicle = PED::GET_VEHICLE_PED_IS_IN(self::ped, false);
-					Vehicle target_vehicle = PED::GET_VEHICLE_PED_IS_IN(target_entity, false);
+					CVehicle* target_vehicle = target_cped->m_vehicle;
 
-					Vector3 target_position = ENTITY::GET_ENTITY_BONE_POSTION(target_entity, PED::GET_PED_BONE_INDEX(target_entity, aimBone));
-					Vector3 player_position = ENTITY::GET_ENTITY_COORDS(self::ped, false);
+					Vector3 target_position = target_cped->get_bone_coords(aimBone);
+					Vector3 player_position = get_camera_position();
 
-					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_entity);
+					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(g_pointers->m_gta.m_ptr_to_handle(target_cped));
 					Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
+
+					//LOG(INFO) << "Target Velocity: " << target_velocity.x << ", " << target_velocity.y << ", " << target_velocity.z;
+					//LOG(INFO) << "Player Velocity: " << player_velocity.x << ", " << player_velocity.y << ", " << player_velocity.z;
 
 					rage::fvector3 target_position_fvec = {target_position.x, target_position.y, target_position.z};
 					rage::fvector3 target_velocity_fvec = {target_velocity.x, target_velocity.y, target_velocity.z};
@@ -264,53 +257,13 @@ namespace big
 					reset_aim_vectors(cam_follow_ped_camera);
 					*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x40) = camera_target_fvec; // First person & sniper (on foot)
 					*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target_fvec; // Third person
-
-					static auto lastExecutionTime = std::chrono::steady_clock::now();
-
-					auto currentTime = std::chrono::steady_clock::now();
-					auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastExecutionTime).count();          
-
-					rage::fvector3 shoot_from_fvec = camera_position_fvec;
-					rage::fvector3 shoot_to_fvec   = target_position_fvec;
-
-					//if (g.weapons.aimbot.instantfire && elapsedTime >= 1000)
-
-					long long time_between_shots = static_cast<long long>(g_local_player->m_weapon_manager->m_weapon_info->m_time_between_shots);
-
-					if (g.weapons.aimbot.instant_fire && elapsedTime >= time_between_shots)
-					{
-						if (g.weapons.aimbot.magic_bullet)
-						{
-							rage::fvector3 magic_vector = target_position_fvec - camera_position_fvec;
-							magic_vector                = magic_vector.normalize();
-							shoot_from_fvec             = target_position_fvec - (magic_vector * 5.0f);
-							shoot_to_fvec				= target_position_fvec + (magic_vector * 5.0f);
-						}
-
-						MISC::SHOOT_SINGLE_BULLET_BETWEEN_COORDS(
-							shoot_from_fvec.x,
-						    shoot_from_fvec.y,
-						    shoot_from_fvec.z,
-						    shoot_to_fvec.x,
-						    shoot_to_fvec.y,
-						    shoot_to_fvec.z,
-							g_local_player->m_weapon_manager->m_weapon_info->m_damage, // damage
-							false, // pureAccuracy
-						    g_local_player->m_weapon_manager->m_selected_weapon_hash, //weaponHash
-							self::ped, //ownerPed
-							true, // isAudible
-							true, // isInvisible
-							-1);
-
-						lastExecutionTime = currentTime;
-					}
 				}
 			}
 		}
 
 		virtual void on_disable() override
 		{
-			target_entity = 0;
+			target_cped = nullptr;
 		}
 
 		static rage::fvector3 get_camera_position()
@@ -377,15 +330,9 @@ namespace big
 	bool_command
 	    g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC", g.weapons.aimbot.nonhitscan);
 	bool_command
-		g_aimbot_instant_fire("instant_fire", "BACKEND_LOOPED_WEAPONS_AIMBOT_INSTANT_FIRE", "BACKEND_LOOPED_WEAPONS_AIMBOT_INSTANT_FIRE_DESC", g.weapons.aimbot.instant_fire);
-	bool_command
-		g_aimbot_magicbullet("aimbotmagicbullet", "BACKEND_LOOPED_WEAPONS_AIMBOT_MAGIC_BULLET", "BACKEND_LOOPED_WEAPONS_AIMBOT_MAGIC_BULLET_DESC", g.weapons.aimbot.magic_bullet);
-	bool_command
 	    g_aimbot_on_player("aimatplayer", "PLAYER", "BACKEND_LOOPED_WEAPONS_AIM_AT_PLAYER_DESC", g.weapons.aimbot.on_player);
 	bool_command
 		g_aimbot_on_npc("aimatnpc", "NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
-	bool_command
-	    g_aimbot_on_police("aimatpolice", "POLICE", "BACKEND_LOOPED_WEAPONS_AIM_AT_POLICE_DESC", g.weapons.aimbot.on_police);
 	bool_command
 		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY_DESC", g.weapons.aimbot.on_enemy);
 }

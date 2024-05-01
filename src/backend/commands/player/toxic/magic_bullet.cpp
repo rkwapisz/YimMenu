@@ -71,8 +71,8 @@ namespace big
 			rage::fvector3 magic_vector = target_position_fvec - player_position_fvec;
 			magic_vector                = magic_vector.normalize();
 			
-			rage::fvector3 shoot_from_fvec = target_position_fvec - (magic_vector * 0.005f);
-			rage::fvector3 shoot_to_fvec = target_position_fvec + (magic_vector * 0.005f);
+			rage::fvector3 shoot_from_fvec = target_position_fvec - (magic_vector * 0.5f);
+			rage::fvector3 shoot_to_fvec = target_position_fvec + (magic_vector * 0.5f);
 
 			MISC::SHOOT_SINGLE_BULLET_BETWEEN_COORDS(
 				shoot_from_fvec.x,

@@ -144,6 +144,11 @@ namespace big::vehicle
 			return false;
 		}
 
+		auto cvehicle = reinterpret_cast<uint8_t*>(g_pointers->m_gta.m_handle_to_ptr(veh));
+
+		// fix vehicle being completly fucked after going into water.
+        cvehicle[0xD8] &= ~(1 << 0);
+
 		VEHICLE::SET_VEHICLE_FIXED(veh);
 		VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0.f);
 
