@@ -11,7 +11,11 @@ namespace big
 		virtual void on_tick() override
 		{
 			const auto veh = self::veh;
-			vehicle::repair(veh);
+
+			if (VEHICLE::GET_DOES_VEHICLE_HAVE_DAMAGE_DECALS(veh))
+			{
+				vehicle::repair(veh);
+			}
 		}
 	};
 

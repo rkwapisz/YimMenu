@@ -155,10 +155,6 @@ namespace big::vehicle
 
 		VEHICLE::SET_VEHICLE_FIXED(veh);
 
-		// Clean once if we're not cleaning every tick
-		if (!g.vehicle.keep_vehicle_clean)
-			VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0.f);
-
 		return true;
 	}
 
