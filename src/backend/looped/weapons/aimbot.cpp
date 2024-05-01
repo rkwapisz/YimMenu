@@ -133,7 +133,7 @@ namespace big
 						goto set_target;
 					}
 					// If target is an enemy and we're aiming at enemies
-					else if (g.weapons.aimbot.on_enemy && cped->m_hostility) // relation 4 and 5 are for enemies
+					else if (g.weapons.aimbot.on_enemy && (cped->m_hostility || PED::IS_PED_IN_COMBAT(self::ped, ped) || PED::IS_PED_IN_COMBAT(ped, self::ped)))
 					{
 						goto set_target;
 					}
