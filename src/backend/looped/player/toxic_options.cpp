@@ -8,6 +8,8 @@
 #include <cmath>
 #include <chrono>
 
+#pragma warning(disable : 4244) 
+
 namespace big
 {
 	static rage::fvector3 previous_position = {0.0f, 0.0f, 0.0f};
@@ -71,8 +73,8 @@ namespace big
 						float pedHeading = ENTITY::GET_ENTITY_HEADING(pedHandle);
 
 						Vector3 spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 0.f, 0.0f, -21.5f);
-						spawnedCages.push_back(new cageObject(779277682, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading + 90.0, std::chrono::seconds(20))); // Stunt Tube End
-						spawnedCages.push_back(new cageObject(779277682, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading - 90.0, std::chrono::seconds(20))); // Stunt Tube End
+						spawnedCages.push_back(std::make_unique<cageObject>(779277682, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading + 90.0, std::chrono::seconds(20))); // Stunt Tube End
+						spawnedCages.push_back(std::make_unique<cageObject>(779277682, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading - 90.0, std::chrono::seconds(20))); // Stunt Tube End
 
 						previous_position = current_position;
 					}

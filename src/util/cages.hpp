@@ -32,5 +32,5 @@ namespace big
 		Object createTimedCage(DWORD model, float xLoc, float yLoc, float zLoc, float pedHeading, std::chrono::seconds cageDuration);
 	};
 
-	extern std::vector<cageObject*> spawnedCages;
+	static std::vector<std::unique_ptr<cageObject>> spawnedCages;
 }	

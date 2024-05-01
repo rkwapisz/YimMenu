@@ -33,7 +33,10 @@ namespace big
 
 				player_ptr target_plyr = plyr.second;
 
-				if (target_plyr == nullptr)
+				if (target_plyr == nullptr || target_plyr->get_ped() == nullptr)
+					return;
+
+				if (target_plyr->get_ped()->m_health <= 0.0f)
 					return;
 
 				rage::fvector3 target_position_fvec = *target_plyr->get_ped()->m_navigation->get_position();
