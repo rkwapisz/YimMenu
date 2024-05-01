@@ -73,8 +73,8 @@ namespace big
 				{
                     CPed* cped = static_cast<CPed*>(g_pointers->m_gta.m_handle_to_ptr(ped));
 
-					// Don't trying acquiring a target if we're already locked onto one
-					if (target_cped)
+					// Don't trying acquiring a target if we're already locked onto one or if the cped is invalid
+					if (cped == nullptr || target_cped)
 						continue;
 
 					// First, filter out all dead peds

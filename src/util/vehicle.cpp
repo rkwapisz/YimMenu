@@ -137,7 +137,7 @@ namespace big::vehicle
 		return true;
 	}
 
-	void repair_engine_from_water(Vehicle veh)
+	void repair_destroyed_engine(Vehicle veh)
 	{
 		auto cvehicle = (uint8_t*)g_pointers->m_gta.m_handle_to_ptr(veh);
 		// fix vehicle being completly fucked after going into water.
@@ -151,10 +151,13 @@ namespace big::vehicle
 			return false;
 		}
 
-		repair_engine_from_water(veh);
+		repair_destroyed_engine(veh);
 
 		VEHICLE::SET_VEHICLE_FIXED(veh);
-		VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0.f);
+
+		// Clean once if we're not cleaning every tick
+		if (!g.vehicle.keep_vehicle_clean)
+			VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0.f);
 
 		return true;
 	}
