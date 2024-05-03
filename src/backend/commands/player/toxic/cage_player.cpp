@@ -2,6 +2,7 @@
 #include "pointers.hpp"
 #include "script.hpp"
 #include "util/cages.hpp"
+#include "util/teleport.hpp"
 
 #pragma warning(disable : 4244) 
 
@@ -44,6 +45,10 @@ namespace big
 
 	void cageObject::deleteCage()
 	{
+		entity::take_control_of(this->cage);
+		int net_id = NETWORK::NETWORK_GET_NETWORK_ID_FROM_ENTITY(this->cage);
+		NETWORK::SET_NETWORK_ID_CAN_MIGRATE(net_id, true);
+		
 		ENTITY::DELETE_ENTITY(&(this->cage));
 	}
 
