@@ -40,25 +40,22 @@ namespace big
 		ImGui::SameLine();
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_OVERLAY_SHOW_WHEN_MENU_OPENED"_T.data(), &g.window.ingame_overlay.show_with_menu_opened);
 
-		ImGui::BeginGroup();
-
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_FPS"_T.data(), &g.window.ingame_overlay.show_fps);
+		ImGui::SameLine();
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_PLAYERS"_T.data(), &g.window.ingame_overlay.show_players);
+
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_TIME"_T.data(), &g.window.ingame_overlay.show_time);
 		if (ImGui::IsItemHovered())
 			ImGui::SetTooltip("VIEW_GUI_SETTINGS_SHOW_TIME_TOOLTIP"_T.data());
+		ImGui::SameLine();
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_INDICATORS"_T.data(), &g.window.ingame_overlay.show_indicators);
 
-		ImGui::EndGroup();
-		ImGui::SameLine();
-		ImGui::BeginGroup();
-
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_REPLAY_INTERFACE"_T.data(), &g.window.ingame_overlay.show_replay_interface);
+		ImGui::SameLine();
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_POSITION"_T.data(), &g.window.ingame_overlay.show_position);
+
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_GAME_VERSION"_T.data(), &g.window.ingame_overlay.show_game_versions);
-
-		ImGui::EndGroup();
-
+		ImGui::SameLine();
 		ImGui::Checkbox("VIEW_GUI_FORMAT_MONEY"_T.data(), &g.window.gui.format_money);
 
 		if (g.window.ingame_overlay.show_indicators)

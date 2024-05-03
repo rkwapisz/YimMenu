@@ -17,7 +17,7 @@ namespace big
 
 		static inline CPed* target_cped = nullptr;
 
-		static inline ePedBoneType aimBone = ePedBoneType::HEAD;
+		static inline ePedBoneType aimBone = ePedBoneType::NECK;
 
 		// Stage 1: Target Acquisition
 		// Stage 2: Target Tracking
@@ -174,13 +174,7 @@ namespace big
 				}
 				else
 				{
-					// We have a valid ped, now do bone stuff
-
-					// Set the bone to aim at
-					// Default bone will be the head
-					aimBone = ePedBoneType::HEAD;
-
-					// Some heavy weapons should be aimed at the body instead of the head
+					// Some heavy weapons should be aimed at the body
 					Hash weapon_hash = g_local_player->m_weapon_manager->m_selected_weapon_hash;
 
 					if (weapon_hash == 0x42BF8A85 || // Minigun
@@ -192,11 +186,6 @@ namespace big
 
 					//Vehicle player_vehicle = PED::GET_VEHICLE_PED_IS_IN(self::ped, false);
 					CVehicle* target_vehicle = target_cped->m_vehicle;
-
-					if (target_vehicle && target_vehicle->m_model_info && target_vehicle->m_model_info->m_hash == 0x7B54A9D3) // Op Mk 2
-					{
-						aimBone = ePedBoneType::ABDOMEN;
-					}
 
 					Vector3 target_position = target_cped->get_bone_coords(aimBone);
 					Vector3 player_position = get_camera_position();
