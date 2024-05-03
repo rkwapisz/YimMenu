@@ -130,16 +130,18 @@ namespace big
 							if (plyr_team == target_team)
 								continue;
 						}
+
 						goto set_target;
 					}
 					// If target is an enemy and we're aiming at enemies
-					else if (g.weapons.aimbot.on_enemy && (cped->m_hostility || PED::IS_PED_IN_COMBAT(self::ped, ped) || PED::IS_PED_IN_COMBAT(ped, self::ped)))
+					// Note that we check !target_plyr since player targeting is a separate option
+					else if (g.weapons.aimbot.on_enemy && !target_plyr && (cped->m_hostility || PED::IS_PED_IN_COMBAT(self::ped, ped) || PED::IS_PED_IN_COMBAT(ped, self::ped)))
 					{
 						goto set_target;
 					}
 					// If target is an NPC and we're aiming at all NPCs
 					// TODO: Maybe filter out animals (type 28)?
-					else if (g.weapons.aimbot.on_npc && cped->m_player_info == nullptr && type != 28)
+					else if (g.weapons.aimbot.on_npc && !target_plyr && type != 28)
 					{
 						goto set_target;
 					}
@@ -162,6 +164,7 @@ namespace big
 			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && target_cped)
 			{
 				Entity target_ped = g_pointers->m_gta.m_ptr_to_handle(target_cped);
+
 				// We're now actively checking against the target entity each tick, not the entire pedlist
 				// So now we need to verify that the target entity is still valid (alive, not behind cover, etc.) and break the lock-on DURING free aim
 				if (target_cped->m_health <= 0.0f || !ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, target_ped, 17))
@@ -190,10 +193,15 @@ namespace big
 					//Vehicle player_vehicle = PED::GET_VEHICLE_PED_IS_IN(self::ped, false);
 					CVehicle* target_vehicle = target_cped->m_vehicle;
 
+					if (target_vehicle && target_vehicle->m_model_info && target_vehicle->m_model_info->m_hash == 0x7B54A9D3) // Op Mk 2
+					{
+						aimBone = ePedBoneType::ABDOMEN;
+					}
+
 					Vector3 target_position = target_cped->get_bone_coords(aimBone);
 					Vector3 player_position = get_camera_position();
 
-					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(g_pointers->m_gta.m_ptr_to_handle(target_cped));
+					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_ped);
 					Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
 
 					//LOG(INFO) << "Target Velocity: " << target_velocity.x << ", " << target_velocity.y << ", " << target_velocity.z;
@@ -216,16 +224,6 @@ namespace big
 					else
 					{
 						target_position_fvec.z += g.weapons.aimbot.z_foot_comp;
-					}
-
-					// If we're a good distance above our target, we should aim just a little lower
-					if (player_position.z - target_position_fvec.z > 40.0f)
-					{
-						target_position_fvec.z -= 0.060f;
-					}
-					else if (player_position.z - target_position_fvec.z > 20.0f)
-					{
-						target_position_fvec.z -= 0.030f;
 					}
 
 					uintptr_t cam_gameplay_director = *g_pointers->m_gta.m_cam_gameplay_director;
@@ -332,7 +330,7 @@ namespace big
 	bool_command
 	    g_aimbot_on_player("aimatplayer", "PLAYER", "BACKEND_LOOPED_WEAPONS_AIM_AT_PLAYER_DESC", g.weapons.aimbot.on_player);
 	bool_command
-		g_aimbot_on_npc("aimatnpc", "NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
+		g_aimbot_on_npc("aimatnpc", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
 	bool_command
 		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY_DESC", g.weapons.aimbot.on_enemy);
 }

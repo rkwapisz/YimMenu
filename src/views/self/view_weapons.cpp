@@ -188,9 +188,9 @@ namespace big
 
 			components::command_checkbox<"aimatplayer">();
 			ImGui::SameLine();
-			components::command_checkbox<"aimatnpc">();
-			ImGui::SameLine();
 			components::command_checkbox<"aimatenemy">();
+			ImGui::SameLine();
+			components::command_checkbox<"aimatnpc">();
 
 			ImGui::PushItemWidth(350);
 			ImGui::SliderFloat("VIEW_WEAPON_AIM_FOV"_T.data(), &g.weapons.aimbot.fov, 0.0f, (float)*g_pointers->m_gta.m_resolution_x, "%.0f");
