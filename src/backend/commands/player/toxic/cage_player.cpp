@@ -45,10 +45,7 @@ namespace big
 
 	void cageObject::deleteCage()
 	{
-		entity::take_control_of(this->cage);
-		int net_id = NETWORK::NETWORK_GET_NETWORK_ID_FROM_ENTITY(this->cage);
-		NETWORK::SET_NETWORK_ID_CAN_MIGRATE(net_id, true);
-		
+		ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&(this->cage));
 		ENTITY::DELETE_ENTITY(&(this->cage));
 	}
 
