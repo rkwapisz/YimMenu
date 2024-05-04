@@ -21,6 +21,12 @@ namespace big
 			ImGui::SameLine();
 			components::player_command_button<"ragdoll">(g_player_service->get_selected(), {});
 
+			components::player_command_button<"smallcage">(g_player_service->get_selected(), {});
+			ImGui::SameLine();
+			components::player_command_button<"bigcage">(g_player_service->get_selected(), {});
+			ImGui::SameLine();
+			components::player_command_button<"barrier">(g_player_service->get_selected(), {});
+
 			components::player_command_button<"beast">(g_player_service->get_selected(), {});
 			ImGui::SameLine();
 			components::player_command_button<"mission">(g_player_service->get_selected(), {});
@@ -95,6 +101,8 @@ namespace big
 				ImGui::SetTooltip("PLAYER_TOXIC_NO_WAY_BACK"_T.data());
 
 			ImGui::Checkbox("KILL_LOOP"_T.data(), &g_player_service->get_selected()->kill_loop);
+			ImGui::SameLine();
+			ImGui::Checkbox("CAGE_LOOP"_T.data(), &g_player_service->get_selected()->cage_loop);
 			ImGui::SameLine();
 			ImGui::Checkbox("EXPLOSION_LOOP"_T.data(), &g_player_service->get_selected()->explosion_loop);
 			ImGui::SameLine();

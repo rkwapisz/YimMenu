@@ -91,6 +91,8 @@ namespace big
 			}
 		});
 
+		components::command_checkbox<"enablemk1variants">();
+
 		ImGui::EndGroup();
 
 		ImGui::SeparatorText("DEBUG_TAB_MISC"_T.data());
@@ -119,7 +121,8 @@ namespace big
 		});
 
 		components::command_checkbox<"incrdamage">();
-		ImGui::InputFloat("VIEW_WEAPON_DAMAGE"_T.data(), &g.weapons.increased_damage, .1, 10, "%.1f");
+		if (g.weapons.increase_damage)
+			ImGui::InputFloat("VIEW_WEAPON_DAMAGE"_T.data(), &g.weapons.increased_damage, .1, 10, "%.1f");
 
 
 		components::command_checkbox<"flyingaxe">();
@@ -133,7 +136,8 @@ namespace big
 		ImGui::Checkbox("VIEW_WEAPON_CUSTOM_GUN_ONLY_FIRES_WHEN_THE_WEAPON_IS_OUT"_T.data(), &g.self.custom_weapon_stop);
 		CustomWeapon selected = g.weapons.custom_weapon;
 
-		if (ImGui::BeginCombo("WEAPON"_T.data(), g_translation_service.get_translation(custom_weapons[(int)selected].name).data()))
+		if (ImGui::BeginCombo("WEAPON"_T.data(),
+		        g_translation_service.get_translation(custom_weapons[(int)selected].name).data()))
 		{
 			for (const custom_weapon& weapon : custom_weapons)
 			{
@@ -175,32 +179,32 @@ namespace big
 		}
 
 		ImGui::SeparatorText("VIEW_WEAPON_AIM_ASSISTANCE"_T.data());
-		components::command_checkbox<"triggerbot">();
-		ImGui::SameLine();
 		components::command_checkbox<"aimbot">();
 
 		if (g.weapons.aimbot.enable)
 		{
+			ImGui::SameLine();
+			components::command_checkbox<"nonhitscan">();
+
 			components::command_checkbox<"aimatplayer">();
 			ImGui::SameLine();
-			components::command_checkbox<"aimatnpc">();
-			ImGui::SameLine();
-			components::command_checkbox<"aimatpolice">();
-			ImGui::SameLine();
 			components::command_checkbox<"aimatenemy">();
+			ImGui::SameLine();
+			components::command_checkbox<"aimatnpc">();
 
-			components::command_checkbox<"smoothing">();
-			if (g.weapons.aimbot.smoothing)
-			{
-				ImGui::SameLine();
-				ImGui::PushItemWidth(220);
-				ImGui::SliderFloat("VIEW_WEAPON_AIM_SPEED"_T.data(), &g.weapons.aimbot.smoothing_speed, 1.f, 8.f, "%.1f");
-				ImGui::PopItemWidth();
-			}
 			ImGui::PushItemWidth(350);
-			ImGui::SliderFloat("VIEW_WEAPON_AIM_FOV"_T.data(), &g.weapons.aimbot.fov, 1.f, 360.f, "%.0f");
-			ImGui::SliderFloat("VIEW_SELF_CUSTOM_TELEPORT_DISTANCE"_T.data(), &g.weapons.aimbot.distance, 1.f, 1000.f, "%.0f");
+			ImGui::SliderFloat("VIEW_WEAPON_AIM_FOV"_T.data(), &g.weapons.aimbot.fov, 0.0f, (float)*g_pointers->m_gta.m_resolution_x, "%.0f");
+			ImGui::SliderFloat("VIEW_WEAPON_AIM_FOOT_ZCOMP"_T.data(), &g.weapons.aimbot.z_foot_comp, -0.2f, 0.2f, "%.5f");
+			ImGui::SliderFloat("VIEW_WEAPON_AIM_VEH_ZCOMP"_T.data(), &g.weapons.aimbot.z_veh_comp, -0.2f, 0.2f, "%.5f");
+			ImGui::SliderFloat("VIEW_WEAPON_AIM_PREDCOMP"_T.data(), &g.weapons.aimbot.pred_comp, 0.0f, 0.2f, "%.5f");
 			ImGui::PopItemWidth();
+
+			components::button("DEFAULT"_T, [] {
+				g.weapons.aimbot.fov         = 100.0f;
+				g.weapons.aimbot.z_foot_comp = 0.065f;
+				g.weapons.aimbot.z_veh_comp  = 0.055f;
+				g.weapons.aimbot.pred_comp   = 0.015f;
+			});
 		}
 
 		if (ImGui::CollapsingHeader("VIEW_WEAPON_AMMUNATION"_T.data()))

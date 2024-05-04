@@ -6,7 +6,7 @@ namespace big
 {
 	void view::hotkey_settings()
 	{
-		ImGui::PushItemWidth(350.f);
+		ImGui::PushItemWidth(450.f);
 
 		if (ImGui::Hotkey("VIEW_HOTKEY_SETTINGS_MENU_TOGGLE"_T.data(), &g.settings.hotkeys.menu_toggle))
 			g.settings.hotkeys.editing_menu_toggle = true; // make our menu reappear
@@ -19,7 +19,8 @@ namespace big
 			g_hotkey_service->update_hotkey("highlighttp", g.settings.hotkeys.teleport_selected);
 		if (ImGui::Hotkey("TP_IN_PV"_T.data(), &g.settings.hotkeys.teleport_pv))
 			g_hotkey_service->update_hotkey("pvtp", g.settings.hotkeys.teleport_pv);
-
+		if (ImGui::Hotkey("VIEW_HOTKEY_SETTINGS_MAGIC_BULLET"_T.data(), &g.settings.hotkeys.magic_bullet))
+			g_hotkey_service->update_hotkey("magicbullet", g.settings.hotkeys.magic_bullet);
 		if (ImGui::Hotkey("VIEW_HOTKEY_SETTINGS_TOGGLE_NOCLIP"_T.data(), &g.settings.hotkeys.noclip))
 			g_hotkey_service->update_hotkey("noclip", g.settings.hotkeys.noclip);
 		if (ImGui::Hotkey("BRING_PV"_T.data(), &g.settings.hotkeys.bringvehicle))

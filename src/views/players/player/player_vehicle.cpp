@@ -11,6 +11,8 @@ namespace big
 			components::player_command_button<"vehkick">(g_player_service->get_selected(), {});
 			ImGui::SameLine();
 			components::player_command_button<"flyingveh">(g_player_service->get_selected(), {});
+			ImGui::SameLine();
+			components::player_command_button<"giftvehicle">(g_player_service->get_selected(), {});
 
 			components::player_command_button<"boostveh">(g_player_service->get_selected(), {});
 			ImGui::SameLine();

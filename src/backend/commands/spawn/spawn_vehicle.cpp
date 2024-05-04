@@ -32,11 +32,11 @@ namespace big
 				return;
 			}
 
-			const auto spawn_location =
-			    vehicle::get_spawn_location(ctx->get_sender()->id() == self::id ? g.spawn_vehicle.spawn_inside : false,
-			        hash,
-			        PLAYER::GET_PLAYER_PED_SCRIPT_INDEX(ctx->get_sender()->id()));
-			const auto spawn_heading = ENTITY::GET_ENTITY_HEADING(PLAYER::GET_PLAYER_PED_SCRIPT_INDEX(ctx->get_sender()->id()));
+			auto id = ctx->get_sender()->id();
+
+			const auto spawn_location = vehicle::get_spawn_location(id == self::id ? g.spawn_vehicle.spawn_inside : false,
+			        hash, PLAYER::GET_PLAYER_PED_SCRIPT_INDEX(id));
+			const auto spawn_heading = ENTITY::GET_ENTITY_HEADING(PLAYER::GET_PLAYER_PED_SCRIPT_INDEX(id));
 
 			auto veh = vehicle::spawn(hash, spawn_location, spawn_heading);
 
@@ -55,7 +55,9 @@ namespace big
 				{
 					vehicle::teleport_into_vehicle(veh);
 				}
-				ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&veh);
+
+				if (g.spawn_vehicle.no_pollute)
+					ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&veh);
 			}
 		}
 	};
@@ -63,4 +65,5 @@ namespace big
 	spawn_vehicle g_spawn_vehicle("spawn", "GUI_TAB_SPAWN_VEHICLE", "BACKEND_SPAWN_VEHICLE_DESC", 1);
 	bool_command g_spawn_maxed("spawnmaxed", "SPAWN_MAXED", "SPAWN_MAXED_DESC", g.spawn_vehicle.spawn_maxed);
 	bool_command g_spawn_inside("spawnin", "SPAWN_IN", "SPAWN_IN_DESC", g.spawn_vehicle.spawn_inside);
+	bool_command g_spawn_nopollute("nopollute", "NO_POLLUTE", "NO_POLLUTE_DESC", g.spawn_vehicle.no_pollute);
 }

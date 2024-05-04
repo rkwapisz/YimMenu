@@ -11,6 +11,7 @@ namespace big
         	{
 			if (self::veh && VEHICLE::DOES_VEHICLE_HAVE_WEAPONS(self::veh))
             		{
+
 				for (int i = 0; i < 3; i++)
 				{
 					VEHICLE::SET_VEHICLE_WEAPON_RESTRICTED_AMMO(self::veh, i, -1);

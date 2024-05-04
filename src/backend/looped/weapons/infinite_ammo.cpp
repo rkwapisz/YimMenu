@@ -1,5 +1,6 @@
 #include "backend/looped_command.hpp"
 #include "natives.hpp"
+#include "common.hpp"
 
 namespace big
 {

@@ -17,6 +17,7 @@ class CBlipList;
 class TimecycleKeyframeData;
 class CTrainConfig;
 class CWeaponInfoManager;
+class CViewportGame;
 
 namespace rage
 {
@@ -104,8 +105,8 @@ namespace big
 		functions::set_gravity_level m_set_gravity_level;
 
 		PVOID m_native_return;
+		PVOID m_ctext_file_ptr;
 		PVOID m_get_label_text;
-		functions::check_chat_profanity* m_check_chat_profanity;
 		functions::write_player_game_state_data_node m_write_player_game_state_data_node;
 
 		ChatData** m_chat_data;
@@ -124,6 +125,8 @@ namespace big
 		PVOID m_network_player_mgr_shutdown;
 
 		functions::get_gameplay_cam_coords m_get_gameplay_cam_coords;
+		
+		CViewportGame** m_viewport;
 
 		PVOID m_write_player_gamer_data_node;
 
@@ -366,7 +369,9 @@ namespace big
 		CWeaponInfoManager* m_weapon_info_manager;
 
 		functions::can_create_vehicle m_can_create_vehicle;
-
+		
+		uintptr_t* m_cam_gameplay_director;
+		
 		PVOID m_format_int;
 	};
 #pragma pack(pop)

@@ -4,15 +4,24 @@
 #include "util/globals.hpp"
 #include "util/misc.hpp"
 #include "util/toxic.hpp"
+#include "util/cages.hpp"
+#include <cmath>
+#include <chrono>
+
+#pragma warning(disable : 4244) 
 
 namespace big
 {
+	static rage::fvector3 previous_position = {0.0f, 0.0f, 0.0f};
+
 	void looped::player_toxic_options()
 	{
 		if (!*g_pointers->m_gta.m_is_session_started)
 			return;
 
 		int rotate_cam_bits = 0;
+
+		static std::chrono::steady_clock::time_point lastExecutionTime;
 
 		g_player_service->iterate([&rotate_cam_bits](const player_entry& entry) {
 			if (g_player_service->get_self()->get_ped() && entry.second->get_ped() && entry.second->get_ped()->m_health > 0)
@@ -48,6 +57,28 @@ namespace big
 
 				if (entry.second->rotate_cam_loop)
 					rotate_cam_bits |= (1 << entry.second->id());
+
+                if (entry.second->cage_loop)
+                {
+					rage::fvector3 current_position = *entry.second->get_ped()->m_navigation->get_position();
+
+                    // Calculate the distance between current_position and previous_position
+                    float distance = std::sqrt(std::pow(current_position.x - previous_position.x, 2) +
+                                               std::pow(current_position.y - previous_position.y, 2) +
+                                               std::pow(current_position.z - previous_position.z, 2));
+
+					if (distance >= 100.0f) // Spawn a new cage if the victim moves too far (like if they teleported)
+					{
+						Ped pedHandle = g_pointers->m_gta.m_ptr_to_handle(entry.second->get_ped());
+						float pedHeading = ENTITY::GET_ENTITY_HEADING(pedHandle);
+
+						Vector3 spawnLocation = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(pedHandle, 0.f, 0.0f, -21.5f);
+						spawnedCages.push_back(std::make_unique<cageObject>(779277682, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading + 90.0, std::chrono::seconds(20))); // Stunt Tube End
+						spawnedCages.push_back(std::make_unique<cageObject>(779277682, spawnLocation.x, spawnLocation.y, spawnLocation.z, pedHeading - 90.0, std::chrono::seconds(20))); // Stunt Tube End
+
+						previous_position = current_position;
+					}
+                }
 			}
 
 			if (rotate_cam_bits)

@@ -797,10 +797,6 @@ Arg Count:  0
  Makes your weapon fire insanely fast 
 Arg Count:  0
 
-### triggerbot 
- Shoots at a ped with fast ease 
-Arg Count:  0
-
 ### blackhole 
  Spawns a blackhole that picks up all the peds and vehicles in your area 
 Arg Count:  0

@@ -384,6 +384,24 @@ namespace big
                 g_pointers->m_gta.m_get_gameplay_cam_coords = ptr.sub(0xE).as<functions::get_gameplay_cam_coords>();
             }
         },
+        // Cam Gameplay Director
+        {
+            "CGD",
+            "4C 8B 35 ? ? ? ? 33 FF 32 DB",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_cam_gameplay_director = ptr.add(3).rip().as<uintptr_t*>();
+            }
+        },
+        // Get Viewport
+        {
+            "GV",
+            "48 8B 15 ? ? ? ? 48 8D 2D ? ? ? ? 48 8B CD",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_viewport = ptr.add(3).rip().as<CViewportGame**>();
+		    }
+        },
         // Give Pickup Reward
         {
             "GPR",
@@ -489,19 +507,11 @@ namespace big
         // Get Label Text
         {
             "GLT",
-            "75 ? E8 ? ? ? ? 8B 0D ? ? ? ? 65 48 8B 04 25 ? ? ? ? BA ? ? ? ? 48 8B 04 C8 8B 0C 02 D1 E9",
+            "48 8D 0D ? ? ? ? E8 ? ? ? ? 45 33 C9 41 B0 ? B2",
             [](memory::handle ptr)
             {
-                g_pointers->m_gta.m_get_label_text = ptr.sub(19).as<PVOID>();
-            }
-        },
-        // Multiplayer chat filter
-        {
-            "MCF",
-            "E8 ? ? ? ? 83 F8 FF 75 B9",
-            [](memory::handle ptr)
-            {
-                g_pointers->m_gta.m_check_chat_profanity = ptr.add(1).rip().as<decltype(gta_pointers::m_check_chat_profanity)>();
+                g_pointers->m_gta.m_ctext_file_ptr = ptr.add(3).rip().as<PVOID>();
+                g_pointers->m_gta.m_get_label_text = ptr.add(8).rip().as<PVOID>();
             }
         },
         // Network

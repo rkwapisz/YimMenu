@@ -25,6 +25,7 @@ namespace big
 		register_hotkey("invis", g.settings.hotkeys.invis, "invis"_J);
 		register_hotkey("invisveh", g.settings.hotkeys.invisveh, "invisveh"_J);
 		register_hotkey("localinvisveh", g.settings.hotkeys.localinvisveh, "localinvisveh"_J);
+		register_hotkey("magicbullet", g.settings.hotkeys.magic_bullet, "magicbullet"_J);
 		register_hotkey("noclip", g.settings.hotkeys.noclip, "noclip"_J);
 		register_hotkey("objective", g.settings.hotkeys.teleport_objective, "objectivetp"_J);
 		register_hotkey("pvtp", g.settings.hotkeys.teleport_pv, "pvtp"_J);
