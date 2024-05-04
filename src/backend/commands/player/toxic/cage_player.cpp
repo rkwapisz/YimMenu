@@ -45,7 +45,6 @@ namespace big
 
 	void cageObject::deleteCage()
 	{
-		ENTITY::SET_ENTITY_AS_NO_LONGER_NEEDED(&(this->cage));
 		ENTITY::DELETE_ENTITY(&(this->cage));
 	}
 
