@@ -212,7 +212,6 @@ namespace big
 			reaction turn_into_beast{"Turn Into Beast", "REACTION_TURN_INTO_BEAST_NOTIFY", "REACTION_TURN_INTO_BEAST_RAID_ANNOUNCE"};
 			reaction remote_wanted_level{"Remote Wanted Level", "REACTION_REMOTE_WANTED_LEVEL_NOTIFY", "REACTION_REMOTE_WANTED_LEVEL_ANNOUNCE"};
 			interloper_reaction remote_wanted_level_others{"Remote Wanted Level On Other Players", "REACTION_REMOTE_WANTED_LEVEL_OTHERS_NOTIFY", "REACTION_REMOTE_WANTED_LEVEL_OTHERS_ANNOUNCE", false, false};
-
 			reaction clear_ped_tasks{"Clear Ped Tasks", "REACTION_CLEAR_PED_TASKS_NOTIFY", "REACTION_CLEAR_PED_TASKS_ANNOUNCE"};
 			reaction remote_ragdoll{"Remote Ragdoll", "REACTION_REMOTE_RAGDOLL_NOTIFY", "REACTION_REMOTE_RAGDOLL_ANNOUNCE"};
 			reaction kick_vote{"Kick Vote", "REACTION_VOTE_KICK_NOTIFY", "REACTION_VOTE_KICK_ANNOUNCE"};

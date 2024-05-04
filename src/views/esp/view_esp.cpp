@@ -320,12 +320,12 @@ namespace big
 
 			std::string weapon_str = "";
 
-			if (g.esp.weapon && plyr->get_ped()->m_weapon_manager != nullptr && plyr->get_ped()->m_weapon_manager->m_weapon_info != nullptr && plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name != nullptr)
+			if (g.esp.weapon && plyr->get_ped()->m_weapon_manager && plyr->get_ped()->m_weapon_manager->m_weapon_info && plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name)
 			{
 				weapon_str = plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name;
 			}
 
-			if (g.esp.vehicle && plyr->get_current_vehicle() != nullptr && plyr->get_current_vehicle()->m_model_info != nullptr)
+			if (g.esp.vehicle && plyr->get_current_vehicle() && plyr->get_current_vehicle()->m_model_info)
 			{
 				CVehicleModelInfo* model_info = static_cast<CVehicleModelInfo*>(plyr->get_current_vehicle()->m_model_info);
 

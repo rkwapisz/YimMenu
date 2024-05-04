@@ -17,7 +17,7 @@ namespace big
 
 		static inline CPed* target_cped = nullptr;
 
-		static inline ePedBoneType aimBone = ePedBoneType::NECK;
+		static inline ePedBoneType aimBone = ePedBoneType::HEAD;
 
 		// Stage 1: Target Acquisition
 		// Stage 2: Target Tracking
@@ -91,7 +91,7 @@ namespace big
 					float ped_to_cam_distance = math::calculate_distance_from_game_cam(ped_position);
 
 					// Don't flip out if an enemy is on top of us
-					if (ped_to_cam_distance < 1.0f || ped_to_cam_distance > 2000.0f)
+					if (ped_to_cam_distance < 0.5f || ped_to_cam_distance > 2000.0f)
 						continue;
 
 					rage::fvector2 screen = {0.f, 0.f};
@@ -174,18 +174,11 @@ namespace big
 				}
 				else
 				{
-					// Some heavy weapons should be aimed at the body
-					Hash weapon_hash = g_local_player->m_weapon_manager->m_selected_weapon_hash;
+					aimBone = ePedBoneType::HEAD;
 
-					if (weapon_hash == 0x42BF8A85 || // Minigun
-					    weapon_hash == 0xFEA23564 || // Railgun
-					    weapon_hash == 0xB62D1F67)   // Widowmaker
-					{
-						aimBone = ePedBoneType::ABDOMEN;
-					}
-
-					//Vehicle player_vehicle = PED::GET_VEHICLE_PED_IS_IN(self::ped, false);
+					// Vehicle check
 					CVehicle* target_vehicle = target_cped->m_vehicle;
+					bool is_in_vehicle = false;
 
 					Vector3 target_position = target_cped->get_bone_coords(aimBone);
 					Vector3 player_position = get_camera_position();
