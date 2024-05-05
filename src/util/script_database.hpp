@@ -71,7 +71,7 @@ namespace big
                 {230, {"gunslinger_arcade", ProtectionStatus::BLOCK_ALWAYS}}, // Badlands Revenge II?
                 {231, {"wizard_arcade", ProtectionStatus::BLOCK_ALWAYS}},
                 {235, {"ggsm_arcade", ProtectionStatus::BLOCK_ALWAYS}}, // Space Monkey?
-                {236, {"puzzle", ProtectionStatus::BLOCK_ALWAYS}},
+                {236, {"puzzle", ProtectionStatus::BLOCK_ALWAYS}}, // Qub3d?
                 {237, {"camhedz_arcade", ProtectionStatus::BLOCK_ALWAYS}},
                 {238, {"SCTV", ProtectionStatus::BLOCK_ALWAYS}}
             };
