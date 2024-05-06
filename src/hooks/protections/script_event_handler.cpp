@@ -129,6 +129,14 @@ namespace big
 				g.reactions.crash.process(plyr);
 				return true;
 			}
+
+			if (args[3] == -4640169 && args[7] == -36565476 && args[8] == -53105203)
+			{
+				session::add_infraction(plyr, Infraction::TRIED_CRASH_PLAYER);
+				g.reactions.crash.process(plyr);
+
+				return true;
+			}
 			break;
 		}
 		case eRemoteEvent::Notification:
