@@ -447,7 +447,7 @@ namespace big
 				return true;
 			}
 
-			if (protection_status == ProtectionStatus::ALLOWED)
+			if (protection_status == ProtectionStatus::ALLOWED_NOTIFY)
 			{
 				g.reactions.start_script.only_notify(plyr);
 			}
