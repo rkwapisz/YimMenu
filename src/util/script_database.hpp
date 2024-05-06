@@ -7,7 +7,7 @@ namespace big
     {
         ALLOWED_NOTIFY,
         BLOCK_ALWAYS,
-        BLOCK_IN_FREEMODE // Renamed from BLOCK_IN_FM
+        BLOCK_IN_FREEMODE
     };
 
     struct ScriptInfo
