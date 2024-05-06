@@ -5,6 +5,7 @@
 #include "gta_util.hpp"
 #include "pointers.hpp"
 #include "services/players/player_service.hpp"
+#include "services/gta_data/gta_data_service.hpp"
 #include "util/math.hpp"
 #include "util/misc.hpp"
 #include "util/model_info.hpp"
@@ -318,31 +319,35 @@ namespace big
 				name_str += "m";
 			}
 
-			std::string weapon_str = "";
+			std::string extra_info = "";
 
-			if (g.esp.weapon && plyr->get_ped()->m_weapon_manager && plyr->get_ped()->m_weapon_manager->m_weapon_info && plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name)
+			if (g.esp.weapon && plyr->get_ped()->m_weapon_manager)
 			{
-				weapon_str = plyr->get_ped()->m_weapon_manager->m_weapon_info->m_stat_name;
+				uint32_t weapon_hash = plyr->get_ped()->m_weapon_manager->m_selected_weapon_hash;
+
+				if (weapon_hash)
+				{
+					extra_info += g_gta_data_service->weapon_by_hash(weapon_hash).m_display_name;
+				}	
 			}
 
-			if (g.esp.vehicle && plyr->get_current_vehicle() && plyr->get_current_vehicle()->m_model_info)
+			if (g.esp.vehicle && plyr->get_ped()->m_vehicle && plyr->get_ped()->m_vehicle->m_model_info)
 			{
-				CVehicleModelInfo* model_info = static_cast<CVehicleModelInfo*>(plyr->get_current_vehicle()->m_model_info);
+				int32_t vehicle_hash = plyr->get_ped()->m_vehicle->m_model_info->m_hash;
 
-				if (model_info->m_name != nullptr)
+				if (vehicle_hash)
 				{
-					// Only add spacer if we're displaying the weapon as well
-					if (!weapon_str.empty())
-						weapon_str += " | ";
+					if (!extra_info.empty())
+						extra_info += " | ";
 
-					weapon_str += model_info->m_name;
+					extra_info += g_gta_data_service->vehicle_by_hash(vehicle_hash).m_display_name;
 				}
 			}
-			
+
 			draw_list->AddText(name_pos, esp_color, name_str.c_str());
 
-			if (!weapon_str.empty())
-				draw_list->AddText({esp_x - (62.5f * multplr), esp_y - (175.f * multplr) + 20.f}, esp_color, weapon_str.c_str());
+			if (!extra_info.empty())
+				draw_list->AddText({esp_x - (62.5f * multplr), esp_y - (175.f * multplr) + 20.f}, esp_color, extra_info.c_str());
 
 			std::string mode_str = "";
 			if (g.esp.god)
