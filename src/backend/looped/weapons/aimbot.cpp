@@ -135,7 +135,7 @@ namespace big
 					}
 					// If target is an enemy and we're aiming at enemies
 					// Note that we check !target_plyr since player targeting is a separate option
-					else if (g.weapons.aimbot.on_enemy && !target_plyr && (cped->m_hostility || PED::IS_PED_IN_COMBAT(self::ped, ped) || PED::IS_PED_IN_COMBAT(ped, self::ped)))
+					else if (g.weapons.aimbot.on_enemy && !target_plyr && cped->m_hostility > 1)
 					{
 						goto set_target;
 					}
