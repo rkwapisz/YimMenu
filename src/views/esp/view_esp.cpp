@@ -29,8 +29,8 @@ namespace big
 	{
 		CPed* cped = static_cast<CPed*>(g_pointers->m_gta.m_handle_to_ptr(ped));
 
-		// Ignore nulls and players
-		if (!cped || ped::get_player_from_ped(ped))
+		// Ignore nulls, players, and animals (maybe we can make animals configurable later)
+		if (!cped || ped::get_player_from_ped(ped) || cped->get_ped_type() == 28)
 			return;
 		
 		// We can preserve essentially all of draw_player's functionality, just apply it to peds with maybe some additional ped-type classifications
@@ -39,14 +39,15 @@ namespace big
 		if (g.esp_npc.only_hostile && cped->m_hostility <= 1)
 			return;
 
-		// If we only want armed NPCs, filter out anything that doesn't return a weapon hash or the weapon hash is Unarmed
-		uint32_t ped_weapon_hash = 0;
-
-		if (cped->m_weapon_manager && cped->m_weapon_manager->m_selected_weapon_hash)
-			ped_weapon_hash = cped->m_weapon_manager->m_selected_weapon_hash;
-
-		if (g.esp_npc.only_armed && (!ped_weapon_hash || ped_weapon_hash == 0xA2719263)) // Unarmed
-			return;
+		if (g.esp_npc.only_armed && cped->m_weapon_manager && cped->m_weapon_manager->m_weapon_info)
+		{
+			// Checking for firetype none lets us skip over a lot of things that have weapon hashes but aren't weapons (phones, food, etc.)
+			// Also check for Unarmed (bare fists) since it's still considered melee
+			if (cped->m_weapon_manager->m_selected_weapon_hash == 0xA2719263 || cped->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None)
+			{
+				return;
+			}
+		}
 
 		if (cped->m_health <= 0)
 			return;
