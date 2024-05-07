@@ -35,10 +35,6 @@ namespace big
 		
 		// We can preserve essentially all of draw_player's functionality, just apply it to peds with maybe some additional ped-type classifications
 
-		// If we only want hostiles, filter out anything that has hostility 0 (friendly) or 1 (cautious?), at hostility >= 2 is when NPCs start attacking us
-		if (g.esp_npc.only_hostile && cped->m_hostility <= 1)
-			return;
-
 		if (g.esp_npc.only_armed && cped->m_weapon_manager && cped->m_weapon_manager->m_weapon_info)
 		{
 			// Checking for firetype none lets us skip over a lot of things that have weapon hashes but aren't weapons (phones, food, etc.)
@@ -70,16 +66,12 @@ namespace big
 
 			std::string name_str;
 			ImVec2 name_pos = {esp_x - (62.5f * multplr), esp_y - (175.f * multplr) - 20.f};
-			ImU32 esp_color = g.esp_npc.default_color;
+			ImU32 esp_color = g.esp_npc.npc_unarmed_color;
 
-			if (cped->m_weapon_manager->m_selected_weapon_hash == 0xA2719263 || cped->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None)
-			{
-				esp_color = g.esp_npc.npc_unarmed_color;
-			}
-			else
-			{
-				esp_color = g.esp_npc.npc_armed_color;
-			}
+            if (cped->m_weapon_manager && cped->m_weapon_manager->m_weapon_info && cped->m_weapon_manager->m_selected_weapon_hash != 0xA2719263 && cped->m_weapon_manager->m_weapon_info->m_fire_type != eFireType::None)
+            {
+                esp_color = g.esp_npc.npc_armed_color;
+            }
 
 			const auto armor_perc  = cped->m_armor / 50.f;
 			const auto health_perc = cped->m_health / (cped->m_maxhealth + 0.001f);
@@ -297,13 +289,6 @@ namespace big
 			if (plyr->is_friend())
 			{
 				esp_color = g.esp_player.friend_color;
-			}
-			else if (g.esp_player.change_esp_color_from_dist)
-			{
-				if (distance <= g.esp_player.distance_threshold[0])
-					esp_color = g.esp_player.enemy_color;
-				else if (distance >= g.esp_player.distance_threshold[0] && distance < g.esp_player.distance_threshold[1])
-					esp_color = g.esp_player.enemy_near_color;
 			}
 
 			const auto armor_perc  = plyr->get_ped()->m_armor / 50.f;

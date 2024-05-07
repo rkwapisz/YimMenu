@@ -993,22 +993,18 @@ namespace big
 			bool name                       = true;
 			bool weapon						= false;
 			bool vehicle					= false;
-			bool change_esp_color_from_dist = false;
 			bool scale_health_from_dist     = false;
 			bool scale_armor_from_dist      = false;
-			float distance_threshold[2]     = {100.f, 200.f};
 			ImU32 enemy_color               = 4281479904;
-			ImU32 enemy_near_color          = 4283794943;
 			ImU32 default_color             = 4285713522;
 			ImU32 friend_color              = 4293244509;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_player, enabled, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, vehicle, change_esp_color_from_dist, scale_health_from_dist, scale_armor_from_dist, distance_threshold, enemy_color, enemy_near_color, default_color, friend_color)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_player, enabled, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, vehicle, scale_health_from_dist, scale_armor_from_dist, enemy_color, default_color, friend_color)
 		} esp_player{};
 
 		struct esp_npc
 		{
 			bool enabled                    = true;
-			bool only_hostile               = true;
 			bool only_armed				    = false;
 			float global_render_distance[2] = {0.f, 600.f};
 			float tracer_render_distance[2] = {200.f, 600.f};
@@ -1025,18 +1021,12 @@ namespace big
 			bool name                       = true;
 			bool weapon                     = false;
 			bool vehicle                    = false;
-			bool change_esp_color_from_dist = false;
 			bool scale_health_from_dist     = false;
 			bool scale_armor_from_dist      = false;
-			float distance_threshold[2]     = {100.f, 200.f};
-			ImU32 enemy_color               = 4281479904;
-			ImU32 enemy_near_color          = 4283794943;
-			ImU32 default_color             = 4285713522;
-			ImU32 friend_color              = 4293244509;
 			ImU32 npc_unarmed_color         = 4286578912;
 			ImU32 npc_armed_color           = 4294901984;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_npc, enabled, only_hostile, only_armed, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, vehicle, change_esp_color_from_dist, scale_health_from_dist, scale_armor_from_dist, distance_threshold, enemy_color, enemy_near_color, default_color, friend_color, npc_unarmed_color, npc_armed_color)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_npc, enabled, only_armed, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, vehicle, scale_health_from_dist, scale_armor_from_dist, npc_unarmed_color, npc_armed_color)
 		} esp_npc{};
 
 		struct session_browser

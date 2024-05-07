@@ -61,7 +61,6 @@ namespace big
 				ImGui::Checkbox("SETTINGS_ESP_HEALTH"_T.data(), &g.esp_player.health);
 				ImGui::Checkbox("SETTINGS_ESP_ARMOR"_T.data(), &g.esp_player.armor);
 
-				ImGui::Checkbox("SETTINGS_ESP_COLOR_W_DISTANCE"_T.data(), &g.esp_player.change_esp_color_from_dist);
 				if (g.esp_player.health)
 					ImGui::Checkbox("SETTINGS_ESP_SCALE_HEALTH"_T.data(), &g.esp_player.scale_health_from_dist);
 
@@ -69,33 +68,11 @@ namespace big
 					ImGui::Checkbox("SETTINGS_ESP_SCALE_ARMOR"_T.data(), &g.esp_player.scale_armor_from_dist);
 
 				static ImVec4 col_enemy      = ImGui::ColorConvertU32ToFloat4(g.esp_player.enemy_color);
-				static ImVec4 col_enemy_near = ImGui::ColorConvertU32ToFloat4(g.esp_player.enemy_near_color);
 				static ImVec4 col_default    = ImGui::ColorConvertU32ToFloat4(g.esp_player.default_color);
 				static ImVec4 col_friend     = ImGui::ColorConvertU32ToFloat4(g.esp_player.friend_color);
 
-				ImGui::Text("SETTINGS_ESP_DISTANCE_THRESHOLD"_T.data());
-				ImGui::SliderFloat2("###Distance threshold",
-				    g.esp_player.distance_threshold,
-				    g.esp_player.global_render_distance[0],
-				    g.esp_player.global_render_distance[1]);
-
 				if (ImGui::TreeNode("SETTINGS_ESP_COLORS"_T.data()))
 				{
-					if (g.esp_player.change_esp_color_from_dist)
-					{
-						ImGui::Text("SETTINGS_ESP_ENEMY_CLOSE_COLOR"_T.data());
-						if (ImGui::ColorEdit4("###Enemy ESP Color##esp_picker", (float*)&col_enemy, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
-						{
-							g.esp_player.enemy_color = ImGui::ColorConvertFloat4ToU32(col_enemy);
-						}
-
-						ImGui::Text("SETTINGS_ESP_ENEMY_NEAR_COLOR"_T.data());
-						if (ImGui::ColorEdit4("###Enemy Near ESP Color##esp_picker", (float*)&col_enemy_near, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
-						{
-							g.esp_player.enemy_near_color = ImGui::ColorConvertFloat4ToU32(col_enemy_near);
-						}
-					}
-
 					ImGui::Text("SETTINGS_ESP_ENEMY_DEFAULT_COLOR"_T.data());
 					if (ImGui::ColorEdit4("###Default ESP Color##esp_picker", (float*)&col_default, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
 					{
@@ -163,51 +140,28 @@ namespace big
 				ImGui::Checkbox("SETTINGS_ESP_HEALTH"_T.data(), &g.esp_npc.health);
 				ImGui::Checkbox("SETTINGS_ESP_ARMOR"_T.data(), &g.esp_npc.armor);
 
-				ImGui::Checkbox("SETTINGS_ESP_COLOR_W_DISTANCE"_T.data(), &g.esp_player.change_esp_color_from_dist);
-				if (g.esp_player.health)
-					ImGui::Checkbox("SETTINGS_ESP_SCALE_HEALTH"_T.data(), &g.esp_player.scale_health_from_dist);
+				if (g.esp_npc.health)
+					ImGui::Checkbox("SETTINGS_ESP_SCALE_HEALTH"_T.data(), &g.esp_npc.scale_health_from_dist);
 
-				if (g.esp_player.armor)
+				if (g.esp_npc.armor)
 					ImGui::Checkbox("SETTINGS_ESP_SCALE_ARMOR"_T.data(), &g.esp_player.scale_armor_from_dist);
 
-				static ImVec4 col_enemy      = ImGui::ColorConvertU32ToFloat4(g.esp_player.enemy_color);
-				static ImVec4 col_enemy_near = ImGui::ColorConvertU32ToFloat4(g.esp_player.enemy_near_color);
-				static ImVec4 col_default    = ImGui::ColorConvertU32ToFloat4(g.esp_player.default_color);
-				static ImVec4 col_friend     = ImGui::ColorConvertU32ToFloat4(g.esp_player.friend_color);
-
-				ImGui::Text("SETTINGS_ESP_DISTANCE_THRESHOLD"_T.data());
-				ImGui::SliderFloat2("###Distance threshold",
-				    g.esp_player.distance_threshold,
-				    g.esp_player.global_render_distance[0],
-				    g.esp_player.global_render_distance[1]);
+				static ImVec4 col_armed    = ImGui::ColorConvertU32ToFloat4(g.esp_npc.npc_armed_color);
+				static ImVec4 col_unarmed = ImGui::ColorConvertU32ToFloat4(g.esp_npc.npc_unarmed_color);
 
 				if (ImGui::TreeNode("SETTINGS_ESP_COLORS"_T.data()))
 				{
-					if (g.esp_player.change_esp_color_from_dist)
-					{
-						ImGui::Text("SETTINGS_ESP_ENEMY_CLOSE_COLOR"_T.data());
-						if (ImGui::ColorEdit4("###Enemy ESP Color##esp_picker", (float*)&col_enemy, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
-						{
-							g.esp_player.enemy_color = ImGui::ColorConvertFloat4ToU32(col_enemy);
-						}
 
-						ImGui::Text("SETTINGS_ESP_ENEMY_NEAR_COLOR"_T.data());
-						if (ImGui::ColorEdit4("###Enemy Near ESP Color##esp_picker", (float*)&col_enemy_near, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
-						{
-							g.esp_player.enemy_near_color = ImGui::ColorConvertFloat4ToU32(col_enemy_near);
-						}
+					ImGui::Text("SETTINGS_ESP_ARMED_COLOR"_T.data());
+					if (ImGui::ColorEdit4("###Armed ESP Color##esp_picker", (float*)&col_armed, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
+					{
+						g.esp_npc.npc_armed_color = ImGui::ColorConvertFloat4ToU32(col_armed);
 					}
 
-					ImGui::Text("SETTINGS_ESP_ENEMY_DEFAULT_COLOR"_T.data());
-					if (ImGui::ColorEdit4("###Default ESP Color##esp_picker", (float*)&col_default, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
+					ImGui::Text("SETTINGS_ESP_UNARMED_COLOR"_T.data());
+					if (ImGui::ColorEdit4("###Unarmed ESP Color##friend_picker", (float*)&col_unarmed, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
 					{
-						g.esp_player.default_color = ImGui::ColorConvertFloat4ToU32(col_default);
-					}
-
-					ImGui::Text("SETTINGS_ESP_FRIENDLY_COLOR"_T.data());
-					if (ImGui::ColorEdit4("###Friend ESP Color##friend_picker", (float*)&col_friend, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_NoSidePreview))
-					{
-						g.esp_player.friend_color = ImGui::ColorConvertFloat4ToU32(col_friend);
+						g.esp_npc.npc_unarmed_color = ImGui::ColorConvertFloat4ToU32(col_unarmed);
 					}
 					ImGui::EndGroup();
 				}
