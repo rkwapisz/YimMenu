@@ -133,15 +133,15 @@ namespace big
 
 						goto set_target;
 					}
-					// If target is an enemy and we're aiming at enemies
+					// If target is armed and we're aiming at armed NPCs
 					// Note that we check !target_plyr since player targeting is a separate option
-					else if (g.weapons.aimbot.on_enemy && !target_plyr && cped->m_hostility > 1)
+					else if (!target_plyr && g.weapons.aimbot.on_armed && !(cped->m_weapon_manager->m_selected_weapon_hash == 0xA2719263 || cped->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None))
 					{
 						goto set_target;
 					}
 					// If target is an NPC and we're aiming at all NPCs
 					// TODO: Maybe filter out animals (type 28)?
-					else if (g.weapons.aimbot.on_npc && !target_plyr && type != 28)
+					else if (!target_plyr && g.weapons.aimbot.on_npc && !target_plyr && type != 28)
 					{
 						goto set_target;
 					}
@@ -314,5 +314,5 @@ namespace big
 	bool_command
 		g_aimbot_on_npc("aimatnpc", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
 	bool_command
-		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY_DESC", g.weapons.aimbot.on_enemy);
+		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED_DESC", g.weapons.aimbot.on_armed);
 }

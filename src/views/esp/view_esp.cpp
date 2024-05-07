@@ -72,16 +72,13 @@ namespace big
 			ImVec2 name_pos = {esp_x - (62.5f * multplr), esp_y - (175.f * multplr) - 20.f};
 			ImU32 esp_color = g.esp_npc.default_color;
 
-			if (cped->m_hostility > 1)
+			if (cped->m_weapon_manager->m_selected_weapon_hash == 0xA2719263 || cped->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None)
 			{
-				if (distance <= g.esp_npc.distance_threshold[0])
-					esp_color = g.esp_npc.enemy_color;
-				else if (distance >= g.esp_npc.distance_threshold[0] && distance < g.esp_npc.distance_threshold[1])
-					esp_color = g.esp_npc.enemy_near_color;
+				esp_color = g.esp_npc.npc_unarmed_color;
 			}
 			else
 			{
-				esp_color = g.esp_npc.friend_color;
+				esp_color = g.esp_npc.npc_armed_color;
 			}
 
 			const auto armor_perc  = cped->m_armor / 50.f;

@@ -119,7 +119,6 @@ namespace big
 			if (g.esp_npc.enabled)
 			{
 				ImGui::BeginGroup();
-				ImGui::Checkbox("SETTINGS_ESP_ONLY_HOSTILE"_T.data(), &g.esp_npc.only_hostile);
 				ImGui::Checkbox("SETTINGS_ESP_ONLY_ARMED"_T.data(), &g.esp_npc.only_armed);
 				ImGui::Text("SETTINGS_ESP_GLOBAL_RENDER_DISTANCE"_T.data());
 				ImGui::SliderFloat2("###Global Render Distance", g.esp_npc.global_render_distance, 0.f, 1500.f);

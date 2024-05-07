@@ -855,7 +855,7 @@ namespace big
 				bool enable            = false;
 				bool nonhitscan		   = true;
 				bool on_player         = true;
-				bool on_enemy          = false;
+				bool on_armed          = false;
 				bool on_npc            = false;
 				float fov              = 100.0f;
 				float z_foot_comp      = 0.0f;
@@ -1033,8 +1033,10 @@ namespace big
 			ImU32 enemy_near_color          = 4283794943;
 			ImU32 default_color             = 4285713522;
 			ImU32 friend_color              = 4293244509;
+			ImU32 npc_unarmed_color         = 4286578912;
+			ImU32 npc_armed_color           = 4294901984;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_npc, enabled, only_hostile, only_armed, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, vehicle, change_esp_color_from_dist, scale_health_from_dist, scale_armor_from_dist, distance_threshold, enemy_color, enemy_near_color, default_color, friend_color)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_npc, enabled, only_hostile, only_armed, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, vehicle, change_esp_color_from_dist, scale_health_from_dist, scale_armor_from_dist, distance_threshold, enemy_color, enemy_near_color, default_color, friend_color, npc_unarmed_color, npc_armed_color)
 		} esp_npc{};
 
 		struct session_browser
