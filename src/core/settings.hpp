@@ -986,6 +986,7 @@ namespace big
 			float tracer_draw_position[2]   = {0.5f, 1.f};
 			bool box                        = false;
 			bool bone                       = true;
+			bool only_draw_head				= false;
 			bool health                     = true;
 			bool armor                      = true;
 			bool god                        = true;
@@ -999,7 +1000,7 @@ namespace big
 			ImU32 default_color             = 4285713522;
 			ImU32 friend_color              = 4293244509;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_player, enabled, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, vehicle, scale_health_from_dist, scale_armor_from_dist, enemy_color, default_color, friend_color)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_player, enabled, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, only_draw_head, health, armor, god, distance, name, weapon, vehicle, scale_health_from_dist, scale_armor_from_dist, enemy_color, default_color, friend_color)
 		} esp_player{};
 
 		struct esp_npc
@@ -1014,6 +1015,7 @@ namespace big
 			float tracer_draw_position[2]   = {0.5f, 1.f};
 			bool box                        = false;
 			bool bone                       = true;
+			bool only_draw_head				= false;
 			bool health                     = true;
 			bool armor                      = true;
 			bool god                        = true;
@@ -1026,7 +1028,7 @@ namespace big
 			ImU32 npc_unarmed_color         = 4286578912;
 			ImU32 npc_armed_color           = 4294901984;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_npc, enabled, only_armed, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, health, armor, god, distance, name, weapon, vehicle, scale_health_from_dist, scale_armor_from_dist, npc_unarmed_color, npc_armed_color)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_npc, enabled, only_armed, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, only_draw_head, health, armor, god, distance, name, weapon, vehicle, scale_health_from_dist, scale_armor_from_dist, npc_unarmed_color, npc_armed_color)
 		} esp_npc{};
 
 		struct session_browser

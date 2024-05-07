@@ -89,78 +89,7 @@ namespace big
 			if (distance < g.esp_npc.bone_render_distance[1] && distance > g.esp_npc.bone_render_distance[0]
 			    && g.esp_npc.bone)
 			{
-				// Map bone locations to x/y on screen
-				rage::fvector2 head_pos;
-				bool head_valid = bone_to_screen(cped, ePedBoneType::HEAD, head_pos);
-				if (head_valid)
-				{
-					// Draw circle around head
-					draw_list->AddCircle(ImVec2(head_pos.x, head_pos.y), 20.f * multplr, esp_color, 0, 2.0f);
-				}
-
-				rage::fvector2 neck_pos;
-				bool neck_valid = bone_to_screen(cped, ePedBoneType::NECK, neck_pos);
-				if (head_valid && neck_valid)
-				{
-					// Head to neck
-					draw_list->AddLine(ImVec2(head_pos.x, head_pos.y), ImVec2(neck_pos.x, neck_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 abdomen_pos;
-				bool abdomen_valid = bone_to_screen(cped, ePedBoneType::ABDOMEN, abdomen_pos);
-				if (neck_valid && abdomen_valid)
-				{
-					// Neck to abdomen
-					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(abdomen_pos.x, abdomen_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 l_hand_pos;
-				bool l_hand_valid = bone_to_screen(cped, ePedBoneType::L_HAND, l_hand_pos);
-				if (neck_valid && l_hand_valid)
-				{
-					// Neck to left hand
-					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(l_hand_pos.x, l_hand_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 r_hand_pos;
-				bool r_hand_valid = bone_to_screen(cped, ePedBoneType::R_HAND, r_hand_pos);
-				if (neck_valid && r_hand_valid)
-				{
-					// Neck to right hand
-					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(r_hand_pos.x, r_hand_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 l_ankle_pos;
-				bool l_ankle_valid = bone_to_screen(cped, ePedBoneType::L_ANKLE, l_ankle_pos);
-				if (abdomen_valid && l_ankle_valid)
-				{
-					// Abdomen to left ankle
-					draw_list->AddLine(ImVec2(abdomen_pos.x, abdomen_pos.y), ImVec2(l_ankle_pos.x, l_ankle_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 r_ankle_pos;
-				bool r_ankle_valid = bone_to_screen(cped, ePedBoneType::R_ANKLE, r_ankle_pos);
-				if (abdomen_valid && r_ankle_valid)
-				{
-					// Abdomen to right ankle
-					draw_list->AddLine(ImVec2(abdomen_pos.x, abdomen_pos.y), ImVec2(r_ankle_pos.x, r_ankle_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 l_foot_pos;
-				bool l_foot_valid = bone_to_screen(cped, ePedBoneType::L_FOOT, l_foot_pos);
-				if (l_ankle_valid && l_foot_valid)
-				{
-					// Left ankle to left foot
-					draw_list->AddLine(ImVec2(l_ankle_pos.x, l_ankle_pos.y), ImVec2(l_foot_pos.x, l_foot_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 r_foot_pos;
-				bool r_foot_valid = bone_to_screen(cped, ePedBoneType::R_FOOT, r_foot_pos);
-				if (r_ankle_valid && r_foot_valid)
-				{
-					// Right ankle to right foot
-					draw_list->AddLine(ImVec2(r_ankle_pos.x, r_ankle_pos.y), ImVec2(r_foot_pos.x, r_foot_pos.y), esp_color, 2.0f);
-				}
+				draw_skeleton(cped, draw_list, multplr, esp_color, g.esp_npc.only_draw_head);
 			}
 
 			if (g.esp_npc.name)
@@ -308,236 +237,7 @@ namespace big
 			if (distance < g.esp_player.bone_render_distance[1] && distance > g.esp_player.bone_render_distance[0]
 			    && g.esp_player.bone)
 			{
-				// Map bone locations to x/y on screen
-				rage::fvector2 head_pos;
-				bool head_valid = bone_to_screen(plyr, ePedBoneType::HEAD, head_pos);
-				if (head_valid)
-				{
-					// Draw circle around head
-					draw_list->AddCircle(ImVec2(head_pos.x, head_pos.y), 20.f * multplr, esp_color, 0, 2.0f);
-				}
-
-				rage::fvector2 neck_pos;
-				bool neck_valid = bone_to_screen(plyr, ePedBoneType::NECK, neck_pos);
-				if (head_valid && neck_valid)
-				{
-					// Head to neck
-					draw_list->AddLine(ImVec2(head_pos.x, head_pos.y), ImVec2(neck_pos.x, neck_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 abdomen_pos;
-				bool abdomen_valid = bone_to_screen(plyr, ePedBoneType::ABDOMEN, abdomen_pos);
-				if (neck_valid && abdomen_valid)
-				{
-					// Neck to abdomen
-					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(abdomen_pos.x, abdomen_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 l_hand_pos;
-				bool l_hand_valid = bone_to_screen(plyr, ePedBoneType::L_HAND, l_hand_pos);
-				if (neck_valid && l_hand_valid)
-				{
-					// Neck to left hand
-					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(l_hand_pos.x, l_hand_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 r_hand_pos;
-				bool r_hand_valid = bone_to_screen(plyr, ePedBoneType::R_HAND, r_hand_pos);
-				if (neck_valid && r_hand_valid)
-				{
-					// Neck to right hand
-					draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(r_hand_pos.x, r_hand_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 l_ankle_pos;
-				bool l_ankle_valid = bone_to_screen(plyr, ePedBoneType::L_ANKLE, l_ankle_pos);
-				if (abdomen_valid && l_ankle_valid)
-				{
-					// Abdomen to left ankle
-					draw_list->AddLine(ImVec2(abdomen_pos.x, abdomen_pos.y), ImVec2(l_ankle_pos.x, l_ankle_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 r_ankle_pos;
-				bool r_ankle_valid = bone_to_screen(plyr, ePedBoneType::R_ANKLE, r_ankle_pos);
-				if (abdomen_valid && r_ankle_valid)
-				{
-					// Abdomen to right ankle
-					draw_list->AddLine(ImVec2(abdomen_pos.x, abdomen_pos.y), ImVec2(r_ankle_pos.x, r_ankle_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 l_foot_pos;
-				bool l_foot_valid = bone_to_screen(plyr, ePedBoneType::L_FOOT, l_foot_pos);
-				if (l_ankle_valid && l_foot_valid)
-				{
-					// Left ankle to left foot
-					draw_list->AddLine(ImVec2(l_ankle_pos.x, l_ankle_pos.y), ImVec2(l_foot_pos.x, l_foot_pos.y), esp_color, 2.0f);
-				}
-
-				rage::fvector2 r_foot_pos;
-				bool r_foot_valid = bone_to_screen(plyr, ePedBoneType::R_FOOT, r_foot_pos);
-				if (r_ankle_valid && r_foot_valid)
-				{
-					// Right ankle to right foot
-					draw_list->AddLine(ImVec2(r_ankle_pos.x, r_ankle_pos.y), ImVec2(r_foot_pos.x, r_foot_pos.y), esp_color, 2.0f);
-				}
-
-				/*
-				bool head_valid = bone_to_screen(plyr, (int)PedBones::SKEL_Head, head_pos);
-				
-				if (head_valid)
-				{
-					// Draw circle around head
-					draw_list->AddCircle(head_pos, 20.f * multplr, esp_color, 0, 2.0f);
-				}
-
-				// Make sure to validate both bones before drawing a line between them, otherwise off-screen bones will cause long lines across your screen
-
-				ImVec2 neck_pos;
-				bool neck_valid = bone_to_screen(plyr, (int)PedBones::SKEL_Neck_1, neck_pos);
-
-				if (head_valid && neck_valid)
-				{
-					// Head to neck
-					draw_list->AddLine(head_pos, neck_pos, esp_color, 2.0f);
-				}
-
-
-				ImVec2 r_shoulder_pos;
-				bool r_shoulder_valid = bone_to_screen(plyr, (int)PedBones::SKEL_R_Clavicle, r_shoulder_pos);
-				if (neck_valid && r_shoulder_valid)
-				{
-					// Neck to right shoulder
-					draw_list->AddLine(neck_pos, r_shoulder_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 l_shoulder_pos;
-				bool l_shoulder_valid = bone_to_screen(plyr, (int)PedBones::SKEL_L_Clavicle, l_shoulder_pos);
-				if (neck_valid && l_shoulder_valid)
-				{
-					// Neck to left shoulder
-					draw_list->AddLine(neck_pos, l_shoulder_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 r_elbow_pos;
-				bool r_elbow_valid = bone_to_screen(plyr, (int)PedBones::SKEL_R_UpperArm, r_elbow_pos);
-				if (r_shoulder_valid && r_elbow_valid)
-				{
-					// Right shoulder to right elbow
-					draw_list->AddLine(r_shoulder_pos, r_elbow_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 l_elbow_pos;
-				bool l_elbow_valid = bone_to_screen(plyr, (int)PedBones::SKEL_L_UpperArm, l_elbow_pos);
-				if (l_shoulder_valid && l_elbow_valid)
-				{
-					// Left shoulder to left elbow
-					draw_list->AddLine(l_shoulder_pos, l_elbow_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 r_upperarm_pos;
-				bool r_upperarm_valid = bone_to_screen(plyr, (int)PedBones::SKEL_R_UpperArm, r_upperarm_pos);
-				if (r_elbow_valid && r_upperarm_valid)
-				{
-					// Right elbow to right upper arm
-					draw_list->AddLine(r_elbow_pos, r_upperarm_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 l_upperarm_pos;
-				bool l_upperarm_valid = bone_to_screen(plyr, (int)PedBones::SKEL_L_UpperArm, l_upperarm_pos);
-				if (l_elbow_valid && l_upperarm_valid)
-				{
-					// Left elbow to left upper arm
-					draw_list->AddLine(l_elbow_pos, l_upperarm_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 r_forearm_pos;
-				bool r_forearm_valid = bone_to_screen(plyr, (int)PedBones::SKEL_R_Forearm, r_forearm_pos);
-				if (r_upperarm_valid && r_forearm_valid)
-				{
-					// Right upper arm to right forearm
-					draw_list->AddLine(r_upperarm_pos, r_forearm_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 l_forearm_pos;
-				bool l_forearm_valid = bone_to_screen(plyr, (int)PedBones::SKEL_L_Forearm, l_forearm_pos);
-				if (l_upperarm_valid && l_forearm_valid)
-				{
-					// Left upper arm to left forearm
-					draw_list->AddLine(l_upperarm_pos, l_forearm_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 r_hand_pos;
-				bool r_hand_valid = bone_to_screen(plyr, (int)PedBones::SKEL_R_Hand, r_hand_pos);
-				if (r_forearm_valid && r_hand_valid)
-				{
-					// Right forearm to right hand
-					draw_list->AddLine(r_forearm_pos, r_hand_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 l_hand_pos;
-				bool l_hand_valid = bone_to_screen(plyr, (int)PedBones::SKEL_L_Hand, l_hand_pos);
-				if (l_forearm_valid && l_hand_valid)
-				{
-					// Left forearm to left hand
-					draw_list->AddLine(l_forearm_pos, l_hand_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 spine_pos;
-				bool spine_valid = bone_to_screen(plyr, (int)PedBones::SKEL_Spine0, spine_pos);
-				if (neck_valid && spine_valid)
-				{
-					// Neck to spine
-					draw_list->AddLine(neck_pos, spine_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 r_thigh_pos;
-				bool r_thigh_valid = bone_to_screen(plyr, (int)PedBones::SKEL_R_Thigh, r_thigh_pos);
-				if (spine_valid && r_thigh_valid)
-				{
-					// Spine to right thigh
-					draw_list->AddLine(spine_pos, r_thigh_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 l_thigh_pos;
-				bool l_thigh_valid = bone_to_screen(plyr, (int)PedBones::SKEL_L_Thigh, l_thigh_pos);
-				if (spine_valid && l_thigh_valid)
-				{
-					// Spine to left thigh
-					draw_list->AddLine(spine_pos, l_thigh_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 r_calf_pos;
-				bool r_calf_valid = bone_to_screen(plyr, (int)PedBones::SKEL_R_Calf, r_calf_pos);
-				if (r_thigh_valid && r_calf_valid)
-				{
-					// Right thigh to right calf
-					draw_list->AddLine(r_thigh_pos, r_calf_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 l_calf_pos;
-				bool l_calf_valid = bone_to_screen(plyr, (int)PedBones::SKEL_L_Calf, l_calf_pos);
-				if (l_thigh_valid && l_calf_valid)
-				{
-					// Left thigh to left calf
-					draw_list->AddLine(l_thigh_pos, l_calf_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 r_foot_pos;
-				bool r_foot_valid = bone_to_screen(plyr, (int)PedBones::SKEL_R_Foot, r_foot_pos);
-				if (r_calf_valid && r_foot_valid)
-				{
-					// Right calf to right foot
-					draw_list->AddLine(r_calf_pos, r_foot_pos, esp_color, 2.0f);
-				}
-
-				ImVec2 l_foot_pos;
-				bool l_foot_valid = bone_to_screen(plyr, (int)PedBones::SKEL_L_Foot, l_foot_pos);
-				if (l_calf_valid && l_foot_valid)
-				{
-					// Left calf to left foot
-					draw_list->AddLine(l_calf_pos, l_foot_pos, esp_color, 2.0f);
-				}
-				*/
+				draw_skeleton(plyr->get_ped(), draw_list, multplr, esp_color, g.esp_player.only_draw_head);
 			}
 
 			if (g.esp_player.name)
@@ -670,20 +370,6 @@ namespace big
 		}
 	}
 
-	bool esp::bone_to_screen(const player_ptr& plyr, ePedBoneType bone_type, rage::fvector2& bone_vec)
-	{
-		if (plyr == nullptr)
-			return false;
-
-		// Validate stability of get_bone_coords
-		const auto player_bones = plyr->get_ped()->get_bone_coords(bone_type);
-
-		if (world_to_screen::w2s(player_bones, bone_vec))
-			return true;
-
-		return false;
-	}
-
     bool esp::bone_to_screen(CPed* cped, ePedBoneType bone_type, rage::fvector2& bone_vec)
     {
         if (cped == nullptr)
@@ -697,6 +383,85 @@ namespace big
 
         return false;
     }
+
+	void esp::draw_skeleton(CPed* cped, ImDrawList* const draw_list, float multplr, ImColor esp_color, bool only_draw_head)
+	{
+		// Map bone locations to x/y on screen
+		rage::fvector2 head_pos;
+		bool head_valid = esp::bone_to_screen(cped, ePedBoneType::HEAD, head_pos);
+		if (head_valid)
+		{
+			// Draw circle around head
+			draw_list->AddCircle(ImVec2(head_pos.x, head_pos.y), 20.f * multplr, esp_color, 0, 2.0f);
+		}
+
+		if (!only_draw_head)
+		{
+			rage::fvector2 neck_pos;
+			bool neck_valid = bone_to_screen(cped, ePedBoneType::NECK, neck_pos);
+			if (head_valid && neck_valid)
+			{
+				// Head to neck
+				draw_list->AddLine(ImVec2(head_pos.x, head_pos.y), ImVec2(neck_pos.x, neck_pos.y), esp_color, 2.0f);
+			}
+
+			rage::fvector2 abdomen_pos;
+			bool abdomen_valid = bone_to_screen(cped, ePedBoneType::ABDOMEN, abdomen_pos);
+			if (neck_valid && abdomen_valid)
+			{
+				// Neck to abdomen
+				draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(abdomen_pos.x, abdomen_pos.y), esp_color, 2.0f);
+			}
+
+			rage::fvector2 l_hand_pos;
+			bool l_hand_valid = bone_to_screen(cped, ePedBoneType::L_HAND, l_hand_pos);
+			if (neck_valid && l_hand_valid)
+			{
+				// Neck to left hand
+				draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(l_hand_pos.x, l_hand_pos.y), esp_color, 2.0f);
+			}
+
+			rage::fvector2 r_hand_pos;
+			bool r_hand_valid = bone_to_screen(cped, ePedBoneType::R_HAND, r_hand_pos);
+			if (neck_valid && r_hand_valid)
+			{
+				// Neck to right hand
+				draw_list->AddLine(ImVec2(neck_pos.x, neck_pos.y), ImVec2(r_hand_pos.x, r_hand_pos.y), esp_color, 2.0f);
+			}
+
+			rage::fvector2 l_ankle_pos;
+			bool l_ankle_valid = bone_to_screen(cped, ePedBoneType::L_ANKLE, l_ankle_pos);
+			if (abdomen_valid && l_ankle_valid)
+			{
+				// Abdomen to left ankle
+				draw_list->AddLine(ImVec2(abdomen_pos.x, abdomen_pos.y), ImVec2(l_ankle_pos.x, l_ankle_pos.y), esp_color, 2.0f);
+			}
+
+			rage::fvector2 r_ankle_pos;
+			bool r_ankle_valid = bone_to_screen(cped, ePedBoneType::R_ANKLE, r_ankle_pos);
+			if (abdomen_valid && r_ankle_valid)
+			{
+				// Abdomen to right ankle
+				draw_list->AddLine(ImVec2(abdomen_pos.x, abdomen_pos.y), ImVec2(r_ankle_pos.x, r_ankle_pos.y), esp_color, 2.0f);
+			}
+
+			rage::fvector2 l_foot_pos;
+			bool l_foot_valid = bone_to_screen(cped, ePedBoneType::L_FOOT, l_foot_pos);
+			if (l_ankle_valid && l_foot_valid)
+			{
+				// Left ankle to left foot
+				draw_list->AddLine(ImVec2(l_ankle_pos.x, l_ankle_pos.y), ImVec2(l_foot_pos.x, l_foot_pos.y), esp_color, 2.0f);
+			}
+
+			rage::fvector2 r_foot_pos;
+			bool r_foot_valid = bone_to_screen(cped, ePedBoneType::R_FOOT, r_foot_pos);
+			if (r_ankle_valid && r_foot_valid)
+			{
+				// Right ankle to right foot
+				draw_list->AddLine(ImVec2(r_ankle_pos.x, r_ankle_pos.y), ImVec2(r_foot_pos.x, r_foot_pos.y), esp_color, 2.0f);
+			}
+		}
+	}
 
 	void esp::draw()
 	{

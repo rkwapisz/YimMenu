@@ -46,6 +46,9 @@ namespace big
 				ImGui::Checkbox("SETTINGS_ESP_BONE"_T.data(), &g.esp_player.bone);
 				if (g.esp_player.bone)
 				{
+					ImGui::SameLine();
+					ImGui::Checkbox("SETTINGS_ESP_ONLY_DRAW_HEAD"_T.data(), &g.esp_player.only_draw_head);
+
 					ImGui::Text("SETTINGS_ESP_BONE_RENDER_DISTANCE"_T.data());
 					ImGui::SliderFloat2("###Bone Render Distance",
 					    g.esp_player.bone_render_distance,
@@ -125,6 +128,9 @@ namespace big
 				ImGui::Checkbox("SETTINGS_ESP_BONE"_T.data(), &g.esp_npc.bone);
 				if (g.esp_npc.bone)
 				{
+					ImGui::SameLine();
+					ImGui::Checkbox("SETTINGS_ESP_ONLY_DRAW_HEAD"_T.data(), &g.esp_npc.only_draw_head);
+
 					ImGui::Text("SETTINGS_ESP_BONE_RENDER_DISTANCE"_T.data());
 					ImGui::SliderFloat2("###Bone Render Distance",
 					    g.esp_npc.bone_render_distance,
