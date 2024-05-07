@@ -861,7 +861,7 @@ namespace big
 				float z_foot_comp      = 0.0f;
 				float z_veh_comp	   = 0.0f;
 				float pred_comp		   = 0.0f;
-				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, on_player, on_enemy, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
+				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, on_player, on_armed, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
 			} aimbot{};
 
 			struct flying_axe
