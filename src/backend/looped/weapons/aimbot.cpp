@@ -197,8 +197,9 @@ namespace big
 					// Check for the little bastard vehicles like the RC car and tank because a ped is technically in them, but they're in god mode and head shots will 100% miss
 					if (target_in_vehicle && target_vehicle && target_vehicle->m_model_info)
 					{
-						if (target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
-							target_vehicle->m_model_info->m_hash == 0xB53C6C52) // MINITANK
+						if (target_in_vehicle &&
+							(target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
+							target_vehicle->m_model_info->m_hash == 0xB53C6C52)) // MINITANK
 						{
 							aimBone = ePedBoneType::ABDOMEN;
 						}
