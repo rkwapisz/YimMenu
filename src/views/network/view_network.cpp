@@ -253,7 +253,7 @@ namespace big
 			ImGui::Checkbox("DISABLE_TRAFFIC"_T.data(), &g.session.disable_traffic);
 			ImGui::Checkbox("FORCE_THUNDER"_T.data(), &g.session.force_thunder);
 
-			components::small_text("WANTED_LVL"_T);
+			components::small_text("WANTED_LEVEL"_T);
 			ImGui::SetNextItemWidth(150);
 			if (ImGui::SliderInt("##wantedlevel", &global_wanted_level, 0, 5))
 			{
