@@ -119,7 +119,17 @@ namespace big
 			{
 				int32_t vehicle_hash = cped->m_vehicle->m_model_info->m_hash;
 
-				if (vehicle_hash)
+				bool in_vehicle = false;
+				for (const auto ped : cped->m_vehicle->m_passengers)
+				{
+					if (ped == cped)
+					{
+						in_vehicle = true;
+						break;
+					}
+				}
+
+				if (vehicle_hash && in_vehicle)
 				{
 					if (!extra_info.empty())
 						extra_info += " | ";
@@ -267,7 +277,17 @@ namespace big
 			{
 				int32_t vehicle_hash = plyr->get_ped()->m_vehicle->m_model_info->m_hash;
 
-				if (vehicle_hash)
+				bool in_vehicle = false;
+				for (const auto ped : plyr->get_ped()->m_vehicle->m_passengers)
+				{
+					if (ped == plyr->get_ped())
+					{
+						in_vehicle = true;
+						break;
+					}
+				}
+
+				if (vehicle_hash && in_vehicle)
 				{
 					if (!extra_info.empty())
 						extra_info += " | ";

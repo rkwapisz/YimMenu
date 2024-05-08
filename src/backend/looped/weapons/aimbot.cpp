@@ -178,8 +178,32 @@ namespace big
 
 					// Vehicle check
 					CVehicle* target_vehicle = target_cped->m_vehicle;
-					bool is_in_vehicle = false;
 
+					// Note that target_vehicle will return the player's current AND/OR last vehicle, so we need to check if the target is actually in the vehicle
+					bool target_in_vehicle = false;
+					
+					if (target_vehicle)
+					{
+						for (const auto ped : target_vehicle->m_passengers)
+						{
+							if (ped == target_cped)
+							{
+								target_in_vehicle = true;
+								break;
+							}
+						}
+					}
+
+					// Check for the little bastard vehicles like the RC car and tank because a ped is technically in them, but they're in god mode and head shots will 100% miss
+					if (target_in_vehicle && target_vehicle && target_vehicle->m_model_info)
+					{
+						if (target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
+							target_vehicle->m_model_info->m_hash == 0xB53C6C52) // MINITANK
+						{
+							aimBone = ePedBoneType::ABDOMEN;
+						}
+					}
+						
 					Vector3 target_position = target_cped->get_bone_coords(aimBone);
 					Vector3 player_position = get_camera_position();
 
