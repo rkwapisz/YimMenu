@@ -207,6 +207,15 @@ namespace big
 
 				break;
 			}
+			case rage::eNetMessage::MsgNetComplaint:
+			{
+				if (player && player->get_net_game_player() && !player->is_host())
+				{
+					player->get_net_game_player()->m_complaints = UINT16_MAX;
+				}	
+
+				return true;
+			}
 			case rage::eNetMessage::MsgRadioStationSyncRequest:
 			{
 				if (player->block_radio_requests)
