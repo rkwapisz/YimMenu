@@ -48,14 +48,6 @@ namespace big
 		std::memcpy(get_code_address(data, m_ip), m_original.data(), m_original.size());
 	}
 
-	void script_patch::eject()
-	{
-		if (m_data)
-		{
-			disable(m_data);
-		}
-	}
-
 	void script_patch::update(script_data* data)
 	{
 		if (m_ip == 0)
