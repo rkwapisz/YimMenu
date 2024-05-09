@@ -28,11 +28,6 @@ namespace big
 		return get_net_game_player() == nullptr ? "" : m_net_game_player->get_name();
 	}
 
-	uint64_t player::get_rockstar_id() const
-	{
-		return get_net_data() == nullptr ? 0 : m_net_game_player->get_net_data()->m_gamer_handle.m_rockstar_id;
-	}
-
 	rage::rlGamerInfo* player::get_net_data() const
 	{
 		return get_net_game_player() == nullptr ? nullptr : m_net_game_player->get_net_data();
