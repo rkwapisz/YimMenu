@@ -43,6 +43,13 @@ namespace big
 		return (m_net_game_player == nullptr || m_net_game_player->m_player_info == nullptr) ? nullptr : m_net_game_player;
 	}
 
+	int64_t player::get_rockstar_id() const
+	{
+		if (auto net_data = get_net_data())
+			return net_data->m_gamer_handle.m_rockstar_id;
+		return 0;
+	}
+
 	CPed* player::get_ped() const
 	{
 		if (const auto player_info = this->get_player_info(); player_info != nullptr)
