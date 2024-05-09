@@ -63,11 +63,12 @@ namespace big
 			g_gui_service->set_selected(tabs::PLAYER);
 			g.window.switched_view = true;
 		}
-		if (ImGui::IsItemHovered() && plyr->get_net_data()
-		    && g_player_database_service->get_player_by_rockstar_id(plyr->get_net_data()->m_gamer_handle.m_rockstar_id))
+
+		if (ImGui::IsItemHovered()
+		    && g_player_database_service->get_player_by_rockstar_id(plyr->get_rockstar_id()) != nullptr)
 		{
 			auto sorted_player =
-			    g_player_database_service->get_player_by_rockstar_id(plyr->get_net_data()->m_gamer_handle.m_rockstar_id);
+			    g_player_database_service->get_player_by_rockstar_id(plyr->get_rockstar_id());
 
 			if (!sorted_player->infractions.empty())
 			{
