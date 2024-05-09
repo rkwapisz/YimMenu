@@ -179,10 +179,13 @@ namespace big
 		}
 
 		ImGui::SeparatorText("VIEW_WEAPON_AIM_ASSISTANCE"_T.data());
+
+		/*
 		components::command_checkbox<"aimbot">();
 
 		if (g.weapons.aimbot.enable)
 		{
+			ImGui::BeginGroup();
 			ImGui::SameLine();
 			components::command_checkbox<"nonhitscan">();
 
@@ -203,8 +206,17 @@ namespace big
 				g.weapons.aimbot.fov         = 100.0f;
 				g.weapons.aimbot.z_foot_comp = 0.065f;
 				g.weapons.aimbot.z_veh_comp  = 0.055f;
-				g.weapons.aimbot.pred_comp   = 0.015f;
+				g.weapons.aimbot.pred_comp   = 0.005f;
 			});
+			ImGui::EndGroup();
+		}
+		*/
+
+		components::command_checkbox<"aimbot2feat">();
+
+		if (g.weapons.aimbot2.enable)
+		{
+			components::command_checkbox<"aimbottargetdrivers">();
 		}
 
 		if (ImGui::CollapsingHeader("VIEW_WEAPON_AMMUNATION"_T.data()))

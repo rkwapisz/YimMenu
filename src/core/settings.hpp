@@ -865,6 +865,14 @@ namespace big
 				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, on_player, on_armed, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
 			} aimbot{};
 
+			struct aimbot2
+			{
+				bool enable         = false;
+				bool target_drivers = false;
+
+				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot2, enable, target_drivers)
+			} aimbot2{};
+
 			struct flying_axe
 			{
 				bool enable            = false;

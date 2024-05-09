@@ -1774,6 +1774,42 @@ namespace big
                 g_pointers->m_gta.m_weapon_info_manager = ptr.add(3).rip().sub(72).as<CWeaponInfoManager*>();
             }
         },
+        // Should Not Target Entity
+        {
+            "SNTE",
+            "48 8B C4 48 89 58 08 48 89 68 10 48 89 70 18 48 89 78 20 41 57 48 81 EC A0 00 00 00 0F",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_should_not_target_entity = ptr.as<PVOID>();
+            }
+        },
+        // Get Assisted Aim Type
+        {
+            "GAAT",
+            "48 89 5C 24 08 48 89 74 24 10 57 48 83 EC 20 48 8B F9 E8 ? ? ? ? 33 F6 48 85",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_get_assisted_aim_type = ptr.as<PVOID>();
+            }
+        },
+        // Should Allow Driver Lock-On
+        {
+            "SADLO",
+            "48 8B C4 48 89 58 08 48 89 68 10 48 89 70 18 57 41 56 41 57 48 83 EC 40 0F 29 70 D8 0F 29 78 C8 8B",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_should_allow_driver_lock_on = ptr.as<PVOID>();
+            }
+        },
+        // Get Lock-On Pos
+        {
+            "GLOP",
+            "0F 85 34 02 00 00 48 85 C9",
+            [](memory::handle ptr)
+            {
+                g_pointers->m_gta.m_get_lockon_pos = ptr.as<PVOID>();
+            }
+        },
         // Can Create Vehicle
         {
             "CCV",
