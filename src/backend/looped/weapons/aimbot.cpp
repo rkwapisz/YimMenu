@@ -135,7 +135,8 @@ namespace big
 					}
 					// If target is armed and we're aiming at armed NPCs
 					// Note that we check !target_plyr since player targeting is a separate option
-					else if (!target_plyr && g.weapons.aimbot.on_armed && !(cped->m_weapon_manager->m_selected_weapon_hash == 0xA2719263 || cped->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None))
+					// Type == 28 check exists because animals are armed (lol)
+					else if (!target_plyr && g.weapons.aimbot.on_armed && type != 28 && !(cped->m_weapon_manager->m_selected_weapon_hash == 0xA2719263 || cped->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None))
 					{
 						goto set_target;
 					}
@@ -194,14 +195,21 @@ namespace big
 						}
 					}
 
-					// Check for the little bastard vehicles like the RC car and tank because a ped is technically in them, but they're in god mode and head shots will 100% miss
+					// Check for bastard vehicles like the RC Bandito, I&P Mini Tank, and Oppressors
 					if (target_in_vehicle && target_vehicle && target_vehicle->m_model_info)
 					{
-						if (target_in_vehicle &&
-							(target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
-							target_vehicle->m_model_info->m_hash == 0xB53C6C52)) // MINITANK
+						if (target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
+							target_vehicle->m_model_info->m_hash == 0xB53C6C52) // MINITANK
 						{
+							// Peds are technically inside these vehicles which makes headshots shoot WAY over the vehicle
 							aimBone = ePedBoneType::ABDOMEN;
+						}
+
+						else if (target_vehicle->m_model_info->m_hash == 0x34B82784 || // OPPRESSOR
+						        target_vehicle->m_model_info->m_hash == 0x7B54A9D3)  // OPPRESSOR2
+						{
+							// Headshots are really hard to hit on these vehicles, so we'll aim for the neck instead
+							aimBone = ePedBoneType::NECK;
 						}
 					}
 						
