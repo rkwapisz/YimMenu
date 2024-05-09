@@ -102,8 +102,10 @@ namespace big
 
 			ImGui::Checkbox("KILL_LOOP"_T.data(), &g_player_service->get_selected()->kill_loop);
 			ImGui::SameLine();
+
 			ImGui::Checkbox("CAGE_LOOP"_T.data(), &g_player_service->get_selected()->cage_loop);
 			ImGui::SameLine();
+
 			ImGui::Checkbox("EXPLOSION_LOOP"_T.data(), &g_player_service->get_selected()->explosion_loop);
 
 			ImGui::Checkbox("RAGDOLL_LOOP"_T.data(), &g_player_service->get_selected()->ragdoll_loop);
