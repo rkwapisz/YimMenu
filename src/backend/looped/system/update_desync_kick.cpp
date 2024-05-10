@@ -16,7 +16,7 @@ namespace big
 
 		for (auto& player : g_player_service->players())
 		{
-			if (player.second->is_valid() && player.second->trigger_desync_kick)
+			if (player.second && player.second->is_valid() && player.second->trigger_desync_kick)
 			{
 				gta_util::get_network()->m_game_complaint_mgr.raise_complaint(player.second->get_net_data()->m_host_token);
 			}
