@@ -217,7 +217,7 @@ namespace big
 				float velocity_comp_factor = g.weapons.aimbot.pred_comp;
 				target_position_fvec = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
 
-				if (target_vehicle)
+				if (in_vehicle && target_vehicle)
 				{
 					target_position_fvec.z += g.weapons.aimbot.z_veh_comp;
 				}

@@ -201,7 +201,7 @@ namespace big
 
 			components::button("DEFAULT"_T, [] {
 				g.weapons.aimbot.fov         = 100.0f;
-				g.weapons.aimbot.z_foot_comp = 0.065f;
+				g.weapons.aimbot.z_foot_comp = 0.055f;
 				g.weapons.aimbot.z_veh_comp  = 0.055f;
 				g.weapons.aimbot.pred_comp   = 0.015f;
 			});
