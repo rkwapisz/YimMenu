@@ -32,33 +32,20 @@ namespace big
 				return;
 			}
 
-			// Only process aim targets while we're actually free aiming
-			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && target_cped == nullptr)
+			// Only process new targets if we haven't already acquired one
+			if (!target_cped)
 			{
-				Hash weapon_hash = WEAPON::GET_SELECTED_PED_WEAPON(self::ped);
-				
+				if (!g_local_player->m_weapon_manager || !g_local_player->m_weapon_manager->m_weapon_info)
+					return;
+
+				// Probably don't need this check - I don't think there's anything in the game we can freeaim with that is eFireType::None
+				if (g_local_player->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None)
+					return;
+
 				if (!g.weapons.aimbot.nonhitscan)
 				{
-					// Don't aimbot with throwables
-					if (weapon_hash == 0x93E220BD || // Grenade
-						weapon_hash == 0xA0973D5E || // BZ Gas
-						weapon_hash == 0x24B17070 || // Molotov
-						weapon_hash == 0xAB564B93 || // Prox Mines
-						weapon_hash == 0xBA45E8B8 || // Pipe Bomb
-						weapon_hash == 0x2C3731D9 || // Sticky Bomb
-						weapon_hash == 0x497FACC3 || // Flare
-						weapon_hash == 0xFDBC8A50)   // Tear Gas
-					{
-						return;
-					}
-
-					if (weapon_hash == 0xB1CA77B1 || // RPG
-						weapon_hash == 0xA284510B || // Grenade Launcher
-						weapon_hash == 0x4DD2DC56 || // Smoke Grenade Launcher
-						weapon_hash == 0x7F7497E5 || // Firework Launcher
-						weapon_hash == 0x63AB0442 || // Homing Launcher
-						weapon_hash == 0x0781FE4A || // Compact Launcher
-						weapon_hash == 0xDB26713A)   // EMP Launcher
+					// Better to check fire types instead of weapon hashes
+					if (g_local_player->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::ProjectTile || g_local_player->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::VolumetricParticle)
 					{
 						return;
 					}
@@ -86,21 +73,20 @@ namespace big
 						continue;
 
 					rage::fvector3 camera_position = get_camera_position();
-					rage::fvector3 ped_position = *(cped->get_position());
+					rage::fvector3 ped_position    = cped->get_bone_coords(ePedBoneType::HEAD);
 
 					float ped_to_cam_distance = math::calculate_distance_from_game_cam(ped_position);
 
 					// Don't flip out if an enemy is on top of us
-					if (ped_to_cam_distance < 0.5f || ped_to_cam_distance > 2000.0f)
+					if (ped_to_cam_distance < 0.5f || ped_to_cam_distance > 1200.0f)
 						continue;
 
 					rage::fvector2 screen = {0.f, 0.f};
-					//GRAPHICS::GET_SCREEN_COORD_FROM_WORLD_COORD(pedWorldPosition.x, pedWorldPosition.y, pedWorldPosition.z, &xScreen, &yScreen);
 					world_to_screen::w2s({ped_position.x, ped_position.y, ped_position.z}, screen);
 
 					float xDelta = screen.x - (resolution.x * 0.5f); // How far from center (crosshair) is X?
 					float yDelta = screen.y - (resolution.y * 0.5f); // How far from center (crosshair) is Y?
-					
+
 					// Note that the values returned into xScreen and yScreen by the W2S function range from [0,0] (top left) to [1,1] (bottom right)
 					// Largest supported magnitude will obviously be sqrt(0.5^2 + 0.5^2) = 0.707 which is what we'll use in the GUI for now
 					// TODO: Create a more easily understandable mapping between GUI value and actual implementation (maybe pixels? maybe draw a box on-screen that shows the valid area?)
@@ -109,7 +95,8 @@ namespace big
 					if (crosshairMag > g.weapons.aimbot.fov)
 						continue;
 
-					// Filter out peds that are alive and in the scan area, but are behind some sort of cover (we don't want to aim through walls)
+					// Save the LOS check for last since it's the most expensive
+					// LOS check on the bone... if we can't get a clear shot then find a new target
 					if (!ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, ped, 17))
 						continue;
 
@@ -162,115 +149,107 @@ namespace big
 			}
 
 			// Stage 2: Target Tracking
-			if (PLAYER::IS_PLAYER_FREE_AIMING(self::id) && target_cped)
+			if (target_cped)
 			{
 				Entity target_ped = g_pointers->m_gta.m_ptr_to_handle(target_cped);
 
 				// We're now actively checking against the target entity each tick, not the entire pedlist
-				// So now we need to verify that the target entity is still valid (alive, not behind cover, etc.) and break the lock-on DURING free aim
-				if (target_cped->m_health <= 0.0f || !ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, target_ped, 17))
+
+				if (target_cped->m_health <= 0.0f) // Dead?
 				{
 					// Reset the target entity, and don't bother with the camera stuff since next tick we're scanning for a new target
 					target_cped = nullptr;
+					return;
 				}
-				else
+				
+				// Default aimbone is head
+				aimBone = ePedBoneType::HEAD;
+
+				// Note that target_vehicle will return the player's current AND/OR last vehicle, so we need to check if the target is actually in the vehicle as a driver or passenger		
+				CVehicle* target_vehicle = target_cped->m_vehicle;
+				bool in_vehicle = false;
+
+				if (target_vehicle)
 				{
-					aimBone = ePedBoneType::HEAD;
-
-					// Vehicle check
-					CVehicle* target_vehicle = target_cped->m_vehicle;
-
-					// Note that target_vehicle will return the player's current AND/OR last vehicle, so we need to check if the target is actually in the vehicle
-					bool target_in_vehicle = false;
-					
-					if (target_vehicle)
+					if (target_cped == target_cped->m_vehicle->m_driver)
 					{
-						for (const auto ped : target_vehicle->m_passengers)
-						{
-							if (ped == target_cped)
-							{
-								target_in_vehicle = true;
-								break;
-							}
-						}
-					}
-
-					// Check for bastard vehicles like the RC Bandito, I&P Mini Tank, and Oppressors
-					if (target_in_vehicle && target_vehicle && target_vehicle->m_model_info)
-					{
-						if (target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
-							target_vehicle->m_model_info->m_hash == 0xB53C6C52) // MINITANK
-						{
-							// Peds are technically inside these vehicles which makes headshots shoot WAY over the vehicle
-							aimBone = ePedBoneType::ABDOMEN;
-						}
-
-						else if (target_vehicle->m_model_info->m_hash == 0x34B82784 || // OPPRESSOR
-						        target_vehicle->m_model_info->m_hash == 0x7B54A9D3)  // OPPRESSOR2
-						{
-							// Headshots are really hard to hit on these vehicles, so we'll aim for the neck instead
-							aimBone = ePedBoneType::NECK;
-						}
-					}
-						
-					Vector3 target_position = target_cped->get_bone_coords(aimBone);
-					Vector3 player_position = get_camera_position();
-
-					Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_ped);
-					Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
-
-					//LOG(INFO) << "Target Velocity: " << target_velocity.x << ", " << target_velocity.y << ", " << target_velocity.z;
-					//LOG(INFO) << "Player Velocity: " << player_velocity.x << ", " << player_velocity.y << ", " << player_velocity.z;
-
-					rage::fvector3 target_position_fvec = {target_position.x, target_position.y, target_position.z};
-					rage::fvector3 target_velocity_fvec = {target_velocity.x, target_velocity.y, target_velocity.z};
-
-					// We use get_camera_position() later to get the player's camera position, so no need for natives
-					rage::fvector3 player_velocity_fvec = {player_velocity.x, player_velocity.y, player_velocity.z};
-
-					// Apply a compensating factor for velocity
-					float velocity_comp_factor = g.weapons.aimbot.pred_comp;
-					target_position_fvec = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
-
-					if (target_vehicle)
-					{
-						target_position_fvec.z += g.weapons.aimbot.z_veh_comp;
+						in_vehicle = true;
 					}
 					else
 					{
-						target_position_fvec.z += g.weapons.aimbot.z_foot_comp;
+						for (int i = 0; i < 15; i++)
+							if (target_cped->m_vehicle->m_passengers[i] == target_cped)
+								in_vehicle = true;
 					}
-
-					uintptr_t cam_gameplay_director = *g_pointers->m_gta.m_cam_gameplay_director;
-
-					// Good info here about the layout of the gameplay camera director
-					// https://www.unknowncheats.me/forum/grand-theft-auto-v/144028-grand-theft-auto-reversal-structs-offsets-625.html#post3249805
-
-					uintptr_t cam_follow_ped_camera = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x2'C0);
-
-					//uintptr_t cam_follow_ped_camera = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x2'C8);
-					//uintptr_t cam_follow_ped_camera2 = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x2'C0);
-					//uintptr_t cam_follow_ped_camera3 = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x3'C0);
-
-					// Camera Handling
-					// Note we HAVE to normalize this vector
-
-
-                    // Convert target_position from Vector3 to rage::fvector3
-					rage::fvector3 camera_position_fvec = get_camera_position();
-
-					// Compensate for player velocity
-					camera_position_fvec = camera_position_fvec + (player_velocity_fvec * velocity_comp_factor);
-
-					// Finally calculate the vector we write into memory
-
-					rage::fvector3 camera_target_fvec   = (target_position_fvec - camera_position_fvec).normalize();
-
-					// Game uses different cameras when on-foot vs. in vehicle, which is why using the gameplay cam is such a PITA, but for the aimbot it's fine to write to both locations
-					reset_aim_vectors(cam_follow_ped_camera);
-					*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x40) = camera_target_fvec; // First person & sniper (on foot)
-					*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target_fvec; // Third person
 				}
+
+				// Check for bastard vehicles like the RC Bandito, I&P Mini Tank, and Oppressors
+				if (in_vehicle && target_vehicle && target_vehicle->m_model_info)
+				{
+					if (target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
+						target_vehicle->m_model_info->m_hash == 0xB53C6C52) // MINITANK
+					{
+						// Peds are technically inside these vehicles which makes headshots shoot WAY over the vehicle
+						aimBone = ePedBoneType::ABDOMEN;
+					}
+				}
+
+				if (!ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, target_ped, 17))
+					return;
+
+				// Convert fvector3 to Vector3 for use in is_target_in_los
+				Vector3 target_position = target_cped->get_bone_coords(aimBone);				
+				Vector3 player_position = get_camera_position();
+
+				Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_ped);
+				Vector3 player_velocity = ENTITY::GET_ENTITY_VELOCITY(self::ped);
+
+				//LOG(INFO) << "Target Velocity: " << target_velocity.x << ", " << target_velocity.y << ", " << target_velocity.z;
+				//LOG(INFO) << "Player Velocity: " << player_velocity.x << ", " << player_velocity.y << ", " << player_velocity.z;
+
+				rage::fvector3 target_position_fvec = {target_position.x, target_position.y, target_position.z};
+				rage::fvector3 target_velocity_fvec = {target_velocity.x, target_velocity.y, target_velocity.z};
+
+				// We use get_camera_position() later to get the player's camera position, so no need for natives
+				rage::fvector3 player_velocity_fvec = {player_velocity.x, player_velocity.y, player_velocity.z};
+
+				// Apply a compensating factor for velocity
+				float velocity_comp_factor = g.weapons.aimbot.pred_comp;
+				target_position_fvec = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
+
+				if (target_vehicle)
+				{
+					target_position_fvec.z += g.weapons.aimbot.z_veh_comp;
+				}
+				else
+				{
+					target_position_fvec.z += g.weapons.aimbot.z_foot_comp;
+				}
+
+				uintptr_t cam_gameplay_director = *g_pointers->m_gta.m_cam_gameplay_director;
+
+				// Good info here about the layout of the gameplay camera director
+				// https://www.unknowncheats.me/forum/grand-theft-auto-v/144028-grand-theft-auto-reversal-structs-offsets-625.html#post3249805
+
+				uintptr_t cam_follow_ped_camera = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x2'C0);
+
+				//uintptr_t cam_follow_ped_camera = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x2'C8);
+				//uintptr_t cam_follow_ped_camera2 = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x2'C0);
+				//uintptr_t cam_follow_ped_camera3 = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x3'C0);
+
+                // Convert target_position from Vector3 to rage::fvector3
+				rage::fvector3 camera_position_fvec = get_camera_position();
+
+				// Compensate for player velocity
+				camera_position_fvec = camera_position_fvec + (player_velocity_fvec * velocity_comp_factor);
+
+				// Finally calculate the vector we write into memory
+				rage::fvector3 camera_target_fvec   = (target_position_fvec - camera_position_fvec).normalize();
+
+				// Game uses different cameras when on-foot vs. in vehicle, which is why using the gameplay cam is such a PITA, but for the aimbot it's fine to write to both locations
+				reset_aim_vectors(cam_follow_ped_camera);
+				*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x40) = camera_target_fvec; // First person & sniper (on foot)
+				*reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target_fvec; // Third person
 			}
 		}
 

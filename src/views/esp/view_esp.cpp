@@ -118,15 +118,17 @@ namespace big
 			if (g.esp_npc.vehicle && cped->m_vehicle && cped->m_vehicle->m_model_info)
 			{
 				int32_t vehicle_hash = cped->m_vehicle->m_model_info->m_hash;
-
 				bool in_vehicle = false;
-				for (const auto ped : cped->m_vehicle->m_passengers)
+
+				if (cped == cped->m_vehicle->m_driver)
 				{
-					if (ped == cped)
-					{
-						in_vehicle = true;
-						break;
-					}
+					in_vehicle = true;
+				}
+				else
+				{
+					for (int i = 0; i < 15; i++)
+						if (cped->m_vehicle->m_passengers[i] == cped)
+							in_vehicle = true;
 				}
 
 				if (vehicle_hash && in_vehicle)
@@ -276,15 +278,17 @@ namespace big
 			if (g.esp_player.vehicle && plyr->get_ped()->m_vehicle && plyr->get_ped()->m_vehicle->m_model_info)
 			{
 				int32_t vehicle_hash = plyr->get_ped()->m_vehicle->m_model_info->m_hash;
-
 				bool in_vehicle = false;
-				for (const auto ped : plyr->get_ped()->m_vehicle->m_passengers)
+
+				if (plyr->get_ped() == plyr->get_ped()->m_vehicle->m_driver)
 				{
-					if (ped == plyr->get_ped())
-					{
-						in_vehicle = true;
-						break;
-					}
+					in_vehicle = true;
+				}
+				else
+				{
+					for (int i = 0; i < 15; i++)
+						if (plyr->get_ped()->m_vehicle->m_passengers[i] == plyr->get_ped())
+							in_vehicle = true;
 				}
 
 				if (vehicle_hash && in_vehicle)
