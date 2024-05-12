@@ -378,6 +378,11 @@ namespace big
 
 	void hooks::received_event(rage::netEventMgr* event_manager, CNetGamePlayer* source_player, CNetGamePlayer* target_player, uint16_t event_id, int event_index, int event_handled_bitset, int buffer_size, rage::datBitBuffer* buffer)
 	{
+		if (source_player == nullptr || target_player == nullptr || buffer == nullptr || buffer_size < 0) [[unlikely]]
+		{
+			return;
+		}
+
 		if (event_id > 91u) [[unlikely]]
 		{
 			g_pointers->m_gta.m_send_event_ack(event_manager, source_player, target_player, event_index, event_handled_bitset);
