@@ -38,7 +38,7 @@ namespace big
 
 		return false;
 	}
-  
+
 	// Returns true if bad event
 	bool scan_weapon_damage_event(rage::netEventMgr* event_manager, CNetGamePlayer* player, CNetGamePlayer* target_player, int event_index, int event_handled_bitset, rage::datBitBuffer* buffer)
 	{
@@ -378,11 +378,6 @@ namespace big
 
 	void hooks::received_event(rage::netEventMgr* event_manager, CNetGamePlayer* source_player, CNetGamePlayer* target_player, uint16_t event_id, int event_index, int event_handled_bitset, int buffer_size, rage::datBitBuffer* buffer)
 	{
-		if (source_player == nullptr || target_player == nullptr || buffer == nullptr || buffer_size < 0) [[unlikely]]
-		{
-			return;
-		}
-
 		if (event_id > 91u) [[unlikely]]
 		{
 			g_pointers->m_gta.m_send_event_ack(event_manager, source_player, target_player, event_index, event_handled_bitset);
@@ -458,18 +453,24 @@ namespace big
 		case eNetworkEvents::SCRIPTED_GAME_EVENT:
 		{
 			const auto scripted_game_event = std::make_unique<CScriptedGameEvent>();
+
 			buffer->ReadDword(&scripted_game_event->m_args_size, 32);
-			if (scripted_game_event->m_args_size - 1 <= 0x1AF)
-				buffer->ReadArray(&scripted_game_event->m_args, 8 * scripted_game_event->m_args_size);
+			if (scripted_game_event->m_args_size > sizeof(scripted_game_event->m_args))
+			{
+				notify::crash_blocked(source_player, "out of bounds tse args size");
+				g_pointers->m_gta.m_send_event_ack(event_manager, source_player, target_player, event_index, event_handled_bitset);
+				return;
+			}
+
+			buffer->ReadArray(&scripted_game_event->m_args, 8 * scripted_game_event->m_args_size);
 
 			if (hooks::scripted_game_event(scripted_game_event.get(), source_player))
 			{
 				g_pointers->m_gta.m_send_event_ack(event_manager, source_player, target_player, event_index, event_handled_bitset);
-
 				return;
 			}
-			buffer->Seek(0);
 
+			buffer->Seek(0);
 			break;
 		}
 		case eNetworkEvents::NETWORK_CLEAR_PED_TASKS_EVENT:
@@ -534,8 +535,8 @@ namespace big
 			{
 				Vehicle personal_vehicle = mobile::mechanic::get_personal_vehicle();
 				Vehicle veh              = g_pointers->m_gta.m_ptr_to_handle(g_local_player->m_vehicle);
-				if (!NETWORK::NETWORK_IS_ACTIVITY_SESSION() //If we're in Freemode.
-				    || personal_vehicle == veh              //Or we're in our personal vehicle.
+				if (!NETWORK::NETWORK_IS_ACTIVITY_SESSION()     //If we're in Freemode.
+				    || personal_vehicle == veh                  //Or we're in our personal vehicle.
 				    || self::spawned_vehicles.contains(net_id)) // Or it's a vehicle we spawned.
 				{
 					auto plyr = g_player_service->get_by_id(source_player->m_player_id);
@@ -628,7 +629,7 @@ namespace big
 			{
 				weapon_item weapon = g_gta_data_service->weapon_by_hash(hash);
 				g_notification_service.push_warning("PROTECTIONS"_T.data(),
-					std::format("{} {} {}.", source_player->get_name(), "REMOVE_WEAPON_ATTEMPT_MESSAGE"_T, weapon.m_display_name));
+				    std::format("{} {} {}.", source_player->get_name(), "REMOVE_WEAPON_ATTEMPT_MESSAGE"_T, weapon.m_display_name));
 				g_pointers->m_gta.m_send_event_ack(event_manager, source_player, target_player, event_index, event_handled_bitset);
 				return;
 			}
