@@ -202,7 +202,7 @@ namespace big
 
 	void esp::draw_player(const player_ptr& plyr, ImDrawList* const draw_list)
 	{
-		if (!plyr->is_valid() || !plyr->get_ped() || !plyr->get_ped()->m_navigation)
+		if (!plyr || !plyr->is_valid() || !plyr->get_ped() || !plyr->get_ped()->m_navigation)
 			return;
 
 		auto& player_pos = *plyr->get_ped()->m_navigation->get_position();

@@ -63,6 +63,9 @@ namespace big
 
 	bool hooks::scripted_game_event(CScriptedGameEvent* scripted_game_event, CNetGamePlayer* player)
 	{
+		if (!scripted_game_event || !player)
+			return false;
+
 		const auto args       = scripted_game_event->m_args;
 		const auto args_count = scripted_game_event->m_args_size / 8;
 
