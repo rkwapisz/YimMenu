@@ -5,9 +5,9 @@
 #include "util/ped.hpp"
 #include "util/world_to_screen.hpp"
 
-#include <numbers>
 #include <chrono>
 #include <cmath>
+#include <numbers>
 
 namespace big
 {
@@ -27,7 +27,8 @@ namespace big
 		virtual void on_tick() override
 		{
 			// Reset aim target when we're not aiming
-			if (!PLAYER::IS_PLAYER_FREE_AIMING(self::id)) {
+			if (!PLAYER::IS_PLAYER_FREE_AIMING(self::id))
+			{
 				target_cped = nullptr;
 				return;
 			}
@@ -45,7 +46,8 @@ namespace big
 				if (!g.weapons.aimbot.nonhitscan)
 				{
 					// Better to check fire types instead of weapon hashes
-					if (g_local_player->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::ProjectTile || g_local_player->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::VolumetricParticle)
+					if (g_local_player->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::ProjectTile
+					    || g_local_player->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::VolumetricParticle)
 					{
 						return;
 					}
@@ -58,7 +60,7 @@ namespace big
 
 				for (auto ped : entity::get_entities(false, true))
 				{
-                    CPed* cped = static_cast<CPed*>(g_pointers->m_gta.m_handle_to_ptr(ped));
+					CPed* cped = static_cast<CPed*>(g_pointers->m_gta.m_handle_to_ptr(ped));
 
 					// Don't trying acquiring a target if we're already locked onto one or if the cped is invalid
 					if (cped == nullptr || target_cped)
@@ -102,8 +104,8 @@ namespace big
 
 					// Now that we've filtered out most of what we want to ignore, our remaining peds are all alive, within our scan area, and targetable
 					// From this list of potentially valid targets, let's pick one!
-					int relation = PED::GET_RELATIONSHIP_BETWEEN_PEDS(self::ped, ped); // relation for enemy check
-					uint32_t type     = cped->get_ped_type(); // for police check, cop types are 6, swat is 27
+
+					uint32_t type = cped->get_ped_type();
 
 					// If target is a player and we're aiming at players
 					player_ptr target_plyr = ped::get_player_from_ped(ped);
@@ -123,7 +125,9 @@ namespace big
 					// If target is armed and we're aiming at armed NPCs
 					// Note that we check !target_plyr since player targeting is a separate option
 					// Type == 28 check exists because animals are armed (lol)
-					else if (!target_plyr && g.weapons.aimbot.on_armed && type != 28 && !(cped->m_weapon_manager->m_selected_weapon_hash == 0xA2719263 || cped->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None))
+					else if (!target_plyr && g.weapons.aimbot.on_armed && type != 28
+					    && !(cped->m_weapon_manager->m_selected_weapon_hash == 0xA2719263
+					        || cped->m_weapon_manager->m_weapon_info->m_fire_type == eFireType::None))
 					{
 						goto set_target;
 					}
@@ -161,13 +165,13 @@ namespace big
 					target_cped = nullptr;
 					return;
 				}
-				
+
 				// Default aimbone is head
 				aimBone = ePedBoneType::HEAD;
 
-				// Note that target_vehicle will return the player's current AND/OR last vehicle, so we need to check if the target is actually in the vehicle as a driver or passenger		
+				// Note that target_vehicle will return the player's current AND/OR last vehicle, so we need to check if the target is actually in the vehicle as a driver or passenger
 				CVehicle* target_vehicle = target_cped->m_vehicle;
-				bool in_vehicle = false;
+				bool in_vehicle          = false;
 
 				if (target_vehicle)
 				{
@@ -187,7 +191,7 @@ namespace big
 				if (in_vehicle && target_vehicle && target_vehicle->m_model_info)
 				{
 					if (target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
-						target_vehicle->m_model_info->m_hash == 0xB53C6C52) // MINITANK
+					    target_vehicle->m_model_info->m_hash == 0xB53C6C52)   // MINITANK
 					{
 						// Peds are technically inside these vehicles which makes headshots shoot WAY over the vehicle
 						aimBone = ePedBoneType::ABDOMEN;
@@ -198,7 +202,7 @@ namespace big
 					return;
 
 				// Convert fvector3 to Vector3 for use in is_target_in_los
-				Vector3 target_position = target_cped->get_bone_coords(aimBone);				
+				Vector3 target_position = target_cped->get_bone_coords(aimBone);
 				Vector3 player_position = get_camera_position();
 
 				Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_ped);
@@ -215,7 +219,7 @@ namespace big
 
 				// Apply a compensating factor for velocity
 				float velocity_comp_factor = g.weapons.aimbot.pred_comp;
-				target_position_fvec = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
+				target_position_fvec       = target_position_fvec + (target_velocity_fvec * velocity_comp_factor);
 
 				if (in_vehicle && target_vehicle)
 				{
@@ -237,14 +241,14 @@ namespace big
 				//uintptr_t cam_follow_ped_camera2 = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x2'C0);
 				//uintptr_t cam_follow_ped_camera3 = *reinterpret_cast<uintptr_t*>(cam_gameplay_director + 0x3'C0);
 
-                // Convert target_position from Vector3 to rage::fvector3
+				// Convert target_position from Vector3 to rage::fvector3
 				rage::fvector3 camera_position_fvec = get_camera_position();
 
 				// Compensate for player velocity
 				camera_position_fvec = camera_position_fvec + (player_velocity_fvec * velocity_comp_factor);
 
 				// Finally calculate the vector we write into memory
-				rage::fvector3 camera_target_fvec   = (target_position_fvec - camera_position_fvec).normalize();
+				rage::fvector3 camera_target_fvec = (target_position_fvec - camera_position_fvec).normalize();
 
 				// Game uses different cameras when on-foot vs. in vehicle, which is why using the gameplay cam is such a PITA, but for the aimbot it's fine to write to both locations
 				reset_aim_vectors(cam_follow_ped_camera);
@@ -319,12 +323,12 @@ namespace big
 
 	aimbot g_aimbot("aimbot", "VIEW_OVERLAY_AIMBOT", "BACKEND_LOOPED_WEAPONS_AIMBOT_DESC", g.weapons.aimbot.enable);
 
-	bool_command
-	    g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC", g.weapons.aimbot.nonhitscan);
+	bool_command g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC",
+	    g.weapons.aimbot.nonhitscan);
 	bool_command
 	    g_aimbot_on_player("aimatplayer", "PLAYER", "BACKEND_LOOPED_WEAPONS_AIM_AT_PLAYER_DESC", g.weapons.aimbot.on_player);
-	bool_command
-		g_aimbot_on_npc("aimatnpc", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
-	bool_command
-		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED_DESC", g.weapons.aimbot.on_armed);
+	bool_command g_aimbot_on_npc("aimatnpc", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC",
+	    g.weapons.aimbot.on_npc);
+	bool_command g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED_DESC",
+	    g.weapons.aimbot.on_armed);
 }
