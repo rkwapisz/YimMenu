@@ -17,8 +17,6 @@ namespace big
 
 		static inline CPed* target_cped = nullptr;
 
-		static inline ePedBoneType aimBone = ePedBoneType::HEAD;
-
 		// Stage 1: Target Acquisition
 		// Stage 2: Target Tracking
 		// Stage 3: Target Reset
@@ -32,6 +30,8 @@ namespace big
 				target_cped = nullptr;
 				return;
 			}
+
+			ePedBoneType aim_bone = g.weapons.aimbot.aim_bone;
 
 			// Only process new targets if we haven't already acquired one
 			if (!target_cped)
@@ -75,7 +75,7 @@ namespace big
 						continue;
 
 					rage::fvector3 camera_position = get_camera_position();
-					rage::fvector3 ped_position    = cped->get_bone_coords(ePedBoneType::HEAD);
+					rage::fvector3 ped_position    = cped->get_bone_coords(aim_bone);
 
 					float ped_to_cam_distance = math::calculate_distance_from_game_cam(ped_position);
 
@@ -166,9 +166,6 @@ namespace big
 					return;
 				}
 
-				// Default aimbone is head
-				aimBone = ePedBoneType::HEAD;
-
 				// Note that target_vehicle will return the player's current AND/OR last vehicle, so we need to check if the target is actually in the vehicle as a driver or passenger
 				CVehicle* target_vehicle = target_cped->m_vehicle;
 				bool in_vehicle          = false;
@@ -194,7 +191,8 @@ namespace big
 					    target_vehicle->m_model_info->m_hash == 0xB53C6C52)   // MINITANK
 					{
 						// Peds are technically inside these vehicles which makes headshots shoot WAY over the vehicle
-						aimBone = ePedBoneType::ABDOMEN;
+						// In this case we want to overwrite the user's preferred bone
+						aim_bone = ePedBoneType::ABDOMEN;
 					}
 				}
 
@@ -202,7 +200,7 @@ namespace big
 					return;
 
 				// Convert fvector3 to Vector3 for use in is_target_in_los
-				Vector3 target_position = target_cped->get_bone_coords(aimBone);
+				Vector3 target_position = target_cped->get_bone_coords(aim_bone);
 				Vector3 player_position = get_camera_position();
 
 				Vector3 target_velocity = ENTITY::GET_ENTITY_VELOCITY(target_ped);

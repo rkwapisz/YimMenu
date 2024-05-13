@@ -11,6 +11,7 @@
 #include <weapon/CAmmoInfo.hpp>
 #include <weapon/CAmmoRocketInfo.hpp>
 #include <weapon/CWeaponInfo.hpp>
+#include <ped/CPedBoneInfo.hpp>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui.h>
@@ -868,6 +869,7 @@ namespace big
 			struct aimbot
 			{
 				bool enable            = false;
+				ePedBoneType aim_bone  = ePedBoneType::NECK;
 				bool nonhitscan		   = true;
 				bool on_player         = true;
 				bool on_armed          = false;
@@ -876,7 +878,7 @@ namespace big
 				float z_foot_comp      = 0.0f;
 				float z_veh_comp	   = 0.0f;
 				float pred_comp		   = 0.0f;
-				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, nonhitscan, on_player, on_armed, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
+				NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, aim_bone, nonhitscan, on_player, on_armed, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
 			} aimbot{};
 
 			struct flying_axe

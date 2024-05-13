@@ -11,6 +11,8 @@
 
 namespace big
 {
+	extern ePedBoneType aimBone;
+
 	struct custom_weapon
 	{
 		big::CustomWeapon id;
@@ -180,12 +182,11 @@ namespace big
 
 		ImGui::SeparatorText("VIEW_WEAPON_AIM_ASSISTANCE"_T.data());
 		components::command_checkbox<"aimbot">();
+		ImGui::SameLine();
+		components::command_checkbox<"nonhitscan">();
 
 		if (g.weapons.aimbot.enable)
 		{
-			ImGui::SameLine();
-			components::command_checkbox<"nonhitscan">();
-
 			components::command_checkbox<"aimatplayer">();
 			ImGui::SameLine();
 			components::command_checkbox<"aimatenemy">();
@@ -193,6 +194,23 @@ namespace big
 			components::command_checkbox<"aimatnpc">();
 
 			ImGui::PushItemWidth(350);
+			if (ImGui::BeginCombo("##aimbot_preferred_bone", "BACKEND_LOOPED_WEAPONS_AIMBOT_PREFERRED_BONE"_T.data()))
+			{
+				components::selectable("ePedBoneType::HEAD", g.weapons.aimbot.aim_bone == ePedBoneType::HEAD, [] {
+					g.weapons.aimbot.aim_bone = ePedBoneType::HEAD;
+				});
+
+				components::selectable("ePedBoneType::NECK", g.weapons.aimbot.aim_bone == ePedBoneType::NECK, [] {
+					g.weapons.aimbot.aim_bone = ePedBoneType::NECK;
+				});
+
+				components::selectable("ePedBoneType::ABDOMEN", g.weapons.aimbot.aim_bone == ePedBoneType::ABDOMEN, [] {
+					g.weapons.aimbot.aim_bone = ePedBoneType::ABDOMEN;
+				});
+
+				ImGui::EndCombo();
+			}
+
 			ImGui::SliderFloat("VIEW_WEAPON_AIM_FOV"_T.data(), &g.weapons.aimbot.fov, 0.0f, (float)*g_pointers->m_gta.m_resolution_x, "%.0f");
 			ImGui::SliderFloat("VIEW_WEAPON_AIM_FOOT_ZCOMP"_T.data(), &g.weapons.aimbot.z_foot_comp, -0.2f, 0.2f, "%.5f");
 			ImGui::SliderFloat("VIEW_WEAPON_AIM_VEH_ZCOMP"_T.data(), &g.weapons.aimbot.z_veh_comp, -0.2f, 0.2f, "%.5f");
@@ -202,8 +220,9 @@ namespace big
 			components::button("DEFAULT"_T, [] {
 				g.weapons.aimbot.fov         = 100.0f;
 				g.weapons.aimbot.z_foot_comp = 0.055f;
-				g.weapons.aimbot.z_veh_comp  = 0.055f;
+				g.weapons.aimbot.z_veh_comp  = 0.085f;
 				g.weapons.aimbot.pred_comp   = 0.015f;
+				g.weapons.aimbot.aim_bone    = ePedBoneType::NECK;
 			});
 		}
 
