@@ -199,7 +199,8 @@ namespace big
 
 		static void searchlight_crash(void* a1, CPed* ped);
 
-		static void write_physical_script_game_state_data_node(__int64 iface, CPhysicalScriptGameStateDataNode* node);
+
+		static void write_physical_script_game_state_data_node(rage::CPhysical* this_ptr, CPhysicalScriptGameStateDataNode* node);
 	};
 
 	class minhook_keepalive

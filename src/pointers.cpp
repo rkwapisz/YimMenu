@@ -1809,8 +1809,8 @@ namespace big
             [](memory::handle ptr)
             {
                 g_pointers->m_gta.m_clone_create_pool = ptr.add(3).rip().as<GenericPool**>();
-			}
-		},
+            }
+        },
         // Write Physical Script Game State Data Node
         {
             "WPSGSDN",
