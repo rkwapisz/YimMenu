@@ -58,9 +58,12 @@ namespace big
 
 				int plyr_team = PLAYER::GET_PLAYER_TEAM(self::id);
 
-				for (auto ped : entity::get_entities(false, true))
+				for (auto ped : pools::get_all_peds())
 				{
-					CPed* cped = static_cast<CPed*>(g_pointers->m_gta.m_handle_to_ptr(ped));
+					if (!ped || ped == g_local_player)
+						continue;
+
+					CPed* cped = static_cast<CPed*>(ped);
 
 					// Don't trying acquiring a target if we're already locked onto one or if the cped is invalid
 					if (cped == nullptr || target_cped)
@@ -99,7 +102,10 @@ namespace big
 
 					// Save the LOS check for last since it's the most expensive
 					// LOS check on the bone... if we can't get a clear shot then find a new target
-					if (!ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, ped, 17))
+
+					Entity target_ped = g_pointers->m_gta.m_ptr_to_handle(cped);
+
+					if (!ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, target_ped, 17))
 						continue;
 
 					// Now that we've filtered out most of what we want to ignore, our remaining peds are all alive, within our scan area, and targetable
@@ -108,7 +114,7 @@ namespace big
 					uint32_t type = cped->get_ped_type();
 
 					// If target is a player and we're aiming at players
-					player_ptr target_plyr = ped::get_player_from_ped(ped);
+					player_ptr target_plyr = ped::get_player_from_ped(target_ped);
 					if (g.weapons.aimbot.on_player && target_plyr)
 					{
 						// Don't aim at our own teammates
@@ -155,8 +161,6 @@ namespace big
 			// Stage 2: Target Tracking
 			if (target_cped)
 			{
-				Entity target_ped = g_pointers->m_gta.m_ptr_to_handle(target_cped);
-
 				// We're now actively checking against the target entity each tick, not the entire pedlist
 
 				if (target_cped->m_health <= 0.0f) // Dead?
@@ -195,6 +199,8 @@ namespace big
 						aim_bone = ePedBoneType::ABDOMEN;
 					}
 				}
+
+				Entity target_ped = g_pointers->m_gta.m_ptr_to_handle(target_cped);
 
 				if (!ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY_ADJUST_FOR_COVER(self::ped, target_ped, 17))
 					return;

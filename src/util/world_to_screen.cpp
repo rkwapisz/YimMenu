@@ -2,7 +2,7 @@
 
 namespace big
 {
-	// w2w will return real pixel coordinates into screen
+	// w2s will return real pixel coordinates into screen
 	bool world_to_screen::w2s(const rage::fvector3 entity_position, rage::fvector2& screen)
 	{
 		// Get the viewport matrix

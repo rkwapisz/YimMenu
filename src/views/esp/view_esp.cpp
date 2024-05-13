@@ -25,12 +25,11 @@ namespace big
 	static const ImColor health_red_bg    = ImColor(0.69f, 0.29f, 0.29f, .75f);
 	static const ImColor health_red       = ImColor(0.69f, 0.29f, 0.29f, 1.f);
 
-	void esp::draw_npc(const Entity ped, ImDrawList* const draw_list)
+	void esp::draw_npc(CPed* cped, ImDrawList* const draw_list)
 	{
-		CPed* cped = static_cast<CPed*>(g_pointers->m_gta.m_handle_to_ptr(ped));
-
 		// Ignore nulls, players, and animals (maybe we can make animals configurable later)
-		if (!cped || ped::get_player_from_ped(ped) || cped->get_ped_type() == 28)
+
+		if (!cped || cped->m_player_info || cped->m_ped_type == 28)
 			return;
 		
 		// We can preserve essentially all of draw_player's functionality, just apply it to peds with maybe some additional ped-type classifications
@@ -49,7 +48,7 @@ namespace big
 			return;
 
 		rage::fvector3 ped_position_fvec = *cped->get_position();
-
+		
 		rage::fvector2 screen;
 
 		const float distance = math::calculate_distance_from_game_cam(ped_position_fvec);
@@ -400,7 +399,7 @@ namespace big
             return false;
 
         // Validate stability of get_bone_coords
-        const auto ped_bones = cped->get_bone_coords(bone_type);
+		auto ped_bones = cped->get_bone_coords(bone_type);
 
         if (world_to_screen::w2s(ped_bones, bone_vec))
             return true;
@@ -505,9 +504,12 @@ namespace big
 
 			if (g.esp_npc.enabled)
 			{
-				for (auto ped : entity::get_entities(false, true))
+				for (auto ped : pools::get_all_peds())
 				{
-					draw_npc(ped, draw_list);
+					if (!ped || ped == g_local_player)
+						continue;
+
+					draw_npc(static_cast<CPed*>(ped), draw_list);
 				}
 			}
 		}
