@@ -38,6 +38,7 @@ namespace big
 		[[nodiscard]] const char* get_name() const;
 		[[nodiscard]] rage::rlGamerInfo* get_net_data() const;
 		[[nodiscard]] int64_t get_rockstar_id() const;
+		[[nodiscard]] uint64_t get_host_token() const;
 		[[nodiscard]] CNetGamePlayer* get_net_game_player() const;
 		[[nodiscard]] CPed* get_ped() const;
 		[[nodiscard]] CPlayerInfo* get_player_info() const;

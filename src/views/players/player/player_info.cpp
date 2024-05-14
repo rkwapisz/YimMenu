@@ -180,14 +180,14 @@ namespace big
 
 			ImGui::SameLine();
 
-			if (ImGui::SmallButton("PLAYER_INFO_ADD_TO_DB"_T.data()))
+			if (ImGui::Button("PLAYER_INFO_ADD_TO_DB"_T.data()))
 			{
 				g_player_database_service->get_or_create_player(g_player_service->get_selected());
 			}
 
 			ImGui::SameLine();
 
-			if (ImGui::SmallButton("VIEW_PLAYER_INFO_SC_PROFILE"_T.data()))
+			if (ImGui::Button("VIEW_PLAYER_INFO_SC_PROFILE"_T.data()))
 				session::show_profile_by_rockstar_id(g_player_service->get_selected()->get_net_data()->m_gamer_handle.m_rockstar_id);
 
 			if (CPlayerInfo* player_info = g_player_service->get_selected()->get_player_info(); player_info != nullptr)
@@ -266,6 +266,8 @@ namespace big
 
 			if (auto net_player_data = g_player_service->get_selected()->get_net_data())
 			{
+				ImGui::Text("PLAYER_INFO_HOST_TOKEN"_T.data(), g_player_service->get_selected()->get_host_token());
+
 				ImGui::Text("PLAYER_INFO_RID"_T.data(), net_player_data->m_gamer_handle.m_rockstar_id);
 
 				ImGui::SameLine();

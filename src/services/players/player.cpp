@@ -45,6 +45,11 @@ namespace big
 		return 0;
 	}
 
+	uint64_t player::get_host_token() const
+	{
+		return (m_net_game_player == nullptr || m_net_game_player->get_net_data() == nullptr) ? 0 : m_net_game_player->get_net_data()->m_host_token;
+	}
+
 	CPed* player::get_ped() const
 	{
 		if (auto player_info = get_player_info())
