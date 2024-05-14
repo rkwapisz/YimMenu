@@ -31,7 +31,7 @@ namespace big
 				return;
 			}
 
-			ePedBoneType aim_bone = g.weapons.aimbot.aim_bone;
+			ePedBoneType aim_bone = g.weapons.aimbot.aim_bone_ped;
 
 			// Only process new targets if we haven't already acquired one
 			if (!target_cped)
@@ -77,13 +77,38 @@ namespace big
 					if (g_local_player->m_vehicle && g_local_player->m_vehicle == cped->m_vehicle)
 						continue;
 
+					CVehicle* target_vehicle = cped->m_vehicle;
+					bool in_vehicle          = false;
+
+					if (target_vehicle)
+					{
+						if (target_cped == target_cped->m_vehicle->m_driver)
+						{
+							in_vehicle = true;
+						}
+						else
+						{
+							for (int i = 0; i < 15; i++)
+							{
+								if (target_cped->m_vehicle->m_passengers[i] == target_cped)
+								{
+									in_vehicle = true;
+									break;
+								}
+							}		
+						}
+					}
+
+					if (in_vehicle)
+						aim_bone = g.weapons.aimbot.aim_bone_veh; // If we're in a vehicle, use the in-vehicle preferred bone
+
 					rage::fvector3 camera_position = get_camera_position();
 					rage::fvector3 ped_position    = cped->get_bone_coords(aim_bone);
 
 					float ped_to_cam_distance = math::calculate_distance_from_game_cam(ped_position);
 
 					// Don't flip out if an enemy is on top of us
-					if (ped_to_cam_distance < 0.5f || ped_to_cam_distance > 1200.0f)
+					if (ped_to_cam_distance < 0.5f || ped_to_cam_distance > 1000.0f)
 						continue;
 
 					rage::fvector2 screen = {0.f, 0.f};
@@ -183,16 +208,27 @@ namespace big
 					else
 					{
 						for (int i = 0; i < 15; i++)
+						{
 							if (target_cped->m_vehicle->m_passengers[i] == target_cped)
+							{
 								in_vehicle = true;
+								break;
+							}
+						}	
 					}
+				}
+
+				if (in_vehicle)
+				{
+					// If we're in a vehicle, use the in-vehicle preferred bone
+					aim_bone = g.weapons.aimbot.aim_bone_veh;
 				}
 
 				// Check for bastard vehicles like the RC Bandito, I&P Mini Tank, and Oppressors
 				if (in_vehicle && target_vehicle && target_vehicle->m_model_info)
 				{
-					if (target_vehicle->m_model_info->m_hash == 0xEEF345EC || // RCBANDITO
-					    target_vehicle->m_model_info->m_hash == 0xB53C6C52)   // MINITANK
+					if (target_vehicle->m_model_info->m_hash == "rcbandito"_J || // RCBANDITO
+					    target_vehicle->m_model_info->m_hash == "minitank"_J) // MINITANK
 					{
 						// Peds are technically inside these vehicles which makes headshots shoot WAY over the vehicle
 						// In this case we want to overwrite the user's preferred bone

@@ -194,18 +194,35 @@ namespace big
 			components::command_checkbox<"aimatnpc">();
 
 			ImGui::PushItemWidth(350);
-			if (ImGui::BeginCombo("##aimbot_preferred_bone", "BACKEND_LOOPED_WEAPONS_AIMBOT_PREFERRED_BONE"_T.data()))
+			if (ImGui::BeginCombo("##aimbot_preferred_bone_ped", "BACKEND_LOOPED_WEAPONS_AIMBOT_PREFERRED_BONE_PED"_T.data()))
 			{
-				components::selectable("ePedBoneType::HEAD", g.weapons.aimbot.aim_bone == ePedBoneType::HEAD, [] {
-					g.weapons.aimbot.aim_bone = ePedBoneType::HEAD;
+				components::selectable("ePedBoneType::HEAD", g.weapons.aimbot.aim_bone_ped == ePedBoneType::HEAD, [] {
+					g.weapons.aimbot.aim_bone_ped = ePedBoneType::HEAD;
 				});
 
-				components::selectable("ePedBoneType::NECK", g.weapons.aimbot.aim_bone == ePedBoneType::NECK, [] {
-					g.weapons.aimbot.aim_bone = ePedBoneType::NECK;
+				components::selectable("ePedBoneType::NECK", g.weapons.aimbot.aim_bone_ped == ePedBoneType::NECK, [] {
+					g.weapons.aimbot.aim_bone_ped = ePedBoneType::NECK;
 				});
 
-				components::selectable("ePedBoneType::ABDOMEN", g.weapons.aimbot.aim_bone == ePedBoneType::ABDOMEN, [] {
-					g.weapons.aimbot.aim_bone = ePedBoneType::ABDOMEN;
+				components::selectable("ePedBoneType::ABDOMEN", g.weapons.aimbot.aim_bone_ped == ePedBoneType::ABDOMEN, [] {
+					g.weapons.aimbot.aim_bone_ped = ePedBoneType::ABDOMEN;
+				});
+
+				ImGui::EndCombo();
+			}
+
+			if (ImGui::BeginCombo("##aimbot_preferred_bone_veh", "BACKEND_LOOPED_WEAPONS_AIMBOT_PREFERRED_BONE_VEH"_T.data()))
+			{
+				components::selectable("ePedBoneType::HEAD", g.weapons.aimbot.aim_bone_veh == ePedBoneType::HEAD, [] {
+					g.weapons.aimbot.aim_bone_veh = ePedBoneType::HEAD;
+				});
+
+				components::selectable("ePedBoneType::NECK", g.weapons.aimbot.aim_bone_veh == ePedBoneType::NECK, [] {
+					g.weapons.aimbot.aim_bone_veh = ePedBoneType::NECK;
+				});
+
+				components::selectable("ePedBoneType::ABDOMEN", g.weapons.aimbot.aim_bone_veh == ePedBoneType::ABDOMEN, [] {
+					g.weapons.aimbot.aim_bone_veh = ePedBoneType::ABDOMEN;
 				});
 
 				ImGui::EndCombo();
@@ -218,11 +235,12 @@ namespace big
 			ImGui::PopItemWidth();
 
 			components::button("DEFAULT"_T, [] {
-				g.weapons.aimbot.fov         = 100.0f;
-				g.weapons.aimbot.z_foot_comp = 0.055f;
-				g.weapons.aimbot.z_veh_comp  = 0.085f;
-				g.weapons.aimbot.pred_comp   = 0.015f;
-				g.weapons.aimbot.aim_bone    = ePedBoneType::NECK;
+				g.weapons.aimbot.fov          = 100.0f;
+				g.weapons.aimbot.z_foot_comp  = 0.055f;
+				g.weapons.aimbot.z_veh_comp   = 0.055f;
+				g.weapons.aimbot.pred_comp    = 0.015f;
+				g.weapons.aimbot.aim_bone_ped = ePedBoneType::NECK;
+				g.weapons.aimbot.aim_bone_veh = ePedBoneType::HEAD;
 			});
 		}
 

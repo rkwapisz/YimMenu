@@ -126,8 +126,13 @@ namespace big
 				else
 				{
 					for (int i = 0; i < 15; i++)
+					{
 						if (cped->m_vehicle->m_passengers[i] == cped)
+						{
 							in_vehicle = true;
+							break;
+						}
+					}
 				}
 
 				if (vehicle_hash && in_vehicle)
@@ -286,8 +291,13 @@ namespace big
 				else
 				{
 					for (int i = 0; i < 15; i++)
+					{
 						if (plyr->get_ped()->m_vehicle->m_passengers[i] == plyr->get_ped())
+						{
 							in_vehicle = true;
+							break;
+						}
+					}
 				}
 
 				if (vehicle_hash && in_vehicle)
