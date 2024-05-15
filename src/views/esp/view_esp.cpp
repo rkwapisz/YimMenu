@@ -29,7 +29,7 @@ namespace big
 	{
 		// Ignore nulls, players, and animals (maybe we can make animals configurable later)
 
-		if (!cped || cped->m_player_info || cped->m_ped_type == 28)
+		if (!cped || cped->m_player_info || cped->get_ped_type() == 28)
 			return;
 		
 		// We can preserve essentially all of draw_player's functionality, just apply it to peds with maybe some additional ped-type classifications
@@ -67,7 +67,7 @@ namespace big
 			ImVec2 name_pos = {esp_x - (62.5f * multplr), esp_y - (175.f * multplr) - 20.f};
 			ImU32 esp_color = g.esp_npc.npc_unarmed_color;
 
-            if (cped->m_weapon_manager && cped->m_weapon_manager->m_weapon_info && cped->m_weapon_manager->m_selected_weapon_hash != 0xA2719263 && cped->m_weapon_manager->m_weapon_info->m_fire_type != eFireType::None)
+            if (cped->m_weapon_manager && cped->m_weapon_manager->m_weapon_info && cped->m_weapon_manager->m_selected_weapon_hash != "weapon_unarmed"_J && cped->m_weapon_manager->m_weapon_info->m_fire_type != eFireType::None)
             {
                 esp_color = g.esp_npc.npc_armed_color;
             }
@@ -314,12 +314,15 @@ namespace big
 			if (!extra_info.empty())
 				draw_list->AddText({esp_x - (62.5f * multplr), esp_y - (175.f * multplr) + 20.f}, esp_color, extra_info.c_str());
 
+			bool player_god      = false;
+
 			std::string mode_str = "";
 			if (g.esp_player.god)
 			{
 				if (ped_damage_bits & (uint32_t)eEntityProofs::GOD)
 				{
-					mode_str = "ESP_GOD"_T.data();
+					player_god = true;
+					mode_str += "ESP_GOD"_T.data();
 				}
 				else
 				{
@@ -337,7 +340,13 @@ namespace big
 			if (auto player_vehicle = plyr->get_current_vehicle(); player_vehicle && (plyr->get_ped()->m_ped_task_flag & (uint32_t)ePedTask::TASK_DRIVING)
 			    && (player_vehicle->m_damage_bits & (uint32_t)eEntityProofs::GOD))
 			{
-				mode_str = +"VEHICLE_GOD"_T.data();
+				// Add a spacer between "God" and "Vehicle God" if both are enabled
+				if (player_god)
+				{
+					mode_str += " | ";
+				}
+
+				mode_str += "ESP_VEH_GOD"_T.data();
 			}
 
 			if (!mode_str.empty())
