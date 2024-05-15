@@ -234,9 +234,7 @@ namespace big
 					return true;
 				}
 			}
-
 			break;
-		}
 		case eRemoteEvent::SendToCayoPerico:
 			if (g.protections.script_events.send_to_location && args[4] == 0)
 			{
