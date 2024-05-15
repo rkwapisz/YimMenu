@@ -19,13 +19,12 @@ namespace big
 			auto current_time = std::chrono::steady_clock::now();
 			auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - last_call_time).count();
 
-			if (elapsed_time >= 1000)
+			if (elapsed_time >= 1000) // Reduce black hole gather spam so it pulses only every second
 			{
-				// Mitigate thread-unsafe behavior of get_entities by not calling it every tick (should be minimal impact to in-game ped behavior)
 				entity_list = entity::get_entities(g.world.blackhole.include_vehicles, g.world.blackhole.include_peds);
 				last_call_time = current_time;
 
-				for (int i = 0; i < 30 && i < entity_list.size(); i++)
+				for (int i = 0; i < 30 && i < entity_list.size(); i++) // Only yeet up to 30 entities every second to prevent crashes
 				{
 					auto entity = entity_list[i];
 
