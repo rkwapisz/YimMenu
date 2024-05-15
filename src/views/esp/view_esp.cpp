@@ -326,14 +326,24 @@ namespace big
 				}
 				else
 				{
+					bool bullet = false;
+					bool explosion = false;
+
 					if (ped_damage_bits & (uint32_t)eEntityProofs::BULLET)
 					{
-						mode_str += "ESP_BULLET"_T.data();
+						bullet = true;
 					}
 					if (ped_damage_bits & (uint32_t)eEntityProofs::EXPLOSION)
 					{
-						mode_str += "ESP_EXPLOSION"_T.data();
+						explosion = true;
 					}
+
+					if (bullet)
+						mode_str += "ESP_BULLET"_T.data();
+					if (bullet && explosion)
+						mode_str += " ";
+					if (explosion)
+						mode_str += "ESP_EXPLOSION"_T.data();
 				}
 			}
 

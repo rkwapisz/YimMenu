@@ -120,7 +120,7 @@ namespace big
 				static float new_location[3];
 				auto& current_location = *reinterpret_cast<float(*)[3]>(g_player_service->get_selected()->get_ped()->get_position());
 
-				components::small_text("VIEW_PLAYER_TELEPORT_CUSTOM_TP"_T);
+				ImGui::SeparatorText("VIEW_PLAYER_TELEPORT_CUSTOM_TP"_T.data());
 				ImGui::SetNextItemWidth(400);
 				ImGui::InputFloat3("##customlocation", new_location);
 				components::button("GUI_TAB_TELEPORT"_T, [] {
