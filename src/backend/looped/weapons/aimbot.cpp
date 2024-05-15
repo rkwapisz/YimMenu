@@ -82,7 +82,7 @@ namespace big
 
 					if (target_vehicle)
 					{
-						if (target_cped == target_cped->m_vehicle->m_driver)
+						if (target_cped == target_vehicle->m_driver)
 						{
 							in_vehicle = true;
 						}
@@ -90,7 +90,7 @@ namespace big
 						{
 							for (int i = 0; i < 15; i++)
 							{
-								if (target_cped->m_vehicle->m_passengers[i] == target_cped)
+								if (target_cped == target_vehicle->m_passengers[i])
 								{
 									in_vehicle = true;
 									break;
@@ -201,7 +201,7 @@ namespace big
 
 				if (target_vehicle)
 				{
-					if (target_cped == target_cped->m_vehicle->m_driver)
+					if (target_cped == target_vehicle->m_driver)
 					{
 						in_vehicle = true;
 					}
@@ -209,7 +209,7 @@ namespace big
 					{
 						for (int i = 0; i < 15; i++)
 						{
-							if (target_cped->m_vehicle->m_passengers[i] == target_cped)
+							if (target_cped == target_vehicle->m_passengers[i])
 							{
 								in_vehicle = true;
 								break;
