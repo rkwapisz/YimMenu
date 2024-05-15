@@ -44,7 +44,7 @@ namespace big
 		}
 	};
 
-	never_wanted g_never_wanted("neverwanted", "NEVER_WANTED", "NEVER_WANTED", g.self.never_wanted);
+	never_wanted g_never_wanted("neverwanted", "NEVER_WANTED", "NEVER_WANTED_DESC", g.self.never_wanted);
 
 	void looped::self_wanted()
 	{
