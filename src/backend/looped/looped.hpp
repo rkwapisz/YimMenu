@@ -66,7 +66,6 @@ namespace big
 		static void weapons_paint_gun();
 
 		static void drive_train();
-		static void derail_train();
 
 		static void world_spawn_ped();
 	};

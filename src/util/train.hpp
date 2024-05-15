@@ -1,62 +1,39 @@
 #pragma once
-#include "entity.hpp"
-#include "gta/enums.hpp"
-#include "natives.hpp"
-#include "pointers.hpp"
-#include "script_global.hpp"
-#include "services/players/player_service.hpp"
+#include "util/pools.hpp"
 
 namespace big::train
 {
-	inline int get_closest_train()
+	inline CVehicle* get_nearest_train()
 	{
-		for (auto veh : pools::get_all_vehicles())
+		CVehicle* nearest_train = nullptr;
+		float nearest_distance  = 2000.0f; // Not too big
+
+		auto player_pos = *g_local_player->get_position();
+
+		for (auto vehicle : pools::get_all_vehicles())
 		{
-			if (veh->m_model_info->m_hash == "freight"_J)
-				return g_pointers->m_gta.m_ptr_to_handle(veh);
+			if (vehicle->m_model_info && vehicle->m_model_info->m_hash == "freight"_J)
+			{
+				auto train_pos = *vehicle->get_position();
+				auto distance = std::sqrt(std::pow(train_pos.x - player_pos.x, 2) + std::pow(train_pos.y - player_pos.y, 2)
+				    + std::pow(train_pos.z - player_pos.z, 2));
+
+				if (distance < nearest_distance)
+				{
+					nearest_train    = static_cast<CVehicle*>(vehicle);
+					nearest_distance = distance;
+					LOG(INFO) << "Found nearest train at distance: " << distance;
+				}
+			}
 		}
-		return 0;
+
+		return nearest_train;
 	}
 
-	inline void hijack_train()
+	inline bool is_in_train()
 	{
-		auto train = get_closest_train();
+		auto vehicle = g_local_player->m_vehicle;
 
-		if (train != 0)
-		{
-			if (auto ped = VEHICLE::GET_PED_IN_VEHICLE_SEAT(train, -1, true))
-				TASK::CLEAR_PED_TASKS_IMMEDIATELY(ped);
-
-			PED::SET_PED_INTO_VEHICLE(PLAYER::PLAYER_PED_ID(), train, -1);
-			g_notification_service.push_success("HIJACK_TRAIN"_T.data(), "HIJACK_TRAIN_FOUND_TRAIN"_T.data());
-		}
-		else
-		{
-			g_notification_service.push_warning("HIJACK_TRAIN"_T.data(), "HIJACK_TRAIN_NOTFOUND_TRAIN"_T.data());
-		}
-	}
-
-	inline void delete_train()
-	{
-		if (!self::veh && get_closest_train() != 0)
-		{
-			VEHICLE::DELETE_ALL_TRAINS();
-		}
-		else
-		{
-			g_notification_service.push_warning("HIJACK_TRAIN"_T.data(), "HIJACK_TRAIN_NOTFOUND_TRAIN"_T.data());
-		}
-	}
-
-	inline void exit_train()
-	{
-		if (self::veh && VEHICLE::IS_THIS_MODEL_A_TRAIN(ENTITY::GET_ENTITY_MODEL(self::veh)))
-			TASK::CLEAR_PED_TASKS_IMMEDIATELY(PLAYER::PLAYER_PED_ID());
-	}
-
-	inline void set_train_speed(float value)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(PLAYER::PLAYER_PED_ID(), false))
-			VEHICLE::SET_TRAIN_CRUISE_SPEED(get_closest_train(), value);
+		return vehicle && (vehicle->m_driver == g_local_player) && vehicle->m_model_info && vehicle->m_model_info->m_hash == "freight"_J;
 	}
 }

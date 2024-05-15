@@ -558,12 +558,6 @@ namespace big
 				NLOHMANN_DEFINE_TYPE_INTRUSIVE(orbital_drone, detect_player, nav_ovverride_fast, nav_ovverride_slow);
 			} orbital_drone{};
 
-			struct train
-			{
-				bool drive_train  = false;
-				bool derail_train = false;
-			} train{};
-
 			struct water
 			{
 				bool part_water = false;
@@ -804,6 +798,14 @@ namespace big
 
 				NLOHMANN_DEFINE_TYPE_INTRUSIVE(abilities, enabled)
 			} abilities{};
+
+			struct train
+			{
+				bool enabled        = false;
+				float current_speed = 0.f;
+				float target_speed  = 0.f;
+				// Don't save
+			} train{};
 
 			struct vehicle_ammo_special
 			{

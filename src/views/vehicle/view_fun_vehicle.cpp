@@ -8,6 +8,7 @@
 #include "services/model_preview/model_preview_service.hpp"
 #include "util/mobile.hpp"
 #include "util/vehicle.hpp"
+#include "util/train.hpp"
 #include "views/view.hpp"
 
 #include <imgui_internal.h>
@@ -261,6 +262,32 @@ namespace big
 				g.vehicle.fly.speed = vehicle::speed_to_mps(fly_speed_user_unit, g.vehicle.speed_unit);
 			}
 		}
+
+		extern bool set_speed;
+
+		ImGui::SeparatorText("TRAIN_CONTROLLER"_T.data());
+		ImGui::Checkbox(std::format("{}##traincontroller", "ENABLED"_T).c_str(), &g.vehicle.train.enabled);
+
+		if (g.vehicle.train.enabled)
+		{
+			if (!train::is_in_train())
+			{
+				components::command_button<"hijacknearesttrain">();
+			}
+			
+			if (train::is_in_train())
+			{
+				components::command_button<"exittrain">();
+
+				ImGui::PushItemWidth(250);
+				ImGui::SliderFloat("TRAIN_SPEED_TARGET"_T.data(), &g.vehicle.train.target_speed, -80.f, 80.f, "%.2f");
+				if (ImGui::IsItemHovered())
+					ImGui::SetTooltip("TRAIN_SPEED_TARGET_DESC"_T.data());
+
+				ImGui::Text(std::vformat("TRAIN_SPEED_CURRENT"_T, std::make_format_args(g.vehicle.train.current_speed)).data());
+			}
+		}
+
 		ImGui::SeparatorText("CUSTOM_VEH_WEAPONS"_T.data());
 		{
 			components::command_checkbox<"customvehweaps">(std::format("{}##customvehweaps", "ENABLED"_T));
