@@ -36,7 +36,7 @@ namespace big
 			return;
 
 		std::scoped_lock lock(g_peds_mutex);
-		esp_ped_pool.clear();
+		esp_ped_pool.clear(); // Make sure we've got a clean vector every loop
 
 		for (auto ped : pools::get_all_peds())
 		{
@@ -553,15 +553,21 @@ namespace big
 				});
 			}
 
-			if (g.esp_npc.enabled)
-			{
-				std::scoped_lock lock(g_peds_mutex);
-				for (auto ped : esp_ped_pool)
-				{
-					// We've already verified that the peds in esp_ped_pool are valid, just draw them
-					draw_npc(ped, draw_list);
-				}
-			}
+            if (g.esp_npc.enabled)
+            {
+                std::vector<CPed*> local_ped_pool; // Create a local copy of esp_ped_pool
+
+                {
+                    std::scoped_lock lock(g_peds_mutex); // Use the scoped lock just for the vector local copy so we don't hold it for the entire for loop
+                    local_ped_pool = esp_ped_pool;
+                }
+
+                for (auto ped : local_ped_pool)
+                {
+                    // We've already verified that the peds in local_ped_pool are valid, just draw them
+                    draw_npc(ped, draw_list);
+                }
+            }
 		}
 	}
 }
