@@ -22,7 +22,6 @@ namespace big::train
 				{
 					nearest_train    = static_cast<CVehicle*>(vehicle);
 					nearest_distance = distance;
-					LOG(INFO) << "Found nearest train at distance: " << distance;
 				}
 			}
 		}
