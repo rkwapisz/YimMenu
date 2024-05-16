@@ -68,5 +68,7 @@ namespace big
 		static void drive_train();
 
 		static void world_spawn_ped();
+
+		static void esp_get_peds();
 	};
 }

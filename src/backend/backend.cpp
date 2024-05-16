@@ -134,6 +134,18 @@ namespace big
 		}
 	}
 
+	void backend::esp_loop()
+	{
+		LOG(INFO) << "Starting script: ESP";
+
+		while (g_running)
+		{
+			looped::esp_get_peds();
+
+			script::get_current()->yield();
+		}
+	}
+
 	void backend::remote_loop()
 	{
 		LOG(INFO) << "Starting script: Remote";

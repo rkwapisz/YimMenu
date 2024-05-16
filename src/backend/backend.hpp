@@ -12,6 +12,7 @@ namespace big
 		static void weapons_loop();
 		static void vehicles_loop();
 		static void misc_loop();
+		static void esp_loop();
 		static void remote_loop();
 		static void lscustoms_loop();
 		static void rainbowpaint_loop();

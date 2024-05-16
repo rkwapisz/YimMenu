@@ -1,5 +1,5 @@
 #include "view_esp.hpp"
-
+#include "backend/looped/looped.hpp"
 #include "gta/enums.hpp"
 #include "gta/matrix.hpp"
 #include "gta_util.hpp"
@@ -24,6 +24,28 @@ namespace big
 	static const ImColor health_yellow    = ImColor(0.69f, 0.49f, 0.29f, 1.f);
 	static const ImColor health_red_bg    = ImColor(0.69f, 0.29f, 0.29f, .75f);
 	static const ImColor health_red       = ImColor(0.69f, 0.29f, 0.29f, 1.f);
+
+	static std::mutex g_peds_mutex;
+	std::vector<CPed*> esp_ped_pool;
+
+	// Since rendering is asyncronous, we're going to use the script thread to create a mutex-protected local copy of our ped pool which we will then iterate through in draw_esp
+	void looped::esp_get_peds()
+	{
+		// Since this is looping all the time, just make sure we're not calling get_all_peds() unless the NPC ESP feature is enabled
+		if (!g.esp_npc.enabled)
+			return;
+
+		std::scoped_lock lock(g_peds_mutex);
+		esp_ped_pool.clear();
+
+		for (auto ped : pools::get_all_peds())
+		{
+			if (!ped || ped == g_local_player)
+				continue;
+
+			esp_ped_pool.push_back(static_cast<CPed*>(ped));
+		}
+	}
 
 	void esp::draw_npc(CPed* cped, ImDrawList* const draw_list)
 	{
@@ -533,12 +555,11 @@ namespace big
 
 			if (g.esp_npc.enabled)
 			{
-				for (auto ped : pools::get_all_peds())
+				std::scoped_lock lock(g_peds_mutex);
+				for (auto ped : esp_ped_pool)
 				{
-					if (!ped || ped == g_local_player)
-						continue;
-
-					draw_npc(static_cast<CPed*>(ped), draw_list);
+					// We've already verified that the peds in esp_ped_pool are valid, just draw them
+					draw_npc(ped, draw_list);
 				}
 			}
 		}
