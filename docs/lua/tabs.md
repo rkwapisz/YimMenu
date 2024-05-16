@@ -46,6 +46,7 @@ For a complete list of available gui functions, please refer to the tab class do
 ### `GUI_TAB_SPOOFING`
 ### `GUI_TAB_PLAYER_DATABASE`
 ### `GUI_TAB_SESSION_BROWSER`
+### `GUI_TAB_SESSION_PROTECTION`
 ### `GUI_TAB_STAT_EDITOR`
 ### `GUI_TAB_SETTINGS`
 ### `GUI_TAB_LUA_SCRIPTS`

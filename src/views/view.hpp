@@ -43,6 +43,7 @@ namespace big
 		static void missions();
 		static void player_database();
 		static void session_browser();
+		static void session_protection();
 		static void settings();
 		static void vehicle();
 		static void lsc();

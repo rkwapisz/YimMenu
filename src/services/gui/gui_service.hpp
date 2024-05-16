@@ -42,6 +42,7 @@ namespace big
 		SPOOFING,
 		PLAYER_DATABASE,
 		SESSION_BROWSER,
+		SESSION_PROTECTION,
 		STAT_EDITOR,
 
 		SETTINGS,
@@ -142,6 +143,7 @@ namespace big
 						{TAB_DECL(MISSIONS), view::missions}},
 						{TAB_DECL(PLAYER_DATABASE), view::player_database}},
 						{TAB_DECL(SESSION_BROWSER), view::session_browser}},
+						{TAB_DECL(SESSION_PROTECTION), view::session_protection}},
 						{TAB_DECL(STAT_EDITOR), view::stat_editor}},
 		            },
 		        },
