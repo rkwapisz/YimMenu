@@ -57,6 +57,8 @@ namespace big
 		ImGui::Checkbox("VIEW_GUI_SETTINGS_SHOW_GAME_VERSION"_T.data(), &g.window.ingame_overlay.show_game_versions);
 		ImGui::SameLine();
 		ImGui::Checkbox("VIEW_GUI_FORMAT_MONEY"_T.data(), &g.window.gui.format_money);
+		ImGui::SameLine();
+		ImGui::Checkbox("METRIC_WARNING"_T.data(), &g.notifications.warn_metric);
 
 		if (g.window.ingame_overlay.show_indicators)
 		{
