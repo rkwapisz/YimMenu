@@ -18,7 +18,8 @@ namespace big
 			uint64_t host_token;
 			g_pointers->m_gta.m_generate_uuid(&host_token);
 
-            host_token = g.session.force_session_host ? (static_cast<unsigned long long>(rand() % 50'000) + 200'000'000) : host_token;
+			srand(time(NULL));
+			host_token = g.session.force_session_host ? (static_cast<unsigned long long>(rand() % 100'000'000) + 200'000'000) : host_token;
 
 			*g_pointers->m_gta.m_host_token = host_token;
 
