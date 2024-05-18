@@ -25,7 +25,7 @@ namespace big
 
 		try
 		{
-			for (const auto& entry : std::filesystem::directory_iterator(folder_path))
+			for (const auto& entry : std::filesystem::recursive_directory_iterator(folder_path))
 			{
 				if (entry.path().extension() == ".xml")
 				{
@@ -33,9 +33,14 @@ namespace big
 					pugi::xml_parse_result result = doc.load_file(entry.path().c_str());
 
 					if (result)
-						m_all_xml_vehicles.emplace(std::pair<std::string, pugi::xml_document>(entry.path().filename().generic_string(), std::move(doc)));
+					{
+						std::string relative_path = std::filesystem::relative(entry.path(), folder_path).generic_string();
+						m_all_xml_vehicles.emplace(std::pair<std::string, pugi::xml_document>(relative_path, std::move(doc)));
+					}
 					else
+					{
 						LOG(WARNING) << "Failed to load XML file: " << entry.path().filename().string() << std::endl;
+					}
 				}
 			}
 		}
