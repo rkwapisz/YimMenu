@@ -61,7 +61,7 @@ namespace big
 		virtual void on_disable() override
 		{
 			// Restore the previous wanted level
-			// NOTE: Since Never Wanted could have been set at any point, there is no guarantee that the prev_max_wanted_level is still valid for whever the player is
+			// NOTE: Since Never Wanted could have been set at any point, there is no guarantee that the prev_max_wanted_level is still valid for where the player is
 
 			PLAYER::SET_MAX_WANTED_LEVEL(prev_max_wanted_level);
 		}
