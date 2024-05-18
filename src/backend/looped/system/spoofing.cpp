@@ -2,6 +2,7 @@
 #include "core/scr_globals.hpp"
 #include "gta_util.hpp"
 #include "natives.hpp"
+#include "util/math.hpp"
 
 #include <network/CCommunications.hpp>
 #include <network/Network.hpp>
@@ -18,9 +19,7 @@ namespace big
 			uint64_t host_token;
 			g_pointers->m_gta.m_generate_uuid(&host_token);
 
-			srand(time(NULL));
-			host_token = g.session.force_session_host ? (static_cast<unsigned long long>(rand() % 100'000'000) + 200'000'000) : host_token;
-
+			host_token = g.session.force_session_host ? math::rand(200'000'000) : host_token;
 			*g_pointers->m_gta.m_host_token = host_token;
 
 			if (gta_util::get_network()->m_game_session_ptr)
