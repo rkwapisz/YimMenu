@@ -1,13 +1,11 @@
 #include "backend/command.hpp"
 #include "backend/looped/looped.hpp"
 #include "backend/looped_command.hpp"
-#include "natives.hpp"
 #include "pointers.hpp"
 
 namespace big
 {
 	bool user_updated_wanted_level   = false;
-	static int prev_max_wanted_level = 5;
 
 	class clear_wanted : command
 	{
@@ -40,30 +38,11 @@ namespace big
 			g_local_player->m_player_info->m_wanted_level = 0;
 			g_local_player->m_player_info->m_is_wanted    = false;
 
-			// Account for situations like Fort Zancudo that continuously spam a high wanted level and can "flicker" the wanted level
-			PLAYER::SET_MAX_WANTED_LEVEL(0);
+			// Situations like Fort Zancudo / Bolingbroke call PLAYER::REPORT_CRIME and are hooked by YimMenu
 
 			// Since we're hiding the force wanted checkbox and wanted slider, we don't need to do anything else
 			g.self.wanted_level       = 0;
 			g.self.force_wanted_level = false;
-		}
-
-		virtual void on_enable() override
-		{
-			// Save the previous wanted level so we can restore it on disable, but don't soft lock us into a 0.
-			if (PLAYER::GET_MAX_WANTED_LEVEL() != 0)
-				prev_max_wanted_level = PLAYER::GET_MAX_WANTED_LEVEL();
-
-			// Set the max wanted level to 0 this tick as well
-			PLAYER::SET_MAX_WANTED_LEVEL(0);
-		}
-
-		virtual void on_disable() override
-		{
-			// Restore the previous wanted level
-			// NOTE: Since Never Wanted could have been set at any point, there is no guarantee that the prev_max_wanted_level is still valid for where the player is
-
-			PLAYER::SET_MAX_WANTED_LEVEL(prev_max_wanted_level);
 		}
 	};
 
