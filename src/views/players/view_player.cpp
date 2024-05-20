@@ -15,6 +15,9 @@ namespace big
 				components::command_int_slider<"overridecamdistanceint">();
 		}
 
+		ImGui::SameLine();
+		components::player_command_button<"showmapblip">(g_player_service->get_selected());
+
 		if (g_player_service->get_selected()->is_valid())
 		{
 			player_ptr current_player     = g_player_service->get_selected();
