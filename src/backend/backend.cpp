@@ -145,6 +145,7 @@ namespace big
 			looped::player_toxic_options();
 			looped::player_spectate();
 			looped::player_remote_control_vehicle();
+			looped::player_blip_maintenance();
 
 			script::get_current()->yield();
 		}
