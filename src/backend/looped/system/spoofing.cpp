@@ -20,6 +20,7 @@ namespace big
 			g_pointers->m_gta.m_generate_uuid(&host_token);
 
 			host_token = g.session.force_session_host ? math::rand(200'000'000, 300'000'000) : host_token;
+
 			*g_pointers->m_gta.m_host_token = host_token;
 
 			if (gta_util::get_network()->m_game_session_ptr)

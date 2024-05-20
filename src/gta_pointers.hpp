@@ -376,7 +376,7 @@ namespace big
 		uintptr_t* m_cam_gameplay_director;
 		
 		PVOID m_format_int;
-
+    
 		PVOID m_searchlight_crash;
 		functions::get_searchlight m_get_searchlight;
 
