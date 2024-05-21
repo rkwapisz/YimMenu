@@ -48,6 +48,11 @@ namespace big
 		start_blip_timer(blip_duration);
 	}
 
+	Entity blip_object::get_blip_object_entity()
+	{
+		return player_entity;
+	}
+
 	bool blip_object::is_new_blip_expired()
 	{
 		return new_blip_expired;

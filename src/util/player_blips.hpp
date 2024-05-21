@@ -12,6 +12,8 @@ namespace big
 	public:
 		blip_object(Entity entity, int blip_sprite = 0, int flash_duration = 30, std::chrono::seconds blip_duration = std::chrono::seconds(30));
 
+		Entity get_blip_object_entity();
+
 		bool is_new_blip_expired();
 		bool is_player_blip_valid();
 
