@@ -16,7 +16,7 @@ namespace big
 		}
 
 		ImGui::SameLine();
-		components::player_command_button<"showmapblip">(g_player_service->get_selected());
+		ImGui::Checkbox("SHOW_MAP_BLIP"_T.data(), &g_player_service->get_selected()->show_highlight_blip);
 
 		if (g_player_service->get_selected()->is_valid())
 		{

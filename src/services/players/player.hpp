@@ -56,10 +56,13 @@ namespace big
 
 		std::optional<CommandAccessLevel> command_access_level = std::nullopt;
 
-		bool off_radar    = false;
-		bool never_wanted = false;
-		bool semi_godmode = false;
-		bool fix_vehicle  = false;
+		bool off_radar      = false;
+		bool never_wanted   = false;
+		bool semi_godmode   = false;
+		bool fix_vehicle    = false;
+
+		bool show_highlight_blip = false;
+		Blip highlight_blip      = 0;
 
 		bool cage_loop		 = false;
 		bool kill_loop       = false;
