@@ -26,12 +26,6 @@ namespace big
 
 				entry.second->highlight_blip = HUD::ADD_BLIP_FOR_ENTITY(plyr_entity);
 
-				// Players inside interiors won't appear correctly (just like with ESP), easy to just check for low Z-values
-				auto entity_coords = entry.second->get_ped()->get_position();
-
-				if (entity_coords && entity_coords->z < -40.0f)
-					g_notification_service.push_warning("WARNING"_T.data(), "BLIP_INTERIOR_WARNING"_T.data());
-
 				// More blip info https://docs.fivem.net/docs/game-references/blips/
 				// We can do all sorts of neat colorful stuff with these blips
 				HUD::SET_BLIP_SPRITE(entry.second->highlight_blip, 161); // radar_mp_noise
@@ -51,12 +45,19 @@ namespace big
 			// If the player is supposed to be showing their blip, turn it on
 			if (entry.second->show_highlight_blip && entry.second->highlight_blip)
 			{
-				HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 255); // Make it visible
+				auto entity_coords = entry.second->get_ped()->get_position();
+
+				// Don't draw blips for entities way under the game world (e.g., interiors)
+				if (entity_coords && entity_coords->z < -40.0f)
+					HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 0); // Make it visible
+				else
+					HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 255); // Make it visible
 			}
 
 			// If the player already has a blip but isn't supposed to be showing it, turn it off
 			if (!entry.second->show_highlight_blip && entry.second->highlight_blip)
 			{
+				// Note: I'm trying to stay away from REMOVE_BLIP because it's fairly unstable. I'm having much better luck just initializing every player with a blip and then controlling its visibility.
 				HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 0); // Make it invisible
 			}
 		});
