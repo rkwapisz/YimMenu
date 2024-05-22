@@ -12,6 +12,9 @@ namespace big
 			return;
 
 		g_player_service->iterate([](const player_entry& entry) {
+			
+			Entity plyr_entity = g_pointers->m_gta.m_ptr_to_handle(entry.second->get_ped());
+
 			// First time around for a player, give them a blip if they don't have one
 			if (!entry.second->highlight_blip)
 			{
@@ -21,8 +24,6 @@ namespace big
 				// Only give blips to those who don't have one
 				if (entry.second->highlight_blip)
 					return;
-
-				Entity plyr_entity = g_pointers->m_gta.m_ptr_to_handle(entry.second->get_ped());
 
 				entry.second->highlight_blip = HUD::ADD_BLIP_FOR_ENTITY(plyr_entity);
 
@@ -47,9 +48,9 @@ namespace big
 			{
 				auto entity_coords = entry.second->get_ped()->get_position();
 
-				// Don't draw blips for entities way under the game world (e.g., interiors)
-				if (entity_coords && entity_coords->z < -40.0f)
-					HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 0); // Make it visible
+				// Don't draw blips for entities inside interiors
+				if (INTERIOR::IS_VALID_INTERIOR(INTERIOR::GET_INTERIOR_FROM_ENTITY(plyr_entity)))
+					HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 0); // Make it invisible
 				else
 					HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 255); // Make it visible
 			}
