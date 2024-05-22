@@ -249,7 +249,7 @@ namespace big
 			case rage::eNetMessage::MsgScriptMigrateHost: return true;
 			case rage::eNetMessage::MsgRadioStationSyncRequest:
 			{
-				static rate_limiter unk_player_radio_requests{2s, 2};
+				static rate_limiter unk_player_radio_requests{6s, 2};
 
 				if (unk_player_radio_requests.process())
 				{
