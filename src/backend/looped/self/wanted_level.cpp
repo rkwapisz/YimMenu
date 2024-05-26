@@ -41,7 +41,7 @@ namespace big
 			{
 				if (!misc::has_bit_set(
 				        script_local(script, scr_locals::fm_mission_controller::mission_controller_wanted_state_flags).as<PINT>(),
-				        6))
+				        7))
 					return;
 			}
 
