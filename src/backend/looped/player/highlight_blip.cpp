@@ -13,14 +13,14 @@ namespace big
 
 		g_player_service->iterate([](const player_entry& entry) {
 			
+			if (!entry.second || !entry.second->get_ped())
+				return;
+
 			Entity plyr_entity = g_pointers->m_gta.m_ptr_to_handle(entry.second->get_ped());
 
 			// First time around for a player, give them a blip if they don't have one
 			if (!entry.second->highlight_blip)
 			{
-				if (!entry.second->get_ped())
-					return;
-
 				// Only give blips to those who don't have one
 				if (entry.second->highlight_blip)
 					return;
