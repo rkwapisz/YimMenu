@@ -12,8 +12,8 @@ namespace big
 			return;
 
 		g_player_service->iterate([](const player_entry& entry) {
-			
-			if (!entry.second || !entry.second->get_ped())
+
+			if (!entry.second || !entry.second->is_valid() || !entry.second->get_ped())
 				return;
 
 			Entity plyr_entity = g_pointers->m_gta.m_ptr_to_handle(entry.second->get_ped());

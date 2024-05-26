@@ -19,7 +19,7 @@ namespace big
 			{
 				ImGui::BeginGroup();
 				ImGui::Text("SETTINGS_ESP_GLOBAL_RENDER_DISTANCE"_T.data());
-				ImGui::SliderFloat2("###Global Render Distance", g.esp_player.global_render_distance, 0.f, 1500.f);
+				ImGui::SliderFloat2("###Global Render Distance", g.esp_player.global_render_distance, 0.f, 1500.f, "%.0f");
 
 				ImGui::Checkbox("SETTINGS_ESP_TRACER"_T.data(), &g.esp_player.tracer);
 				if (g.esp_player.tracer)
@@ -30,7 +30,8 @@ namespace big
 					ImGui::SliderFloat2("###Tracer Render Distance",
 					    g.esp_player.tracer_render_distance,
 					    g.esp_player.global_render_distance[0],
-					    g.esp_player.global_render_distance[1]);
+					    g.esp_player.global_render_distance[1],
+					    "%.0f");
 				}
 
 				ImGui::Checkbox("SETTINGS_ESP_BOX"_T.data(), &g.esp_player.box);
@@ -40,7 +41,8 @@ namespace big
 					ImGui::SliderFloat2("###Box Render Distance",
 					    g.esp_player.box_render_distance,
 					    g.esp_player.global_render_distance[0],
-					    g.esp_player.global_render_distance[1]);
+					    g.esp_player.global_render_distance[1],
+					    "%.0f");
 				}
 
 				ImGui::Checkbox("SETTINGS_ESP_BONE"_T.data(), &g.esp_player.bone);
@@ -53,7 +55,8 @@ namespace big
 					ImGui::SliderFloat2("###Bone Render Distance",
 					    g.esp_player.bone_render_distance,
 					    g.esp_player.global_render_distance[0],
-					    g.esp_player.global_render_distance[1]);
+					    g.esp_player.global_render_distance[1],
+					    "%.0f");
 				}
 
 				ImGui::Checkbox("SETTINGS_ESP_NAME"_T.data(), &g.esp_player.name);
@@ -101,7 +104,7 @@ namespace big
 				ImGui::BeginGroup();
 				ImGui::Checkbox("SETTINGS_ESP_ONLY_ARMED"_T.data(), &g.esp_npc.only_armed);
 				ImGui::Text("SETTINGS_ESP_GLOBAL_RENDER_DISTANCE"_T.data());
-				ImGui::SliderFloat2("###Global Render Distance", g.esp_npc.global_render_distance, 0.f, 1500.f);
+				ImGui::SliderFloat2("###Global Render Distance", g.esp_npc.global_render_distance, 0.f, 1500.f, "%.0f");
 
 				ImGui::Checkbox("SETTINGS_ESP_TRACER"_T.data(), &g.esp_npc.tracer);
 				if (g.esp_npc.tracer)
@@ -112,7 +115,8 @@ namespace big
 					ImGui::SliderFloat2("###Tracer Render Distance",
 					    g.esp_npc.tracer_render_distance,
 					    g.esp_npc.global_render_distance[0],
-					    g.esp_npc.global_render_distance[1]);
+					    g.esp_npc.global_render_distance[1],
+						"%.0f");
 				}
 
 				ImGui::Checkbox("SETTINGS_ESP_BOX"_T.data(), &g.esp_npc.box);
@@ -122,7 +126,8 @@ namespace big
 					ImGui::SliderFloat2("###Box Render Distance",
 					    g.esp_npc.box_render_distance,
 					    g.esp_npc.global_render_distance[0],
-					    g.esp_npc.global_render_distance[1]);
+					    g.esp_npc.global_render_distance[1],
+					    "%.0f");
 				}
 
 				ImGui::Checkbox("SETTINGS_ESP_BONE"_T.data(), &g.esp_npc.bone);
@@ -135,7 +140,8 @@ namespace big
 					ImGui::SliderFloat2("###Bone Render Distance",
 					    g.esp_npc.bone_render_distance,
 					    g.esp_npc.global_render_distance[0],
-					    g.esp_npc.global_render_distance[1]);
+					    g.esp_npc.global_render_distance[1],
+					    "%.0f");
 				}
 
 				ImGui::Checkbox("SETTINGS_ESP_NAME"_T.data(), &g.esp_npc.name);
