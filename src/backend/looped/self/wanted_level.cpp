@@ -4,6 +4,7 @@
 #include "core/scr_globals.hpp"
 #include "gta_util.hpp"
 #include "util/misc.hpp"
+#include "natives.hpp"
 
 namespace big
 {
@@ -20,6 +21,7 @@ namespace big
 				return;
 
 			// Clear current wanted level
+			PLAYER::SET_MAX_WANTED_LEVEL(0);
 			g_local_player->m_player_info->m_wanted_level = 0;
 			g_local_player->m_player_info->m_is_wanted    = false;
 
@@ -54,6 +56,12 @@ namespace big
 			// Since we're hiding the force wanted checkbox and wanted slider, we don't need to do anything else
 			g.self.wanted_level       = 0;
 			g.self.force_wanted_level = false;
+		}
+
+		virtual void on_disable() override
+		{
+			// There are cases where it is set to 6 in the scripts, but the native automatically reverts it back to 5 anyway
+			PLAYER::SET_MAX_WANTED_LEVEL(5);
 		}
 	};
 
