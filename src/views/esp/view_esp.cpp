@@ -1,7 +1,5 @@
 #include "view_esp.hpp"
-#include "backend/looped/looped.hpp"
 #include "gta/enums.hpp"
-#include "gta/matrix.hpp"
 #include "gta_util.hpp"
 #include "pointers.hpp"
 #include "services/gta_data/gta_data_service.hpp"
@@ -10,7 +8,6 @@
 #include "util/ped.hpp"
 #include "util/math.hpp"
 #include "util/misc.hpp"
-#include "util/model_info.hpp"
 #include "util/world_to_screen.hpp"
 
 namespace big
@@ -134,7 +131,6 @@ namespace big
 				{
 					extra_info += g_gta_data_service->weapon_by_hash(weapon_hash).m_display_name;
 				}
-			}
 
 			if (g.esp_npc.vehicle && cped->m_vehicle && cped->m_vehicle->m_model_info)
 			{
@@ -388,7 +384,7 @@ namespace big
 				    mode_str.c_str());
 			}
 
-			if (!(ped_damage_bits & (uint32_t)eEntityProofs::GOD))
+			if (!in_god)
 			{
 				if (g.esp_player.health)
 				{
