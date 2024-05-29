@@ -55,6 +55,12 @@ namespace big
 					HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 255); // Make it visible
 			}
 
+			// If player is no longer valid, delete their blip
+			if (!entry.second->is_valid() && entry.second->highlight_blip)
+			{
+				HUD::REMOVE_BLIP(&entry.second->highlight_blip);
+			}
+
 			// If the player already has a blip but isn't supposed to be showing it, turn it off
 			if (!entry.second->show_highlight_blip && entry.second->highlight_blip)
 			{
