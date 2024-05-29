@@ -566,6 +566,8 @@ namespace big
 			    ImGui::SameLine();
 			    components::command_button<"interiortpall">({161}, "TP_ALL_TO_MULTI_FLOOR_GARAGE"_T);
 
+				ImGui::Separator();
+
 			    components::command_button<"tutorialall">();
 			    ImGui::SameLine();
 			    components::command_button<"golfall">();
