@@ -32,6 +32,9 @@ namespace big
 
 		if (kick)
 		{
+			if (kick_only_if_host && !g_player_service->get_self()->is_host())
+				return;
+
 			g_fiber_pool->queue_job([player] {
 				dynamic_cast<player_command*>(command::get("smartkick"_J))->call(player, {});
 			});

@@ -25,6 +25,12 @@ namespace big
 			ImGui::Checkbox("REACTION_ADD_TO_DATABASE"_T.data(), &reaction.add_to_player_db);
 			ImGui::Checkbox("REACTION_BLOCK_JOINS"_T.data(), &reaction.block_joins);
 			ImGui::Checkbox("REACTION_KICK_PLAYER"_T.data(), &reaction.kick);
+			if (reaction.kick)
+			{
+				ImGui::SameLine();
+				ImGui::Checkbox("REACTION_KICK_ONLY_IF_HOST"_T.data(), &reaction.kick_only_if_host);
+			}
+
 			ImGui::Checkbox("TIMEOUT"_T.data(), &reaction.timeout);
 			ImGui::TreePop();
 		}
@@ -43,9 +49,14 @@ namespace big
 			ImGui::Checkbox("NOTIFY"_T.data(), &reaction.notify);
 			ImGui::Checkbox("LOG"_T.data(), &reaction.log);
 			ImGui::Checkbox("REACTION_ADD_TO_DATABASE"_T.data(), &reaction.add_to_player_db);
-			if (reaction.add_to_player_db)
-				ImGui::Checkbox("REACTION_BLOCK_JOINS"_T.data(), &reaction.block_joins);
+			ImGui::Checkbox("REACTION_BLOCK_JOINS"_T.data(), &reaction.block_joins);
 			ImGui::Checkbox("REACTION_KICK_ATTACKER"_T.data(), &reaction.kick);
+			if (reaction.kick)
+			{
+				ImGui::SameLine();
+				ImGui::Checkbox("REACTION_KICK_ONLY_IF_HOST"_T.data(), &reaction.kick_only_if_host);
+			}
+				
 			ImGui::Checkbox("TIMEOUT"_T.data(), &reaction.timeout);
 
 			if (reaction.m_blockable || reaction.m_karmaable)
