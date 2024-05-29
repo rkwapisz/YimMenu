@@ -17,7 +17,7 @@ namespace big
 		virtual void execute(const command_arguments&, const std::shared_ptr<command_context> ctx) override
 		{
 			uint8_t target_player = 0;
-			float minimum_distance = *g_pointers->m_gta.m_resolution_x;
+			float minimum_distance = 9999.0f;
 
 			player_ptr best_player = nullptr;
 
@@ -39,13 +39,11 @@ namespace big
 				if (target_plyr->get_ped()->m_health <= 0.0f)
 					return;
 
-				rage::fvector3 target_position_fvec = *target_plyr->get_ped()->m_navigation->get_position();
-				rage::fvector2 screen_pos;
-
-				world_to_screen::w2s(target_position_fvec, screen_pos);
-
-				// Filter out players that are not on the screen
-				if (screen_pos.x < 0 || screen_pos.y < 0 || screen_pos.x > *g_pointers->m_gta.m_resolution_x || screen_pos.y > *g_pointers->m_gta.m_resolution_y)
+				auto target_position_fvec = *(target_plyr->get_ped()->get_position());
+				rage::fvector2 screen_pos = {0.0f, 0.0f};
+				
+				// Make sure to check if w2s returns true (false means the player is off-screen which we don't want)
+				if (!world_to_screen::w2s(target_position_fvec, screen_pos))
 					return;
 
 				// Calculate the distance from the center of the screen
