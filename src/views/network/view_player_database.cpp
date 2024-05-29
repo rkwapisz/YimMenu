@@ -76,6 +76,13 @@ namespace big
 		ImGui::SetNextItemWidth(300.f);
 		components::input_text_with_hint("PLAYER"_T, "SEARCH"_T, search, sizeof(search), ImGuiInputTextFlags_None);
 
+		// Filters
+		ImGui::Checkbox("VIEW_NET_PLAYER_DB_SHOW_SPAMMERS"_T.data(), &g.player_db.show_spammers);
+		ImGui::SameLine();
+		ImGui::Checkbox("VIEW_NET_PLAYER_DB_SHOW_TRUSTED"_T.data(), &g.player_db.show_trusted);
+		ImGui::SameLine();
+		ImGui::Checkbox("VIEW_NET_PLAYER_DB_SHOW_UNTRUSTED"_T.data(), &g.player_db.show_untrusted);
+
 		if (ImGui::BeginListBox("###players", {180, static_cast<float>(*g_pointers->m_gta.m_resolution_y - 400 - 38 * 4)}))
 		{
 			auto& item_arr = g_player_database_service->get_sorted_players();
@@ -84,24 +91,31 @@ namespace big
 				std::string lower_search = search;
 				std::transform(lower_search.begin(), lower_search.end(), lower_search.begin(), tolower);
 
-				for (auto& player : item_arr | std::ranges::views::values)
-				{
+                for (auto& player : item_arr | std::ranges::views::values)
+                {
+					bool draw_player = false;
+
+					// First, make sure that the player is valid for drawing before any filtering business
 					if (player_database_service::is_joinable_session(player->session_type))
-						draw_player_db_entry(player, lower_search);
-				}
-
-				for (auto& player : item_arr | std::ranges::views::values)
-				{
-					if (!player_database_service::is_joinable_session(player->session_type) && player->session_type != GSType::Invalid
+						draw_player = true;
+					else if (!player_database_service::is_joinable_session(player->session_type) && player->session_type != GSType::Invalid
 					    && player->session_type != GSType::Unknown)
-						draw_player_db_entry(player, lower_search);
-				}
+						draw_player = true;
+					else if (player->session_type == GSType::Invalid || player->session_type == GSType::Unknown)
+						draw_player = true;
 
-				for (auto& player : item_arr | std::ranges::views::values)
-				{
-					if (player->session_type == GSType::Invalid || player->session_type == GSType::Unknown)
+					if (!draw_player)
+						continue;
+
+					// Player is valid for drawing, so now let's apply these filters
+					// Filter additively (so each checkbox will add more players to the list)
+                    if (g.player_db.show_spammers && player->infractions.contains(static_cast<int>(Infraction::CHAT_SPAM)))
 						draw_player_db_entry(player, lower_search);
-				}
+					else if (g.player_db.show_trusted && player->is_trusted)
+						draw_player_db_entry(player, lower_search);
+					else if (g.player_db.show_untrusted && !player->is_trusted)
+						draw_player_db_entry(player, lower_search);
+                }
 			}
 			else
 			{

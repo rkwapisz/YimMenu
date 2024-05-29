@@ -254,7 +254,11 @@ namespace big
 			bool notify_on_transition_change   = false;
 			bool notify_on_mission_change      = false;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(player_db, update_player_online_states, notify_when_online, notify_when_joinable, notify_when_unjoinable, notify_when_offline, notify_on_session_type_change, notify_on_session_change, notify_on_spectator_change, notify_on_become_host, notify_on_transition_change, notify_on_mission_change)
+			bool show_spammers  = true;
+			bool show_trusted   = true;
+			bool show_untrusted = true;
+
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(player_db, update_player_online_states, notify_when_online, notify_when_joinable, notify_when_unjoinable, notify_when_offline, notify_on_session_type_change, notify_on_session_change, notify_on_spectator_change, notify_on_become_host, notify_on_transition_change, notify_on_mission_change, show_spammers, show_trusted, show_untrusted)
 		} player_db{};
 
 		struct protections
