@@ -22,7 +22,7 @@ namespace big
 
 		virtual void on_tick() override
 		{
-			Vehicle vehicle = self::veh;
+			Vehicle vehicle               = self::veh;
 			static bool player_fpv_warned = false;
 
 			if (!vehicle)
