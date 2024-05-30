@@ -1,3 +1,5 @@
+#include "core/data/block_join_reasons.hpp"
+#include "backend/reactions/reaction.hpp"
 #include "views/view.hpp"
 
 namespace big
@@ -24,6 +26,22 @@ namespace big
 			ImGui::Checkbox("LOG"_T.data(), &reaction.log);
 			ImGui::Checkbox("REACTION_ADD_TO_DATABASE"_T.data(), &reaction.add_to_player_db);
 			ImGui::Checkbox("REACTION_BLOCK_JOINS"_T.data(), &reaction.block_joins);
+
+			if (reaction.block_joins)
+				if (ImGui::BeginCombo("BLOCK_JOIN_ALERT"_T.data(), block_join_reasons[reaction.block_join_reason]))
+				{
+					for (const auto& [key, value] : block_join_reasons)
+					{
+						bool is_selected = (reaction.block_join_reason == key);
+
+						if (ImGui::Selectable(value, is_selected))
+							reaction.block_join_reason = key;
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+
 			ImGui::Checkbox("REACTION_KICK_PLAYER"_T.data(), &reaction.kick);
 			if (reaction.kick)
 			{
@@ -50,6 +68,22 @@ namespace big
 			ImGui::Checkbox("LOG"_T.data(), &reaction.log);
 			ImGui::Checkbox("REACTION_ADD_TO_DATABASE"_T.data(), &reaction.add_to_player_db);
 			ImGui::Checkbox("REACTION_BLOCK_JOINS"_T.data(), &reaction.block_joins);
+
+			if (reaction.block_joins)
+				if (ImGui::BeginCombo("BLOCK_JOIN_ALERT"_T.data(), block_join_reasons[reaction.block_join_reason]))
+				{	
+					for (const auto& [key, value] : block_join_reasons)
+					{
+						bool is_selected = (reaction.block_join_reason == key);
+
+						if (ImGui::Selectable(value, is_selected))
+							reaction.block_join_reason = key;
+						if (is_selected)
+							ImGui::SetItemDefaultFocus();
+					}
+					ImGui::EndCombo();
+				}
+
 			ImGui::Checkbox("REACTION_KICK_ATTACKER"_T.data(), &reaction.kick);
 			if (reaction.kick)
 			{
@@ -109,10 +143,10 @@ namespace big
 		draw_reaction(g.reactions.send_to_cutscene);
 		draw_reaction(g.reactions.send_to_interior);
 		draw_reaction(g.reactions.send_to_location);
+		draw_reaction(g.reactions.sound_spam);
 		draw_reaction(g.reactions.spectate);
 		draw_reaction(g.reactions.spectate_notification);
 		draw_interloper_reaction(g.reactions.spectate_others);
-		draw_reaction(g.reactions.sound_spam);
 		draw_reaction(g.reactions.start_activity);
 		draw_reaction(g.reactions.start_script);
 		draw_reaction(g.reactions.teleport_to_warehouse);
@@ -121,6 +155,7 @@ namespace big
 		draw_reaction(g.reactions.tse_freeze);
 		draw_reaction(g.reactions.tse_sender_mismatch);
 		draw_reaction(g.reactions.turn_into_beast);
+		draw_reaction(g.reactions.vehicle_kick);
 
 		components::title("SETTINGS_NOTIFICATIONS"_T);
 		components::sub_title("SETTINGS_NOTIFY_GTA_THREADS"_T);
