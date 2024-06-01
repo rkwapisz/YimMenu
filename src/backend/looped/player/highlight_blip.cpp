@@ -14,17 +14,18 @@ namespace big
 		g_player_service->iterate([](const player_entry& entry) {
 
 			if (!entry.second || !entry.second->is_valid() || !entry.second->get_ped())
+			{
+				if (HUD::DOES_BLIP_EXIST(entry.second->highlight_blip))
+					HUD::REMOVE_BLIP(&entry.second->highlight_blip);
+
 				return;
+			}
 
 			Entity plyr_entity = g_pointers->m_gta.m_ptr_to_handle(entry.second->get_ped());
 
 			// First time around for a player, give them a blip if they don't have one
-			if (!entry.second->highlight_blip)
+			if (entry.second->show_highlight_blip && !entry.second->highlight_blip)
 			{
-				// Only give blips to those who don't have one
-				if (entry.second->highlight_blip)
-					return;
-
 				entry.second->highlight_blip = HUD::ADD_BLIP_FOR_ENTITY(plyr_entity);
 
 				// More blip info https://docs.fivem.net/docs/game-references/blips/
@@ -55,17 +56,11 @@ namespace big
 					HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 255); // Make it visible
 			}
 
-			// If player is no longer valid, delete their blip
-			if (!entry.second->is_valid() && entry.second->highlight_blip)
-			{
-				HUD::REMOVE_BLIP(&entry.second->highlight_blip);
-			}
-
 			// If the player already has a blip but isn't supposed to be showing it, turn it off
 			if (!entry.second->show_highlight_blip && entry.second->highlight_blip)
 			{
-				// Note: I'm trying to stay away from REMOVE_BLIP because it's fairly unstable. I'm having much better luck just initializing every player with a blip and then controlling its visibility.
-				HUD::SET_BLIP_ALPHA(entry.second->highlight_blip, 0); // Make it invisible
+				if (HUD::DOES_BLIP_EXIST(entry.second->highlight_blip))
+					HUD::REMOVE_BLIP(&entry.second->highlight_blip);
 			}
 		});
 	}
