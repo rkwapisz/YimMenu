@@ -83,7 +83,7 @@ namespace big
 		ImGui::SameLine();
 		ImGui::Checkbox("VIEW_NET_PLAYER_DB_SHOW_UNTRUSTED"_T.data(), &g.player_db.show_untrusted);
 
-		if (ImGui::BeginListBox("###players", {180, static_cast<float>(*g_pointers->m_gta.m_resolution_y - 400 - 38 * 4)}))
+		if (ImGui::BeginListBox("###players", {300, static_cast<float>(*g_pointers->m_gta.m_resolution_y - 400 - 38 * 4)}))
 		{
 			auto& item_arr = g_player_database_service->get_sorted_players();
 			if (item_arr.size() > 0)
