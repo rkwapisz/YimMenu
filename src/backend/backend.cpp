@@ -123,6 +123,7 @@ namespace big
 			looped::session_force_thunder();
 			looped::session_randomize_ceo_colors();
 			looped::session_auto_kick_host();
+			looped::session_auto_kick_player();
 			looped::session_block_jobs();
 			looped::session_chat_translator();
 			looped::session_modder_detection();

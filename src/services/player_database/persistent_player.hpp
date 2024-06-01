@@ -44,7 +44,8 @@ namespace big
 		std::string name;
 		uint64_t rockstar_id  = 0;
 		bool block_join       = false;
-		int block_join_reason = 1;
+		int block_join_reason = 0;
+		bool auto_kick        = false;
 		bool is_modder        = false;
 		bool is_trusted       = false;
 		bool notify_online    = false;
@@ -67,7 +68,7 @@ namespace big
 		std::string game_mode_id           = "";
 		rage::rlSessionInfo redirect_info{};
 
-		NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(persistent_player, name, rockstar_id, block_join, block_join_reason, is_modder, is_trusted, notify_online, infractions, custom_infraction_reason, notes, command_access_level, join_redirect, join_redirect_preference)
+		NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(persistent_player, name, rockstar_id, block_join, block_join_reason, auto_kick, is_modder, is_trusted, notify_online, infractions, custom_infraction_reason, notes, command_access_level, join_redirect, join_redirect_preference)
 
 		const char* get_infraction_description(int infraction);
 		std::string get_all_infraction_descriptions();

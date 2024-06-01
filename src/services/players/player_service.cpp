@@ -60,6 +60,18 @@ namespace big
 		return nullptr;
 	}
 
+	player_ptr player_service::get_by_rid(uint32_t rid) const
+	{
+		for (const auto& [_, player] : m_players)
+		{
+			if (player && player->get_rockstar_id() == rid)
+			{
+				return player;
+			}
+		}
+		return nullptr;
+	}
+
 	player_ptr player_service::get_by_host_token(uint64_t token) const
 	{
 		for (const auto& [_, player] : m_players)

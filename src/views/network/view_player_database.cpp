@@ -141,8 +141,19 @@ namespace big
 				    || ImGui::Checkbox("IS_MODDER"_T.data(), &current_player->is_modder)
 				    || ImGui::Checkbox("TRUST"_T.data(), &current_player->is_trusted)
 				    || ImGui::Checkbox("BLOCK_JOIN"_T.data(), &current_player->block_join)
+					|| ImGui::Checkbox("AUTO_KICK"_T.data(), &current_player->auto_kick)
 				    || ImGui::Checkbox("VIEW_NET_PLAYER_DB_TRACK_PLAYER"_T.data(), &current_player->notify_online))
 				{
+
+					// Update player values instantly instead of waiting for assign_physical_index
+					//
+					if (auto plyr = g_player_service->get_by_rid(current_player->rockstar_id))
+					{
+						plyr->is_modder  = current_player->is_modder;
+						plyr->is_trusted = current_player->is_trusted;
+						plyr->auto_kick  = current_player->auto_kick;
+					}
+
 					if (current_player->rockstar_id != selected->rockstar_id)
 						g_player_database_service->update_rockstar_id(selected->rockstar_id, current_player->rockstar_id);
 					g_player_database_service->save();

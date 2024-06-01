@@ -87,6 +87,7 @@ namespace big
 		bool is_trusted       = false;
 		bool block_join       = false;
 		int block_join_reason = 0;
+		bool auto_kick        = false;
 		bool is_spammer       = false;
 		bool is_admin         = false;
 		std::optional<uint32_t> player_time_value;
