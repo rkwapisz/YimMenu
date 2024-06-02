@@ -18,8 +18,8 @@ namespace big
 		{
 			packet pack;
 			pack.write_message(rage::eNetMessage::MsgRoamingJoinBubbleAck);
-			pack.write(0, 2);
-			pack.write(10, 4);
+			pack.write(0, 2); // ACKCODE_SUCCESS
+			pack.write(10, 4); // Bubble ID (10 is MAX_BUBBLES and also INVALID_BUBBLE_ID)
 			pack.write(0, 6);
 			pack.send(player->get_net_game_player()->m_msg_id);
 		}

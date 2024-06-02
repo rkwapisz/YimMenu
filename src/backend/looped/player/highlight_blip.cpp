@@ -36,10 +36,10 @@ namespace big
 		static int previous_player_count = 0;
 		int current_player_count  = g_player_service->players().size(); // Don't include us in the count
 
-		// If the player count changed, clear the blips so we don't risk having any weird stragglers
+		// Blips are handled kinda stupidly by the game... blips added via ADD_BLIP_FOR_ENTITY don't disappear when the entity disappears
+		// Clear everyone's blips when the session player count changes so we don't have to individually clean up blips
 		if (current_player_count != previous_player_count)
 		{
-			// It's easier to just clear everyone's blips when the session changes, instead of trying to keep track of who left and individually clean up their blip
 			clear_all_player_blips();
 
 			previous_player_count = current_player_count;
@@ -77,7 +77,8 @@ namespace big
 
 			// If the player already has a blip but isn't supposed to be showing it, turn it off
 			if ((!entry.second->show_highlight_blip && entry.second->highlight_blip)
-				|| INTERIOR::IS_VALID_INTERIOR(INTERIOR::GET_INTERIOR_FROM_ENTITY(plyr_entity))) // Turn off blips for players inside interiors
+				|| INTERIOR::IS_VALID_INTERIOR(INTERIOR::GET_INTERIOR_FROM_ENTITY(plyr_entity)) // Turn off blips for players inside interiors
+				|| entry.second->get_ped()->m_health <= 0.0f) // Turn off blips for dead players
 			{
 				if (HUD::DOES_BLIP_EXIST(entry.second->highlight_blip))
 					HUD::REMOVE_BLIP(&entry.second->highlight_blip);
