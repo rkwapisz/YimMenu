@@ -105,6 +105,7 @@ namespace big
 
 		bool trigger_desync_kick = false;
 		bool trigger_end_session_kick = false;
+		bool trigger_bubble_kick      = false;
 
 		bool spam_killfeed = false;
 
