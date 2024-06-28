@@ -38,6 +38,7 @@ namespace big
 		static void session_randomize_ceo_colors();
 		static void session_auto_kick_host();
 		static void session_auto_kick_player();
+		static void session_force_script_host();
 		static void session_chat_translator();
 		static void session_modder_detection();
 

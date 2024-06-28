@@ -178,18 +178,26 @@ namespace big
 
 				if (ImGui::BeginCombo("BLOCK_JOIN_ALERT"_T.data(), block_join_reasons[current_player->block_join_reason]))
 				{
-					for (const auto& reason : block_join_reasons)
+					block_join_reason_t i = block_join_reason_t::None;
+					for (const auto& reason_str : block_join_reasons)
 					{
-						if (ImGui::Selectable(reason.second, reason.first == current_player->block_join_reason))
+						if (reason_str != "")
 						{
-							current_player->block_join_reason = reason.first;
-							g_player_database_service->save();
+							const bool is_selected = current_player->block_join_reason == i;
+
+							if (ImGui::Selectable(reason_str, is_selected))
+							{
+								current_player->block_join_reason = i;
+								g_player_database_service->save();
+							}
+
+							if (is_selected)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
 						}
 
-						if (reason.first == current_player->block_join_reason)
-						{
-							ImGui::SetItemDefaultFocus();
-						}
+						i++;
 					}
 
 					ImGui::EndCombo();
@@ -291,7 +299,7 @@ namespace big
 					ImGui::Text(std::format("{}: {}", "VIEW_NET_PLAYER_DB_CURRENT_MISSION_TYPE"_T, player_database_service::get_game_mode_str(selected->game_mode)).c_str());
 					if (selected->game_mode != GameMode::None && player_database_service::can_fetch_name(selected->game_mode))
 					{
-						ImGui::Text("VIEW_NET_PLAYER_DB_CURRENT_MISSION_TYPE"_T.data(), selected->game_mode_name.c_str());
+						ImGui::Text(std::format("{}: {}", "VIEW_NET_PLAYER_DB_CURRENT_MISSION_NAME"_T.data(), selected->game_mode_name.c_str()).c_str());
 						if ((selected->game_mode_name == "VIEW_NET_PLAYER_DB_GAME_MODE_UNKNOWN"_T.data() || selected->game_mode_name.empty())
 						    && !selected->game_mode_id.empty())
 						{

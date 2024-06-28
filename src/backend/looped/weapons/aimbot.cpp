@@ -4,9 +4,9 @@
 #include "util/entity.hpp"
 #include "util/ped.hpp"
 #include "util/world_to_screen.hpp"
-
 #include <chrono>
 #include <cmath>
+#include "util/math.hpp"
 #include <numbers>
 
 namespace big
