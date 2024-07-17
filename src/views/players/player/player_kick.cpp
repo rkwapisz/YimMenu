@@ -16,9 +16,6 @@ namespace big
 		ImGui::SameLine();
 		components::player_command_button<"breakup">(g_player_service->get_selected());
 		ImGui::EndDisabled();
-		ImGui::SameLine();
-
-		components::command_checkbox<"breakupcheating">();
 			
 		ImGui::SameLine();
 		components::player_command_button<"bubblekick">(g_player_service->get_selected());

@@ -1,8 +1,10 @@
 #include "core/data/bullet_impact_types.hpp"
 #include "core/data/special_ammo_types.hpp"
 #include "fiber_pool.hpp"
+#include "gta/enums.hpp"
 #include "gta/joaat.hpp"
 #include "gta/weapons.hpp"
+#include "imgui_internal.h"
 #include "natives.hpp"
 #include "pointers.hpp"
 #include "services/gta_data/gta_data_service.hpp"
@@ -102,6 +104,8 @@ namespace big
 		components::command_checkbox<"norecoil">();
 		ImGui::SameLine();
 		components::command_checkbox<"nospread">();
+		ImGui::SameLine();
+		components::command_checkbox<"nosway">();
 
 		components::button("GET_ALL_WEAPONS"_T, [] {
 			for (const auto& [_, weapon] : g_gta_data_service->weapons())
@@ -177,7 +181,10 @@ namespace big
 		case CustomWeapon::PAINT_GUN:
 			ImGui::Checkbox("RAINBOW_PAINT"_T.data(), &g.weapons.paintgun.rainbow);
 			ImGui::SliderFloat("VIEW_WEAPON_RAINBOW_SPEED"_T.data(), &g.weapons.paintgun.speed, 0.f, 10.f);
-			if (!g.weapons.paintgun.rainbow) { ImGui::ColorEdit4("VIEW_WEAPON_PAINT_GUN_COLOR"_T.data(), g.weapons.paintgun.col); }
+			if (!g.weapons.paintgun.rainbow)
+			{
+				ImGui::ColorEdit4("VIEW_WEAPON_PAINT_GUN_COLOR"_T.data(), g.weapons.paintgun.col);
+			}
 		}
 
 		ImGui::SeparatorText("VIEW_WEAPON_AIM_ASSISTANCE"_T.data());
@@ -291,7 +298,7 @@ namespace big
 				{
 					for (std::string attachment : weapon.m_attachments)
 					{
-						weapon_component attachment_component   = g_gta_data_service->weapon_component_by_name(attachment);
+						weapon_component attachment_component = g_gta_data_service->weapon_component_by_name(attachment);
 						std::string attachment_name = attachment_component.m_display_name;
 						Hash attachment_hash        = attachment_component.m_hash;
 						if (attachment_hash == NULL)
@@ -377,7 +384,8 @@ namespace big
 			components::button("VIEW_WEAPON_PERSIST_WEAPONS_SET_LOADOUT"_T, [] {
 				persist_weapons::set_weapon_loadout(selected_loadout);
 			});
-			ImGui::Text(std::format("{}: {}:", "VIEW_WEAPON_PERSIST_WEAPONS_CURRENT_LOADOUT"_T, g.persist_weapons.weapon_loadout_file).data());
+			ImGui::Text(std::format("{}: {}:", "VIEW_WEAPON_PERSIST_WEAPONS_CURRENT_LOADOUT"_T, g.persist_weapons.weapon_loadout_file)
+			                .data());
 			ImGui::EndGroup();
 			ImGui::PopItemWidth();
 		}
