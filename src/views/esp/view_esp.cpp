@@ -8,6 +8,7 @@
 #include "util/math.hpp"
 #include "util/misc.hpp"
 #include "util/ped.hpp"
+#include "util/pools.hpp"
 #include "util/world_to_screen.hpp"
 #include "view_esp.hpp"
 

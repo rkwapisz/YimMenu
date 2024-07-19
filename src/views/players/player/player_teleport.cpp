@@ -17,7 +17,7 @@ namespace big
 		ImGui::SameLine();
 		components::player_command_button<"bring">(g_player_service->get_selected());
 		ImGui::SameLine();
-		components::button("VIEW_PLAYER_TELEPORT_YOUR_WAYPOINT"_T, [] {
+		components::button("VIEW_PLAYER_TELEPORT_WAYPOINT"_T, [] {
 			Vector3 location;
 			if (blip::get_blip_location(location, (int)BlipIcons::Waypoint))
 				entity::load_ground_at_3dcoord(location), teleport::teleport_player_to_coords(g_player_service->get_selected(), location);

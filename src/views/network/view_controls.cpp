@@ -236,7 +236,7 @@ namespace big
 		static int global_wanted_level = 0;
 
 		ImGui::BeginGroup();
-		components::small_text("WANTED_LVL"_T);
+		components::small_text("WANTED_LEVEL"_T);
 		ImGui::SetNextItemWidth(150);
 		if (ImGui::SliderInt("##wantedlevel", &global_wanted_level, 0, 5))
 		{
