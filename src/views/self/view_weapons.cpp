@@ -190,8 +190,9 @@ namespace big
 		ImGui::SeparatorText("VIEW_WEAPON_AIM_ASSISTANCE"_T.data());
 		components::command_checkbox<"aimbot">();
 
-		if (g.weapons.aimbot.enable || g.weapons.triggerbot)
+		if (g.weapons.aimbot.enable)
 		{
+			components::command_checkbox<"triggerbot">();
 			ImGui::SameLine();
 			components::command_checkbox<"nonhitscan">();
 			components::command_checkbox<"aimatplayer">();

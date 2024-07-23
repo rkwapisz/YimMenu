@@ -356,6 +356,9 @@ namespace big
 			    aimbot::reset_aim_vectors(cam_follow_ped_camera);
 			    *reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x40) = camera_target_fvec; // First person & sniper (on foot)
 			    *reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x3'D0) = camera_target_fvec; // Third person
+
+				if (g.weapons.aimbot.triggerbot)
+					PED::SET_PED_RESET_FLAG(self::ped, 65, TRUE);
 		    }
 
 			// This is a total mystery but we need to call it to correct our in-vehicle aim
@@ -415,12 +418,14 @@ namespace big
 		return result;
 	}
 
-	bool_command g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC",
-	    g.weapons.aimbot.nonhitscan);
+	bool_command
+		g_aimbot_nonhitscan("nonhitscan", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN", "BACKEND_LOOPED_WEAPONS_AIMBOT_NONHITSCAN_DESC", g.weapons.aimbot.nonhitscan);
+	bool_command
+		g_aimbot_triggerbot("triggerbot", "BACKEND_LOOPED_WEAPONS_TRIGGERBOT", "BACKEND_LOOPED_WEAPONS_TRIGGERBOT_DESC", g.weapons.aimbot.triggerbot);
 	bool_command
 	    g_aimbot_on_player("aimatplayer", "PLAYER", "BACKEND_LOOPED_WEAPONS_AIM_AT_PLAYER_DESC", g.weapons.aimbot.on_player);
-	bool_command g_aimbot_on_npc("aimatnpc", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC",
-	    g.weapons.aimbot.on_npc);
-	bool_command g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED_DESC",
-	    g.weapons.aimbot.on_armed);
+	bool_command
+		g_aimbot_on_npc("aimatnpc", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
+	bool_command
+		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED_DESC", g.weapons.aimbot.on_armed);
 }
