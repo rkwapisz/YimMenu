@@ -1,15 +1,10 @@
 #include "backend/looped_command.hpp"
 #include "gta/enums.hpp"
 #include "natives.hpp"
-#include "hooking/hooking.hpp"
-#include "util/entity.hpp"
-#include "util/ped.hpp"
-#include "util/pools.hpp"
-#include "util/world_to_screen.hpp"
-#include <chrono>
-#include <cmath>
 #include "util/math.hpp"
-#include <numbers>
+#include "util/pools.hpp"
+#include "services/friends/friends_service.hpp"
+#include "services/player_database/player_database_service.hpp"
 
 namespace big
 {
@@ -55,6 +50,7 @@ namespace big
 				{
 					// This is our first-person camera direction
 					return reinterpret_cast<rage::fvector3*>(cam_follow_ped_camera + 0x40)->normalize();
+
 				}
 				else
 				{

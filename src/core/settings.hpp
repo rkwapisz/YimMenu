@@ -2,6 +2,7 @@
 #include "backend/reactions/interloper_reaction.hpp"
 #include "backend/reactions/reaction.hpp"
 #include "core/data/hud_colors.hpp"
+#include "core/data/language_codes.hpp"
 #include "core/data/ptfx_effects.hpp"
 #include "enums.hpp"
 #include "file_manager.hpp"
@@ -734,7 +735,7 @@ namespace big
 			bool spoof_session_region_type      = false;
 			int session_region_type             = 0;
 			bool spoof_session_language         = false;
-			int session_language                = 0;
+			eGameLanguage session_language      = eGameLanguage::ENGLISH;
 			bool spoof_session_player_count     = false;
 			int session_player_count            = 25;
 			int spoof_session_bad_sport_status  = 0;
@@ -922,13 +923,14 @@ namespace big
 				bool triggerbot			  = false;
 				bool nonhitscan           = true;
 				bool on_player            = true;
+				bool on_enemies			  = true;
 				bool on_armed             = false;
 				bool on_npc               = false;
 				float fov                 = 100.0f;
 				float z_foot_comp         = 0.0f;
 				float z_veh_comp          = 0.0f;
 				float pred_comp           = 0.0f;
-								NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, aim_bone_ped, aim_bone_veh, nonhitscan, on_player, on_armed, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
+								NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, aim_bone_ped, aim_bone_veh, nonhitscan, on_player, on_enemies, on_armed, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
 			} aimbot{};
 
 			struct flying_axe
@@ -1103,7 +1105,7 @@ namespace big
 			int region_filter          = 0;
 
 			bool language_filter_enabled = false;
-			int language_filter          = 0;
+			eGameLanguage language_filter = eGameLanguage::ENGLISH;
 
 			bool pool_filter_enabled = false;
 			int pool_filter          = 0;
