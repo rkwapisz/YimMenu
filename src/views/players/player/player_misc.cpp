@@ -34,7 +34,11 @@ namespace big
 		ImGui::Checkbox("NEVER_WANTED"_T.data(), &g_player_service->get_selected()->never_wanted);
 		ImGui::Checkbox("SEMI_GODMODE"_T.data(), &g_player_service->get_selected()->semi_godmode);
 		ImGui::Checkbox("VIEW_NET_SESSION_FIX_VEHICLE"_T.data(), &g_player_service->get_selected()->fix_vehicle);
+		ImGui::EndGroup();
 
+		ImGui::SameLine();
+
+		ImGui::BeginGroup();
 		components::button("Trigger UFO Abduction", [] {
 			scripts::force_host("freemode"_J);
 			g_player_service->get_selected()->script_host_mission = 9999;

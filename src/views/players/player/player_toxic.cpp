@@ -106,6 +106,8 @@ namespace big
 		ImGui::Checkbox("EXPLOSION_LOOP"_T.data(), &g_player_service->get_selected()->explosion_loop);
 		ImGui::SameLine();
 		ImGui::Checkbox("RAGDOLL_LOOP"_T.data(), &g_player_service->get_selected()->ragdoll_loop);
+		// New Line
+		ImGui::Checkbox("CAGE_LOOP"_T.data(), &g_player_service->get_selected()->cage_loop);
 		ImGui::SameLine();
 		ImGui::Checkbox("ROT_CAM_LOOP"_T.data(), &g_player_service->get_selected()->rotate_cam_loop);
 		if (ImGui::IsItemHovered())
