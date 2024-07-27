@@ -364,9 +364,9 @@ namespace big
 
 		uintptr_t* m_cam_gameplay_director;
 		functions::cam_gameplay_directory_update m_cam_gameplay_director_update;
-    
+
 		PVOID m_format_int;
-    
+
 		PVOID m_searchlight_crash;
 		functions::get_searchlight m_get_searchlight;
 
@@ -402,6 +402,8 @@ namespace big
 		PVOID m_create_pool_item;
 
 		PVOID m_scope_sway_function;
+
+		PVOID m_report_myself_sender;
 	};
 #pragma pack(pop)
 	static_assert(sizeof(gta_pointers) % 8 == 0, "Pointers are not properly aligned");
