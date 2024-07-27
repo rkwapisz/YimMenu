@@ -192,9 +192,12 @@ namespace big
 			components::command_checkbox<"triggerbot">();
 			ImGui::SameLine();
 			components::command_checkbox<"nonhitscan">();
+
 			components::command_checkbox<"aimatplayer">();
 			ImGui::SameLine();
 			components::command_checkbox<"aimatenemy">();
+			ImGui::SameLine();
+			components::command_checkbox<"aimatarmed">();
 			ImGui::SameLine();
 			components::command_checkbox<"aimatnpc">();
 

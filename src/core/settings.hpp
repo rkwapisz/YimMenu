@@ -923,14 +923,14 @@ namespace big
 				bool triggerbot			  = false;
 				bool nonhitscan           = true;
 				bool on_player            = true;
-				bool on_enemies			  = true;
+				bool on_enemy			  = true;
 				bool on_armed             = false;
 				bool on_npc               = false;
 				float fov                 = 100.0f;
 				float z_foot_comp         = 0.0f;
 				float z_veh_comp          = 0.0f;
 				float pred_comp           = 0.0f;
-								NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, aim_bone_ped, aim_bone_veh, nonhitscan, on_player, on_enemies, on_armed, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
+								NLOHMANN_DEFINE_TYPE_INTRUSIVE(aimbot, enable, aim_bone_ped, aim_bone_veh, nonhitscan, on_player, on_enemy, on_armed, on_npc, fov, z_foot_comp, z_veh_comp, pred_comp)
 			} aimbot{};
 
 			struct flying_axe
@@ -1075,6 +1075,7 @@ namespace big
 		{
 			bool enabled                    = true;
 			bool only_armed				    = false;
+			bool only_enemy					= false;
 			float global_render_distance[2] = {0.f, 600.f};
 			float tracer_render_distance[2] = {200.f, 600.f};
 			float box_render_distance[2]    = {0.f, 150.f};
@@ -1096,7 +1097,7 @@ namespace big
 			ImU32 npc_unarmed_color         = 4286578912;
 			ImU32 npc_armed_color           = 4294901984;
 
-			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_npc, enabled, only_armed, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, only_draw_head, health, armor, god, distance, name, weapon, vehicle, scale_health_from_dist, scale_armor_from_dist, npc_unarmed_color, npc_armed_color)
+			NLOHMANN_DEFINE_TYPE_INTRUSIVE(esp_npc, enabled, only_armed, only_enemy, global_render_distance, tracer_render_distance, box_render_distance, bone_render_distance, tracer, tracer_draw_position, box, bone, only_draw_head, health, armor, god, distance, name, weapon, vehicle, scale_health_from_dist, scale_armor_from_dist, npc_unarmed_color, npc_armed_color)
 		} esp_npc{};
 
 		struct session_browser

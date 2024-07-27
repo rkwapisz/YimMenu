@@ -1,6 +1,8 @@
 #include "backend/looped/looped.hpp"
 #include "gta/enums.hpp"
 #include "gta_util.hpp"
+#include "pointers.hpp"
+#include "services/gta_data/gta_data_service.hpp"
 #include "util/misc.hpp"
 #include "util/ped.hpp"
 #include "util/pools.hpp"
@@ -44,11 +46,23 @@ namespace big
 	void esp::draw_npc(CPed* cped, ImDrawList* const draw_list)
 	{
 		// Ignore nulls, players, and animals (maybe we can make animals configurable later)
-
 		if (!cped || cped->m_player_info || cped->get_ped_type() == 28)
 			return;
 		
 		// We can preserve essentially all of draw_player's functionality, just apply it to peds with maybe some additional ped-type classifications
+
+		if (g.esp_npc.only_enemy)
+		{
+			Entity ped_handle = g_pointers->m_gta.m_ptr_to_handle(cped);
+
+			int blip_color = HUD::GET_BLIP_HUD_COLOUR(HUD::GET_BLIP_FROM_ENTITY(ped_handle));
+			bool is_enemy = ((PED::GET_PED_CONFIG_FLAG(ped_handle, 38, TRUE) == TRUE) || (blip_color == HUD_COLOUR_RED));
+
+			if (!is_enemy)
+			{
+				return;
+			}
+		}
 
 		if (g.esp_npc.only_armed && cped->m_weapon_manager && cped->m_weapon_manager->m_weapon_info)
 		{
@@ -108,7 +122,7 @@ namespace big
 			}
 
 			if (g.esp_npc.name)
-				name_str = g_gta_data_service->ped_by_hash(cped->m_model_info->m_hash).m_name;
+				name_str = g_gta_data_service.ped_by_hash(cped->m_model_info->m_hash).m_name;
 
 			if (g.esp_npc.distance)
 			{
@@ -126,7 +140,7 @@ namespace big
 
 				if (weapon_hash)
 				{
-					extra_info += g_gta_data_service->weapon_by_hash(weapon_hash).m_display_name;
+					extra_info += g_gta_data_service.weapon_by_hash(weapon_hash).m_display_name;
 				}
 			}
 
@@ -156,7 +170,7 @@ namespace big
 					if (!extra_info.empty())
 						extra_info += " | ";
 
-					extra_info += g_gta_data_service->vehicle_by_hash(vehicle_hash).m_display_name;
+					extra_info += g_gta_data_service.vehicle_by_hash(vehicle_hash).m_display_name;
 				}
 			}
 
@@ -291,7 +305,7 @@ namespace big
 
 				if (weapon_hash)
 				{
-					extra_info += g_gta_data_service->weapon_by_hash(weapon_hash).m_display_name;
+					extra_info += g_gta_data_service.weapon_by_hash(weapon_hash).m_display_name;
 				}
 			}
 
@@ -321,7 +335,7 @@ namespace big
 					if (!extra_info.empty())
 						extra_info += " | ";
 
-					extra_info += g_gta_data_service->vehicle_by_hash(vehicle_hash).m_display_name;
+					extra_info += g_gta_data_service.vehicle_by_hash(vehicle_hash).m_display_name;
 				}
 			}
 

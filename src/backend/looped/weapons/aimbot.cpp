@@ -2,7 +2,10 @@
 #include "gta/enums.hpp"
 #include "natives.hpp"
 #include "util/math.hpp"
+#include "hooking/hooking.hpp"
+#include "util/ped.hpp"
 #include "util/pools.hpp"
+#include "util/world_to_screen.hpp"
 #include "services/friends/friends_service.hpp"
 #include "services/player_database/player_database_service.hpp"
 
@@ -22,13 +25,11 @@ namespace big
 
 			virtual void on_tick() override
 			{
-				if (!PLAYER::IS_PLAYER_FREE_AIMING(self::id))
+				if (PLAYER::IS_PLAYER_FREE_AIMING(self::id))
 				{
-					return;
+				    CAM::STOP_SCRIPT_GLOBAL_SHAKING(true);
+				    CAM::SET_GAMEPLAY_CAM_SHAKE_AMPLITUDE(0);
 				}
-
-				CAM::STOP_SCRIPT_GLOBAL_SHAKING(true);
-				CAM::SET_GAMEPLAY_CAM_SHAKE_AMPLITUDE(0);
 			}
 
 			static rage::fvector3 get_camera_position()
@@ -192,6 +193,21 @@ namespace big
 					    target_cped = cped;
 					    break;
 				    }
+					// If target is an enemy and we're aiming at enemies
+					else if (g.weapons.aimbot.on_enemy)
+					{
+					    Entity ped_handle = g_pointers->m_gta.m_ptr_to_handle(cped);
+
+						int blip_color = HUD::GET_BLIP_HUD_COLOUR(HUD::GET_BLIP_FROM_ENTITY(ped_handle));
+						bool is_enemy = ((PED::GET_PED_CONFIG_FLAG(ped_handle, 38, TRUE) == TRUE) || (blip_color == HUD_COLOUR_RED));
+
+						if (is_enemy)
+						{
+							target_cped = cped;
+							break;
+						}
+					}
+
 				    // If target is armed and we're aiming at armed NPCs
 				    // Note that we check !target_plyr since player targeting is a separate option
 				    // Type == 28 check exists because animals are armed (lol)
@@ -421,7 +437,9 @@ namespace big
 	bool_command
 	    g_aimbot_on_player("aimatplayer", "PLAYER", "BACKEND_LOOPED_WEAPONS_AIM_AT_PLAYER_DESC", g.weapons.aimbot.on_player);
 	bool_command
+		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY", "BACKEND_LOOPED_WEAPONS_AIM_AT_ENEMY_DESC", g.weapons.aimbot.on_enemy);
+	bool_command
 		g_aimbot_on_npc("aimatnpc", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC", "BACKEND_LOOPED_WEAPONS_AIM_AT_NPC_DESC", g.weapons.aimbot.on_npc);
 	bool_command
-		g_aimbot_on_enemy("aimatenemy", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED_DESC", g.weapons.aimbot.on_armed);
+		g_aimbot_on_armed("aimatarmed", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED", "BACKEND_LOOPED_WEAPONS_AIM_AT_ARMED_DESC", g.weapons.aimbot.on_armed);
 }
